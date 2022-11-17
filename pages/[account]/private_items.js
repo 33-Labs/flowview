@@ -37,7 +37,7 @@ export default function PrivateItems(props) {
   }
 
   const showItems = () => {
-    if (!itemsData) {
+    if (!privateItems) {
       return (
         <div className="flex mt-10 h-[200px] justify-center">
           <SpinnerCircular size={50} thickness={180} speed={100} color="#38E8C6" secondaryColor="#e2e8f0" />
@@ -47,9 +47,9 @@ export default function PrivateItems(props) {
       return (
         <div className="flex flex-col gap-y-4">
           { privateItems.length > 0 ?
-            privateItems.map((item) => {
+            privateItems.map((item, index) => {
               return (
-                <ItemsView item={item} />
+                <ItemsView key={`privateItems-${index}`} item={item} />
               )
             }) : 
             <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">

@@ -66,10 +66,10 @@ const doGetTypeView = (type) => {
   if (type.kind == "Restriction") {
     return (
       <div className="flex flex-col gap-y-1 items-start">
-        {type.restrictions.map((r) => {
+        {type.restrictions.map((r, index) => {
           const restrictionColor = getTypeColor(r.kind)
           return (
-            <div className="flex flex-row gap-x-1 pl-4">
+            <div key={`${r.typeID}-${index}`} className="flex flex-row gap-x-1 pl-4">
               <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${restrictionColor.bg} ${restrictionColor.text}`}>
                 {r.kind}
               </label>

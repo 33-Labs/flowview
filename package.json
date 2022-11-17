@@ -13,6 +13,7 @@
     "@heroicons/react": "v1",
     "@onflow/fcl": "^1.3.2",
     "autoprefixer": "^10.4.13",
+    "decimal.js": "^10.4.2",
     "next": "13.0.3",
     "postcss": "^8.4.19",
     "react": "18.2.0",

@@ -1,11 +1,34 @@
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { SpinnerCircular } from "spinners-react";
+import useSWR from "swr";
 import Layout from "../../components/common/Layout";
-import { isValidFlowAddress } from "../../lib/utils";
+import { getAccountInfo } from "../../flow/scripts";
+import { isValidFlowAddress, percentage } from "../../lib/utils";
 import Custom404 from "./404";
+
+
+const basicInfoFetcher = async (funcName, address) => {
+  return await getAccountInfo(address)
+}
 
 export default function Account() {
   const router = useRouter()
   const { account } = router.query
+
+  const [basicInfo, setBasicInfo] = useState(null)
+  const { data: infoData, error: infoError } = useSWR(
+    account && isValidFlowAddress(account) ? ["basicInfoFetcher", account] : null, basicInfoFetcher
+  )
+
+  console.log("infoData", infoData)
+  console.log("infoError", infoError)
+
+  useEffect(() => {
+    if (infoData) {
+      setBasicInfo(infoData)
+    }
+  }, [infoData])
 
   if (!account) {
     return <></>
@@ -13,6 +36,34 @@ export default function Account() {
 
   if (!isValidFlowAddress(account)) {
     return <Custom404 title={"Account may not exist"} />
+  }
+
+  const dataField = (title, value) => {
+    return (
+      <div className="flex flex-col gap-y-1">
+        <label className="px-2 text-base text-gray-500">{title}</label>
+        <label className="px-2 text-xl font-bold">{value}</label>
+      </div>
+    )
+  }
+
+  const showInfo = () => {
+    if (!basicInfo) {
+      return (
+        <div className="flex mt-10 h-[200px] justify-center">
+          <SpinnerCircular size={50} thickness={180} speed={100} color="#38E8C6" secondaryColor="#e2e8f0" />
+        </div>
+      )
+    } else {
+      return (
+        <div className="flex flex-col gap-y-4 p-5 shadow-md rounded-2xl bg-white">
+          {dataField("Balance", `${basicInfo.balance} FLOW`)}
+          {dataField("Available Balance", `${basicInfo.availableBalance} FLOW`)}
+          {dataField("Storage Used", `${basicInfo.storageUsed} Bytes / ${percentage(basicInfo.storageUsed, basicInfo.storageCapacity)}`)}
+          {dataField("Storage Capacity", `${basicInfo.storageCapacity} Bytes`)}
+        </div>
+      )
+    }
   }
 
   return (
@@ -24,7 +75,9 @@ export default function Account() {
       <div hidden className="text-teal-800 bg-teal-100"></div>
       <div hidden className="text-indigo-800 bg-indigo-100"></div>
       <div hidden className="text-slate-800 bg-slate-100"></div>
-      <Layout>{account}</Layout>
+      <Layout>
+        {showInfo()}
+      </Layout>
     </div>
   )
 }
