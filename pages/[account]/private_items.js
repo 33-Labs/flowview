@@ -1,21 +1,25 @@
+import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { SpinnerCircular } from "spinners-react"
 import useSWR from "swr"
 import ItemsView from "../../components/common/ItemsView"
 import Layout from "../../components/common/Layout"
 import { getItems } from "../../flow/scripts"
+import { isValidFlowAddress } from "../../lib/utils"
+import Custom404 from "./404"
 
 const privateItemsFetcher = async (funcName, address) => {
   return await getItems("private", address)
 }
 
 export default function PrivateItems(props) {
+  const router = useRouter()
+  const { account } = router.query
+
   const [privateItems, setPrivateItems] = useState([])
 
-  const account = props.user && props.user.addr
-
   const { data: itemsData, error: itemsError } = useSWR(
-    account ? ["privateItemsFetcher", account] : null, privateItemsFetcher
+    account && isValidFlowAddress(account) ? ["privateItemsFetcher", account] : null, privateItemsFetcher
   )
 
   useEffect(() => {
@@ -23,6 +27,14 @@ export default function PrivateItems(props) {
       setPrivateItems(itemsData)
     }
   }, [itemsData])
+
+  if (!account) {
+    return <></>
+  }
+
+  if (!isValidFlowAddress(account)) {
+    return <Custom404 title={"Account may not exist"} />
+  }
 
   const showItems = () => {
     if (!itemsData) {
@@ -34,12 +46,15 @@ export default function PrivateItems(props) {
     } else {
       return (
         <div className="flex flex-col gap-y-4">
-          {
+          { privateItems.length > 0 ?
             privateItems.map((item) => {
               return (
                 <ItemsView item={item} />
               )
-            })
+            }) : 
+            <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
+              There is nothing here
+            </div>
           }
         </div>
       )

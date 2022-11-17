@@ -9,7 +9,7 @@ export default function Sidebar(props) {
   const { account } = router.query
 
   const menuItems = [
-    { id: "0", label: "Home", link: { pathname: "/[account]", query: { account: account } } },
+    { id: "0", label: `Basic Info`, link: { pathname: "/[account]", query: { account: account } } },
     {
       id: "1", label: "Storage", subItems: [
         { id: "1-0", isSubItem: true, label: "Public Items", link: { pathname: "/[account]/public_items", query: { account: account } } },
@@ -47,9 +47,9 @@ export default function Sidebar(props) {
 
   return (
     <div
-      className="flex flex-col p-3 rounded-xl  min-w-[160px]"
+      className="flex flex-col p-3 rounded-xl"
     >
-      <div className="flex flex-col gap-y-5 items-start mt-4 mb-4">
+      <div className="flex flex-col gap-y-5 items-start">
         {menuItems.map(({ label: label, ...menu }, index) => {
           const classes = getNavItemClasses(menu)
           return (

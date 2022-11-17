@@ -31,6 +31,17 @@ const getTypeColor = (typeKind) => {
   return colorMap[typeKind] || {bg: "bg-gray-100", text: "bg-gray-800"}
 }
 
+const formatPath = (path) => {
+  const comps = path.split("/")
+  const domain = comps[1]
+  const itemPath = comps[2]
+  return (
+    <label className="text-base">
+      {`/${domain}/`}<span className="font-bold">{`${itemPath}`}</span>
+    </label>
+  )
+}
+
 const formatTypeID = (typeID) => {
   // e.g. A.631e88ae7f1d7c20.NonFungibleToken .CollectionPublic
   const comps = typeID.split(".")
@@ -100,9 +111,7 @@ export default function ItemsView(props) {
   console.log(item)
   return (
     <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
-      <label className="text-base font-bold font-flow">
-        {item.path}
-      </label>
+      {formatPath(item.path)}
       <div className="w-full border-b-2"></div>
       <div className="mt-1">
         {getTypeView(item.type, 0)}
