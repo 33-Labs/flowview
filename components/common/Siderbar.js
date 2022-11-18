@@ -39,8 +39,8 @@ export default function Sidebar(props) {
 
   const getNavItemClasses = (menu) => {
     return classNames(
-      activeMenu && activeMenu.id === menu.id ? "bg-emerald" : "",
-      menu.link ? "hover:bg-emerald-light cursor-pointer" : "",
+      activeMenu && activeMenu.id === menu.id ? "bg-drizzle" : "",
+      menu.link ? "hover:bg-drizzle-light cursor-pointer" : "",
       menu.isSubItem ? "text-sm sm:text-base leading-5 sm:leading-6" : "text-base sm:text-lg font-bold leading-6 sm:leading-8",
       "flex flex-col rounded w-full overflow-hidden whitespace-nowrap px-2 py-1",
     )

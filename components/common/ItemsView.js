@@ -53,7 +53,7 @@ const formatTypeID = (typeID) => {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="underline font-bold decoration-emerald decoration-2">
+        className="underline font-bold decoration-drizzle decoration-2">
         {contract}
       </a>{`${rest}`}
     </label>

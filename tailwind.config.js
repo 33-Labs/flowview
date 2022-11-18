@@ -7,9 +7,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'emerald': '#38E8C6',
-        'emerald-light': '#68FADE',
-        'emerald-dark': '#09BC99'
+        'drizzle': '#00d588',
+        'drizzle-dark': '#00a368',
+        'drizzle-light': '#95e7c1',
+        'drizzle-ultralight': '#e9faf3', 
       },
       light: {
         DEFAULT: "#FAFBFC",
@@ -19,7 +20,7 @@ module.exports = {
         'flow': ['sans-serif'],
       },
       boxShadow: {
-        'emerald': '0px 5px 25px -5px rgba(0,0,0,0.2)'
+        'drizzle': '0px 5px 25px -5px rgba(0,0,0,0.2)'
       }
     }
   },

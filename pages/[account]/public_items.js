@@ -1,9 +1,9 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import { SpinnerCircular } from "spinners-react"
 import useSWR from "swr"
 import ItemsView from "../../components/common/ItemsView"
 import Layout from "../../components/common/Layout"
+import Spinner from "../../components/common/Spinner"
 import { getItems } from "../../flow/scripts"
 import { isValidFlowAddress, getResourceType } from "../../lib/utils"
 import Custom404 from "./404"
@@ -41,7 +41,7 @@ export default function PublicItems(props) {
     if (!publicItems) {
       return (
         <div className="flex mt-10 h-[200px] justify-center">
-          <SpinnerCircular size={50} thickness={180} speed={100} color="#38E8C6" secondaryColor="#e2e8f0" />
+          <Spinner />
         </div>
       )
     }

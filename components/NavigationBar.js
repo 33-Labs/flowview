@@ -39,13 +39,13 @@ export default function NavigationBar(props) {
         <label
           className="shrink truncate font-flow text-base
           text-black shadow-sm
-          bg-emerald rounded-full px-3 py-2 leading-5"
+          bg-drizzle rounded-full px-3 py-2 leading-5"
         >
           {user && user.addr}
         </label>
         <button
           type="button"
-          className="shrink-0 bg-emerald rounded-full p-2"
+          className="shrink-0 bg-drizzle rounded-full p-2"
           onClick={() => {
             fcl.unauthenticate()
             router.push("/")
@@ -61,7 +61,7 @@ export default function NavigationBar(props) {
       <div>
         <button
           type="button"
-          className="h-12 px-6 text-base rounded-2xl font-flow font-semibold shadow-sm text-black bg-emerald hover:bg-emerald-dark"
+          className="h-12 px-6 text-base rounded-2xl font-flow font-semibold shadow-sm text-black bg-drizzle hover:bg-drizzle-dark"
           onClick={fcl.logIn}
         >
           <label className="hidden sm:block">Connect Wallet</label>
@@ -76,7 +76,7 @@ export default function NavigationBar(props) {
       <div className="flex items-center gap-x-2">
         <Link href="/">
           <div className="min-w-[40px]">
-            <Image src="/link.png" alt="" width={50} height={50} priority={true} />
+            <Image src="/logo.png" alt="" width={50} height={50} priority={true} />
           </div>
         </Link>
 
@@ -85,10 +85,10 @@ export default function NavigationBar(props) {
             Viewer
           </label>
         </Link>
-        <label className="hidden sm:block px-1 text-center font-flow text-emerald font-medium text-xs border border-1 border-emerald">
+        <label className="hidden sm:block px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
           {`${publicConfig.chainEnv == "mainnet" ? "BETA" : "TESTNET"}`}
         </label>
-        <label className="block sm:hidden px-1 text-center font-flow text-emerald font-medium text-xs border border-1 border-emerald">
+        <label className="block sm:hidden px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
           {`${publicConfig.chainEnv == "mainnet" ? "BETA" : "T"}`}
         </label>
       </div>

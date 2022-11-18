@@ -42,7 +42,7 @@ const NotificationContent = ({ txStatus }) => {
             <a
               href={`${publicConfig.flowscanURL}/transaction/${txStatus.txid}`}
               rel="noopener noreferrer"
-              target="_blank" className="truncate font-medium font-flow text-sm underline decoration-emerald decoration-2">
+              target="_blank" className="truncate font-medium font-flow text-sm underline decoration-drizzle decoration-2">
               {`${txStatus.txid}`}
             </a >
           </div>
@@ -56,7 +56,7 @@ const NotificationContent = ({ txStatus }) => {
     return (
       <>
         <div className="flex-shrink-0">
-          <CheckCircleIcon className="h-6 w-6 text-emerald" aria-hidden="true" />
+          <CheckCircleIcon className="h-6 w-6 text-drizzle" aria-hidden="true" />
         </div>
         <div className="ml-3 w-0 flex-1 pt-0.5">
           <div className="flex gap-x-2">
@@ -64,7 +64,7 @@ const NotificationContent = ({ txStatus }) => {
             <a
               href={`${publicConfig.flowscanURL}/transaction/${txStatus.txid}`}
               rel="noopener noreferrer"
-              target="_blank" className="truncate font-medium font-flow text-sm underline decoration-emerald decoration-2">
+              target="_blank" className="truncate font-medium font-flow text-sm underline decoration-drizzle decoration-2">
               {`${txStatus.txid}`}
             </a >
           </div>
@@ -88,7 +88,7 @@ const NotificationContent = ({ txStatus }) => {
                 <a
                   href={`${publicConfig.flowscanURL}/transaction/${txStatus.txid}`}
                   rel="noopener noreferrer"
-                  target="_blank" className="truncate font-medium font-flow text-sm underline decoration-emerald decoration-2">
+                  target="_blank" className="truncate font-medium font-flow text-sm underline decoration-drizzle decoration-2">
                   {`${txStatus.txid}`}
                 </a>
               ) : null
