@@ -31,21 +31,21 @@ export default function Account() {
     return <></>
   }
 
-  if (!isValidFlowAddress(account)) {
+  if (!isValidFlowAddress(account) || infoError) {
     return <Custom404 title={"Account may not exist"} />
   }
 
   const dataField = (title, value) => {
     return (
       <div className="flex flex-col gap-y-1">
-        <label className="px-2 text-base text-gray-500">{title}</label>
-        <label className="px-2 text-xl font-bold">{value}</label>
+        <div className="px-2 text-base text-gray-500 whitespace-nowrap">{title}</div>
+        <div className="px-2 text-xl font-bold whitespace-nowrap">{value}</div>
       </div>
     )
   }
 
   const showInfo = () => {
-    if (!basicInfo) {
+    if (!infoData || !basicInfo) {
       return (
         <div className="flex mt-10 h-[200px] justify-center">
           <Spinner />
