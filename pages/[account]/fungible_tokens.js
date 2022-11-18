@@ -52,13 +52,11 @@ export default function FungibleTokens(props) {
   }, [setRegistryTokenList])
 
   useEffect(() => {
-    if (balancesData && balancesData.length > 0 && registryTokenList.length > 0) {
+    if (balancesData && registryTokenList) {
       const tokensInfo = formatBalancesData(balancesData)
-      console.log("HELLO", tokensInfo)
       for (let i = 0; i < tokensInfo.length; i++) {
         const token = tokensInfo[i]
         const registryInfo = registryTokenList.find((t) => t.id == token.contract)
-        console.log("registryInfo", registryInfo)
         if (registryInfo) {
           token.symbol = registryInfo.symbol
           token.logoURL = registryInfo.logoURI

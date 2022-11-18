@@ -106,10 +106,25 @@ const getTypeView = (type, deep) => {
 }
 
 export default function ItemsView(props) {
-  const { item } = props
+  const { item, isStoredItem } = props
+  let tag = null
+  if (isStoredItem) {
+    if (item.isNFTCollection) { 
+      tag = {title: "NFT", bg: "bg-yellow-100", text: "text-yellow-800"}
+    } else if (item.isVault) {
+      tag = {title: "Vault", bg: "bg-blue-100", text: "text-blue-800"}
+    }
+  }
   return (
     <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
-      {formatPath(item.path)}
+      {
+        tag ? <div className="flex gap-x-1 items-center">
+          {formatPath(item.path)}
+          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${tag.bg} ${tag.text}`}>{tag.title}</label>
+        </div> 
+        : formatPath(item.path)
+      }
+      
       <div className="w-full border-b-2"></div>
       <div className="mt-1">
         {getTypeView(item.type, 0)}

@@ -95,6 +95,53 @@ export const getAccountInfo = async (address) => {
   return result
 }
 
+export const getStoredItems = async (address) => {
+  const code = `
+  import FungibleToken from 0x9a0766d93b6608b7
+  import NonFungibleToken from 0x631e88ae7f1d7c20
+   
+  pub struct Item {
+      pub let address: Address
+      pub let path: String
+      pub let type: Type
+      pub let isNFTCollection: Bool
+      pub let isVault: Bool
+  
+      init(address: Address, path: String, type: Type, isNFTCollection: Bool, isVault: Bool) {
+          self.address = address
+          self.path = path
+          self.type = type
+          self.isNFTCollection = isNFTCollection
+          self.isVault = isVault
+      }
+  }
+  
+  pub fun main(address: Address): [Item] {
+      let account = getAuthAccount(address)
+      let items: [Item] = []
+      let vaultType = Type<@FungibleToken.Vault>()
+      let collectionType = Type<@NonFungibleToken.Collection>()
+      account.forEachStored(fun (path: StoragePath, type: Type): Bool {
+          let isNFTCollection = type.isSubtype(of: collectionType)
+          let isVault = type.isSubtype(of: vaultType) 
+          let item = Item(address: address, path: path.toString(), type: type, isNFTCollection: isNFTCollection, isVault: isVault)
+          items.append(item)
+          return true
+      })
+      return items
+  }
+  `
+
+  const items = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return items
+}
+
 export const getItems = async (path, address) => {
   let func = "forEachPublic"
   let pathType = "PublicPath"

@@ -4,12 +4,12 @@ import { SpinnerCircular } from "spinners-react"
 import useSWR from "swr"
 import ItemsView from "../../components/common/ItemsView"
 import Layout from "../../components/common/Layout"
-import { getItems } from "../../flow/scripts"
+import { getItems, getStoredItems } from "../../flow/scripts"
 import { isValidFlowAddress } from "../../lib/utils"
 import Custom404 from "./404"
 
 const storedItemsFetcher = async (funcName, address) => {
-  return await getItems("storage", address)
+  return await getStoredItems(address)
 }
 
 export default function StoredItems(props) {
@@ -52,7 +52,7 @@ export default function StoredItems(props) {
         { storedItems.length > 0 ?
           storedItems.map((item, index) => {
             return (
-              <ItemsView key={`storedItems-${index}`} item={item} />
+              <ItemsView key={`storedItems-${index}`} item={item} isStoredItem={true} />
             )
           }) : 
           <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
