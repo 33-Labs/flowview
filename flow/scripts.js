@@ -1,6 +1,54 @@
 import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
 
+export const getFTBalances = async (address) => {
+  const code = `
+  import FungibleToken from 0x9a0766d93b6608b7
+
+  pub struct Balance {
+  pub let path: String
+  pub let type: Type
+  pub let balance: UFix64
+
+  init(path: String, type: Type, balance: UFix64) {
+      self.path = path
+      self.type = type
+      self.balance = balance
+  }
+  }
+
+  pub fun main(address: Address): [Balance] {
+      let account = getAccount(address)
+      let res: [Balance] = []
+      let balanceCapType = Type<Capability<&AnyResource{FungibleToken.Balance}>>()
+      account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+          if (type.isSubtype(of: balanceCapType)) {
+              let vaultRef = account
+                  .getCapability(path)
+                  .borrow<&{FungibleToken.Balance}>()
+
+              if let vault = vaultRef {
+                  let balance = Balance(path: path.toString(), type: type, balance: vault.balance)
+                  res.append(balance)
+              }
+          }
+          return true
+
+      })
+      return res
+  }
+  `
+
+  const result = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return result 
+}
+
 export const getAccountInfo = async (address) => {
   const code = `
   pub struct Result {

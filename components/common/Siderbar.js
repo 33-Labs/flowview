@@ -9,12 +9,13 @@ export default function Sidebar(props) {
   const { account } = router.query
 
   const menuItems = [
-    { id: "0", label: `Basic Info`, link: { pathname: "/[account]", query: { account: account } } },
+    { id: "0", label: `Basic`, link: { pathname: "/[account]", query: { account: account } } },
+    { id: "1", label: `FTs`, link: { pathname: "/[account]/fungible_tokens", query: { account: account } } },
     {
-      id: "1", label: "Storage", subItems: [
-        { id: "1-0", isSubItem: true, label: "Public Items", link: { pathname: "/[account]/public_items", query: { account: account } } },
-        { id: "1-1", isSubItem: true, label: "Stored Items", link: { pathname: "/[account]/stored_items", query: { account: account } } },
-        { id: "1-2", isSubItem: true, label: "Private Items", link: { pathname: "/[account]/private_items", query: { account: account } } },
+      id: "2", label: "Storage", subItems: [
+        { id: "2-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/[account]/public_items", query: { account: account } } },
+        { id: "2-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/[account]/stored_items", query: { account: account } } },
+        { id: "2-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/[account]/private_items", query: { account: account } } },
       ]
     }
   ]
@@ -40,7 +41,7 @@ export default function Sidebar(props) {
     return classNames(
       activeMenu && activeMenu.id === menu.id ? "bg-emerald" : "",
       menu.link ? "hover:bg-emerald-light cursor-pointer" : "",
-      menu.isSubItem ? "text-base leading-6" : "text-lg font-bold leading-8",
+      menu.isSubItem ? "text-sm sm:text-base leading-5 sm:leading-6" : "text-base sm:text-lg font-bold leading-6 sm:leading-8",
       "flex flex-col rounded w-full overflow-hidden whitespace-nowrap px-2 py-1",
     )
   }
@@ -70,7 +71,8 @@ export default function Sidebar(props) {
                       return (
                         <div id={`${subLabel}_${index}`} className="w-full pl-1">
                           <Link href={subMenu.link}>
-                            <label className={classes}>{subLabel}</label>
+                            <label className={`${classes} hidden sm:block`}>{subLabel}</label>
+                            <label className={`${classes} block sm:hidden`}>{subMenu.smLabel}</label>
                           </Link>
                         </div>
                       )

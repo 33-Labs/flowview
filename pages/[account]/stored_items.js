@@ -16,7 +16,7 @@ export default function StoredItems(props) {
   const router = useRouter()
   const { account } = router.query
 
-  const [storedItems, setStoredItems] = useState([])
+  const [storedItems, setStoredItems] = useState(null)
 
   const { data: itemsData, error: itemsError } = useSWR(
     account && isValidFlowAddress(account) ? ["storedItemsFetcher", account] : null, storedItemsFetcher
@@ -24,7 +24,9 @@ export default function StoredItems(props) {
 
   useEffect(() => {
     if (itemsData) {
-      setStoredItems(itemsData)
+      console.log(itemsData)
+      const data = itemsData.sort((a, b) => a.path.localeCompare(b.path))
+      setStoredItems(data)
     }
   }, [itemsData])
 
@@ -43,22 +45,22 @@ export default function StoredItems(props) {
           <SpinnerCircular size={50} thickness={180} speed={100} color="#38E8C6" secondaryColor="#e2e8f0" />
         </div>
       )
-    } else {
-      return (
-        <div className="flex flex-col gap-y-4">
-          { storedItems.length > 0 ?
-            storedItems.map((item, index) => {
-              return (
-                <ItemsView key={`storedItems-${index}`} item={item} />
-              )
-            }) : 
-            <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-              There is nothing here
-            </div>
-          }
-        </div>
-      )
     }
+
+    return (
+      <div className="flex flex-col gap-y-4">
+        { storedItems.length > 0 ?
+          storedItems.map((item, index) => {
+            return (
+              <ItemsView key={`storedItems-${index}`} item={item} />
+            )
+          }) : 
+          <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
+            There is nothing here
+          </div>
+        }
+      </div>
+    )
   }
 
   return (

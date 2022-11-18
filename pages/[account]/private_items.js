@@ -16,7 +16,7 @@ export default function PrivateItems(props) {
   const router = useRouter()
   const { account } = router.query
 
-  const [privateItems, setPrivateItems] = useState([])
+  const [privateItems, setPrivateItems] = useState(null)
 
   const { data: itemsData, error: itemsError } = useSWR(
     account && isValidFlowAddress(account) ? ["privateItemsFetcher", account] : null, privateItemsFetcher
@@ -24,7 +24,8 @@ export default function PrivateItems(props) {
 
   useEffect(() => {
     if (itemsData) {
-      setPrivateItems(itemsData)
+      const data = itemsData.sort((a, b) => a.path.localeCompare(b.path))
+      setPrivateItems(data)
     }
   }, [itemsData])
 
@@ -43,22 +44,22 @@ export default function PrivateItems(props) {
           <SpinnerCircular size={50} thickness={180} speed={100} color="#38E8C6" secondaryColor="#e2e8f0" />
         </div>
       )
-    } else {
-      return (
-        <div className="flex flex-col gap-y-4">
-          { privateItems.length > 0 ?
-            privateItems.map((item, index) => {
-              return (
-                <ItemsView key={`privateItems-${index}`} item={item} />
-              )
-            }) : 
-            <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-              There is nothing here
-            </div>
-          }
-        </div>
-      )
     }
+
+    return (
+      <div className="flex flex-col gap-y-4">
+        { privateItems.length > 0 ?
+          privateItems.map((item, index) => {
+            return (
+              <ItemsView key={`privateItems-${index}`} item={item} />
+            )
+          }) : 
+          <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
+            There is nothing here
+          </div>
+        }
+      </div>
+    )
   }
 
   return (

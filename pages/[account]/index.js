@@ -21,9 +21,6 @@ export default function Account() {
     account && isValidFlowAddress(account) ? ["basicInfoFetcher", account] : null, basicInfoFetcher
   )
 
-  console.log("infoData", infoData)
-  console.log("infoError", infoError)
-
   useEffect(() => {
     if (infoData) {
       setBasicInfo(infoData)

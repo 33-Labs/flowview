@@ -1,7 +1,6 @@
 import publicConfig from "../../publicConfig"
 
 const getTypeColor = (typeKind) => {
-  console.log("Kind", typeKind)
   const colorMap = {
     "Restriction": {
       bg: "bg-rose-100",
@@ -108,7 +107,6 @@ const getTypeView = (type, deep) => {
 
 export default function ItemsView(props) {
   const { item } = props
-  console.log(item)
   return (
     <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
       {formatPath(item.path)}
