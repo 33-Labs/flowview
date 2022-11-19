@@ -27,15 +27,15 @@ const getTypeColor = (typeKind) => {
       text: "text-slate-800"
     }
   }
-  return colorMap[typeKind] || {bg: "bg-gray-100", text: "bg-gray-800"}
+  return colorMap[typeKind] || { bg: "bg-gray-100", text: "bg-gray-800" }
 }
 
-const formatPath = (path) => {
+const formatPath = (path, classes) => {
   const comps = path.split("/")
   const domain = comps[1]
   const itemPath = comps[2]
   return (
-    <label className="text-base">
+    <label className={classes}>
       {`/${domain}/`}<span className="font-bold">{`${itemPath}`}</span>
     </label>
   )
@@ -49,7 +49,7 @@ const formatTypeID = (typeID) => {
   const rest = typeID.replace(contract, "")
   return (
     <label>
-      <a 
+      <a
         href={url}
         target="_blank"
         rel="noopener noreferrer"
@@ -109,22 +109,74 @@ export default function ItemsView(props) {
   const { item, isStoredItem } = props
   let tag = null
   if (isStoredItem) {
-    if (item.isNFTCollection) { 
-      tag = {title: "NFT", bg: "bg-yellow-100", text: "text-yellow-800"}
+    if (item.isNFTCollection) {
+      tag = { title: "NFT", bg: "bg-yellow-100", text: "text-yellow-800" }
     } else if (item.isVault) {
-      tag = {title: "Vault", bg: "bg-blue-100", text: "text-blue-800"}
+      tag = { title: "Vault", bg: "bg-blue-100", text: "text-blue-800" }
     }
   }
+
+  const getUnlinkButton = () => {
+    return (
+      <button
+        type="button"
+        className="px-3 py-2 text-sm rounded-2xl font-semibold text-black bg-drizzle hover:bg-drizzle-dark"
+        onClick={() => {
+          console.log("LINK")
+        }}
+      >
+        UNLINK
+      </button>
+    )
+  }
+
+  const getDestroyButton = () => {
+    return (
+      <button
+        type="button"
+        className="px-3 py-2 text-sm rounded-2xl font-semibold text-black bg-drizzle hover:bg-drizzle-dark"
+        onClick={() => {
+          console.log("UNLINK")
+        }}
+      >
+        DESTROY
+      </button>
+    )
+  }
+
+  const getTargetView = () => {
+    return (
+      !isStoredItem ?
+      <div className="flex gap-x-1">
+        <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-purple-800 bg-purple-100`}>
+          Target
+        </label>
+        <label>{formatPath(item.linkTarget, "text-base text-gray-600")}</label>
+      </div> : null
+    )
+  }
+
   return (
     <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
-      {
-        tag ? <div className="flex gap-x-1 items-center">
-          {formatPath(item.path)}
-          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${tag.bg} ${tag.text}`}>{tag.title}</label>
-        </div> 
-        : formatPath(item.path)
-      }
-      
+      <div className="flex justify-between items-center">
+        {
+          tag ? <div className="flex gap-x-1 items-center">
+            {formatPath(item.path, "text-base")}
+            <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${tag.bg} ${tag.text}`}>{tag.title}</label>
+          </div>
+            : 
+          <div className="flex flex-col gap-y-1">
+            {formatPath(item.path, "text-base")}
+            <div className="px-4">
+              {getTargetView()}
+            </div>
+          </div>
+        }
+        {
+          isStoredItem ? getDestroyButton() : getUnlinkButton()
+        }
+      </div>
+
       <div className="w-full border-b-2"></div>
       <div className="mt-1">
         {getTypeView(item.type, 0)}

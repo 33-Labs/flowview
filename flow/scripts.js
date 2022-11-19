@@ -142,13 +142,12 @@ export const getStoredItems = async (address) => {
   return items
 }
 
-export const getItems = async (path, address) => {
+export const getLinkedItems = async (path, address) => {
+  if (path != "public" && path != "private") throw "invalid path"
+
   let func = "forEachPublic"
   let pathType = "PublicPath"
-  if (path == "storage") {
-    func = "forEachStored"
-    pathType = "StoragePath"
-  } else if (path == "private") {
+  if (path == "private") {
     func = "forEachPrivate"
     pathType = "PrivatePath"
   }
@@ -158,11 +157,13 @@ export const getItems = async (path, address) => {
     pub let address: Address
     pub let path: String
     pub let type: Type
+    pub let linkTarget: String?
 
-    init(address: Address, path: String, type: Type) {
+    init(address: Address, path: String, type: Type, linkTarget: String?) {
       self.address = address
       self.path = path
       self.type = type
+      self.linkTarget = linkTarget
     }
   }
 
@@ -170,7 +171,12 @@ export const getItems = async (path, address) => {
     let account = getAuthAccount(address)
     let items: [Item] = []
     account.${func}(fun (path: ${pathType}, type: Type): Bool {
-      let item = Item(address: address, path: path.toString(), type: type)
+      let target = account.getLinkTarget(path)
+      var targetPath: String? = nil
+      if let t = target {
+        targetPath = t.toString()
+      }
+      let item = Item(address: address, path: path.toString(), type: type, linkTarget: targetPath)
       items.append(item)
       return true
     })

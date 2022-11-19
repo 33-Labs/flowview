@@ -4,12 +4,12 @@ import useSWR from "swr"
 import ItemsView from "../../components/common/ItemsView"
 import Layout from "../../components/common/Layout"
 import Spinner from "../../components/common/Spinner"
-import { getItems } from "../../flow/scripts"
+import { getLinkedItems } from "../../flow/scripts"
 import { isValidFlowAddress } from "../../lib/utils"
 import Custom404 from "./404"
 
 const privateItemsFetcher = async (funcName, address) => {
-  return await getItems("private", address)
+  return await getLinkedItems("private", address)
 }
 
 export default function PrivateItems(props) {
