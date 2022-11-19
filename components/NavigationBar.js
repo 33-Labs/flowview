@@ -75,8 +75,8 @@ export default function NavigationBar(props) {
     <div className="px-6 m-auto max-w-7xl min-w-[380px] relative gap-x-5 flex items-center justify-between bg-transparent h-44">
       <div className="flex items-center gap-x-2">
         <Link href="/">
-          <div className="min-w-[40px]">
-            <Image src="/logo.png" alt="" width={50} height={50} priority={true} />
+          <div className="w-[40px] sm:w-[50px] aspect-square relative">
+            <Image src="/logo.png" alt="" fill sizes="33vw" priority={true} />
           </div>
         </Link>
 

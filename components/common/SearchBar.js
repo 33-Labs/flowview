@@ -7,15 +7,17 @@ import {
   transactionInProgressState,
 } from "../../lib/atoms"
 
-export default function SearchBar() {
+export default function SearchBar(props) {
   const router = useRouter()
+
+  const { classes } = props
   const [transactionInProgress,] = useRecoilState(transactionInProgressState)
 
   const [isValidInput, setIsValidInput] = useState(true)
   const [inputValue, setInputValue] = useState(null)
 
   return (
-    <div>
+    <div className={`${classes}`}>
       <div className="mt-1 relative">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <SearchIcon className="h-5 w-5 text-gray-300" aria-hidden="true" />
@@ -28,7 +30,7 @@ export default function SearchBar() {
           required
           className="pl-10 pr-16 bg-drizzle/0 w-full border-drizzle-light border-0 border-b-2 outline-none font-flow text-lg px-3 py-2
                focus:border-drizzle-dark placeholder:text-gray-300"
-          placeholder={"Flow Account"}
+          placeholder={"Flow account"}
           aria-invalid={false}
           aria-describedby="address-error"
           value={inputValue}
