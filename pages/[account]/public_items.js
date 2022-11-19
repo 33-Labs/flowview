@@ -22,8 +22,6 @@ export default function PublicItems(props) {
     account && isValidFlowAddress(account) ? ["publicItemsFetcher", account] : null, publicItemsFetcher
   )
 
-  console.log(itemsError)
-
   useEffect(() => {
     if (itemsData) {
       const data = itemsData.sort((a, b) => a.path.localeCompare(b.path))

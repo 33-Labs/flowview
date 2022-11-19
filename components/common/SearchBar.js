@@ -14,7 +14,7 @@ export default function SearchBar(props) {
   const [transactionInProgress,] = useRecoilState(transactionInProgressState)
 
   const [isValidInput, setIsValidInput] = useState(true)
-  const [inputValue, setInputValue] = useState(null)
+  const [inputValue, setInputValue] = useState("")
 
   return (
     <div className={`${classes}`}>

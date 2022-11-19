@@ -1,4 +1,28 @@
 import publicConfig from "../../publicConfig"
+import { useRecoilState } from "recoil"
+import {
+  transactionStatusState,
+  transactionInProgressState,
+  showAlertModalState,
+  alertModalContentState
+} from "../../lib/atoms"
+import { classNames } from "../../lib/utils"
+import { destroy, unlink } from "../../flow/transactions"
+import { useSWRConfig } from 'swr'
+
+const getPathType = (path) => {
+  if (path.includes("/public")) {
+    return "Public"
+  }
+
+  if (path.includes("/storage")) {
+    return "Storage"
+  }
+
+  if (path.includes("/private")) {
+    return "Private"
+  }
+}
 
 const getTypeColor = (typeKind) => {
   const colorMap = {
@@ -106,9 +130,18 @@ const getTypeView = (type, deep) => {
 }
 
 export default function ItemsView(props) {
-  const { item, isStoredItem } = props
+  const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
+  const [, setTransactionStatus] = useRecoilState(transactionStatusState)
+  const [, setShowAlertModal] = useRecoilState(showAlertModalState)
+  const [, setAlertModalContent] = useRecoilState(alertModalContentState)
+
+  const { item } = props
+  const { mutate } = useSWRConfig()
+  const pathType = getPathType(item.path)
+
+  // Only show badge for storage items
   let tag = null
-  if (isStoredItem) {
+  if (pathType == "Storage") {
     if (item.isNFTCollection) {
       tag = { title: "NFT", bg: "bg-yellow-100", text: "text-yellow-800" }
     } else if (item.isVault) {
@@ -120,9 +153,20 @@ export default function ItemsView(props) {
     return (
       <button
         type="button"
-        className="px-3 py-2 text-sm rounded-2xl font-semibold text-black bg-drizzle hover:bg-drizzle-dark"
-        onClick={() => {
-          console.log("LINK")
+        disabled={transactionInProgress}
+        className={
+          classNames(
+            transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+            `px-3 py-2 text-sm rounded-2xl font-semibold`
+          )
+        }
+        onClick={async () => {
+          await unlink(item.path, setTransactionInProgress, setTransactionStatus)
+          if (pathType == "Public") {
+            mutate(["publicItemsFetcher", item.address])
+          } else if (pathType == "Private") {
+            mutate(["privateItemsFetcher", item.address])
+          }
         }}
       >
         UNLINK
@@ -134,9 +178,25 @@ export default function ItemsView(props) {
     return (
       <button
         type="button"
-        className="px-3 py-2 text-sm rounded-2xl font-semibold text-black bg-drizzle hover:bg-drizzle-dark"
-        onClick={() => {
-          console.log("UNLINK")
+        disabled={transactionInProgress}
+        className={
+          classNames(
+            transactionInProgress ? "bg-red-400 text-white" : "text-white bg-red-600 hover:bg-red-800",
+            `px-3 py-2 text-sm rounded-2xl font-semibold`
+          )
+        }
+        onClick={async () => {
+          setShowAlertModal(false)
+          setAlertModalContent({
+            title: "Dangerous Action",
+            content: "Destroy resource is NOT unrevertible, please make sure you know what you are doing",
+            actionTitle: "DESTROY",
+            action: async () => {
+              await destroy(item.path, setTransactionInProgress, setTransactionStatus)
+              mutate(["storedItemsFetcher", item.address])
+            }
+          })
+          setShowAlertModal(true)
         }}
       >
         DESTROY
@@ -144,14 +204,14 @@ export default function ItemsView(props) {
     )
   }
 
-  const getTargetView = () => {
+  const getTargetView = (pathType) => {
     return (
-      !isStoredItem ?
+      pathType != "Storage" ?
       <div className="flex gap-x-1">
         <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-purple-800 bg-purple-100`}>
           Target
         </label>
-        <label>{formatPath(item.linkTarget, "text-base text-gray-600")}</label>
+        <label>{item.linkTarget ? formatPath(item.linkTarget, "text-base text-gray-600") : "Unknown"}</label>
       </div> : null
     )
   }
@@ -168,12 +228,12 @@ export default function ItemsView(props) {
           <div className="flex flex-col gap-y-1">
             {formatPath(item.path, "text-base")}
             <div className="px-4">
-              {getTargetView()}
+              {getTargetView(pathType)}
             </div>
           </div>
         }
         {
-          isStoredItem ? getDestroyButton() : getUnlinkButton()
+          pathType == "Storage" ? getDestroyButton() : getUnlinkButton()
         }
       </div>
 

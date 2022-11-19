@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import AlertModal from "./AlertModal";
 import SearchBar from "./SearchBar";
 import Sidebar from "./Siderbar";
 
@@ -7,6 +8,7 @@ export default function Layout({ children }) {
   const { account } = router.query
 
   return (
+    <>
     <div className="flex flex-col gap-y-2">
       <div className="px-5 mb-10">
         <SearchBar />
@@ -24,6 +26,7 @@ export default function Layout({ children }) {
         </div>
       </div>
     </div>
-
+    <AlertModal />
+    </>
   )
 }

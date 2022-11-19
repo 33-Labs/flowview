@@ -54,7 +54,7 @@ export default function Sidebar(props) {
         {menuItems.map(({ label: label, ...menu }, index) => {
           const classes = getNavItemClasses(menu)
           return (
-            <div id={`${label}_${index}`} className="w-full">
+            <div key={`${label}_${index}`} className="w-full">
               {
                 menu.link ? (
                   <Link href={menu.link}>
@@ -69,7 +69,7 @@ export default function Sidebar(props) {
                     menu.subItems.map(({ label: subLabel, ...subMenu }, index) => {
                       const classes = getNavItemClasses(subMenu)
                       return (
-                        <div id={`${subLabel}_${index}`} className="w-full pl-1">
+                        <div key={`${subLabel}_${index}`} className="w-full pl-1">
                           <Link href={subMenu.link}>
                             <label className={`${classes} hidden sm:block`}>{subLabel}</label>
                             <label className={`${classes} block sm:hidden`}>{subMenu.smLabel}</label>
