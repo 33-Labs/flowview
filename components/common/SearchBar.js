@@ -38,7 +38,7 @@ export default function SearchBar(props) {
             if (event.key == "Enter") {
               if (isValidFlowAddress(event.target.value)) {
                 setIsValidInput(true)
-                router.push(`/${event.target.value}`)
+                router.push(`/account/${event.target.value}`)
                 return
               }
               setIsValidInput(false)

@@ -1,10 +1,10 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import Layout from "../../components/common/Layout";
-import Spinner from "../../components/common/Spinner";
-import { getAccountInfo } from "../../flow/scripts";
-import { isValidFlowAddress, percentage } from "../../lib/utils";
+import Layout from "../../../components/common/Layout";
+import Spinner from "../../../components/common/Spinner";
+import { getAccountInfo } from "../../../flow/scripts";
+import { isValidFlowAddress, percentage } from "../../../lib/utils";
 import Custom404 from "./404";
 
 

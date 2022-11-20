@@ -1,16 +1,16 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
-import TokenList from "../../components/TokenList"
-import Layout from "../../components/common/Layout"
-import { getFTBalances, getItems, getNfts, getNftCatalog, getNftsWithIDs, getCatalogTypeData, getNFTsWithCollectionID } from "../../flow/scripts"
-import { isValidFlowAddress, getResourceType, getContract } from "../../lib/utils"
+import TokenList from "../../../components/TokenList"
+import Layout from "../../../components/common/Layout"
+import { getFTBalances, getItems, getNfts, getNftCatalog, getNftsWithIDs, getCatalogTypeData, getNFTsWithCollectionID } from "../../../flow/scripts"
+import { isValidFlowAddress, getResourceType, getContract } from "../../../lib/utils"
 import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"
-import publicConfig from "../../publicConfig"
-import Spinner from "../../components/common/Spinner"
-import NFTList from "../../components/NFTList"
-import NFTView from "../../components/common/NFTView"
+import publicConfig from "../../../publicConfig"
+import Spinner from "../../../components/common/Spinner"
+import NFTList from "../../../components/NFTList"
+import NFTView from "../../../components/common/NFTView"
 
 const getNftsWithNftType = (nfts) => {
   return nfts.map((n) => {

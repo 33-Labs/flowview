@@ -1,14 +1,14 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
-import TokenList from "../../components/TokenList"
-import Layout from "../../components/common/Layout"
-import { getFTBalances, getItems } from "../../flow/scripts"
-import { isValidFlowAddress, getResourceType } from "../../lib/utils"
+import TokenList from "../../../components/TokenList"
+import Layout from "../../../components/common/Layout"
+import { getFTBalances, getItems } from "../../../flow/scripts"
+import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
 import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"
-import publicConfig from "../../publicConfig"
-import Spinner from "../../components/common/Spinner"
+import publicConfig from "../../../publicConfig"
+import Spinner from "../../../components/common/Spinner"
 
 const tokenBalancesFetcher = async (funcName, address) => {
   return await getFTBalances(address)
