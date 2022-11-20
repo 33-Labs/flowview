@@ -72,6 +72,7 @@ export default function Account() {
       <div hidden className="text-teal-800 bg-teal-100"></div>
       <div hidden className="text-indigo-800 bg-indigo-100"></div>
       <div hidden className="text-slate-800 bg-slate-100"></div>
+      <div hidden className="text-purple-800 bg-purple-100"></div>
       <Layout>
         {showInfo()}
       </Layout>
