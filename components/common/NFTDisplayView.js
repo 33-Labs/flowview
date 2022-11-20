@@ -25,17 +25,22 @@ export default function NFTDisplayView(props) {
 
   useEffect(() => {
     if (displayData) {
-      // let data = displayData.map((d) => {
-      // const imageSrc = getImageSrcFromMetadataViewsFile(d.)
-      // })
       const displayArray = []
       for (const [tokenID, display] of Object.entries(displayData)) {
+        if (!display) {
+          displayArray.push({
+            tokenID: tokenID,
+            imageSrc: null,
+            name: `${nft.contractName}`
+          })
+          continue
+        }
+
         const copyDisplay = Object.assign({}, display)
         copyDisplay.imageSrc = getImageSrcFromMetadataViewsFile(display.thumbnail)
         copyDisplay.tokenID = tokenID
         displayArray.push(copyDisplay)
       }
-      console.log("displayArray", displayArray)
       setDisplays(displayArray.sort((a, b) => a.tokenID - b.tokenID))
     }
   }, [displayData])
