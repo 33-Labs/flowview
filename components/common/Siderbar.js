@@ -10,8 +10,8 @@ export default function Sidebar(props) {
 
   const menuItems = [
     { id: "0", label: `Basic`, link: { pathname: "/[account]", query: { account: account } } },
-    { id: "1", label: `FTs`, link: { pathname: "/[account]/fungible_tokens", query: { account: account } } },
-    { id: "2", label: `NFTs`, link: { pathname: "/[account]/NFTs", query: { account: account } } },
+    { id: "1", label: `FT`, link: { pathname: "/[account]/fungible_tokens", query: { account: account } } },
+    { id: "2", label: `NFT`, link: { pathname: "/[account]/nfts", query: { account: account } } },
     {
       id: "3", label: "Storage", subItems: [
         { id: "3-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/[account]/public_items", query: { account: account } } },

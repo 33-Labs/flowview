@@ -3,6 +3,79 @@ import * as fcl from "@onflow/fcl"
 
 const NFTCatalogPath = "0xNFTCatalog"
 
+const splitList = (list, chunkSize) => {
+  const groups = []
+  let currentGroup = []
+  for (let i = 0; i < list.length; i++) {
+      const collectionID = list[i]
+      if (currentGroup.length >= chunkSize) {
+        groups.push([...currentGroup])
+        currentGroup = []
+      }
+      currentGroup.push(collectionID)
+  }
+  groups.push([...currentGroup])
+  return groups
+}
+
+export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
+  const ids = tokenIDs.map((id) => `${id}`)
+  const code = `
+  import NonFungibleToken from 0x631e88ae7f1d7c20
+  import MetadataViews from 0x631e88ae7f1d7c20
+
+  pub fun main(address: Address, publicPathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
+    let account = getAuthAccount(address)
+    let res: {UInt64: MetadataViews.Display?} = {}
+
+    let path = PublicPath(identifier: publicPathID)!
+    let collectionRef = account.getCapability<&{MetadataViews.ResolverCollection}>(path).borrow()
+    if (collectionRef == nil) {
+      for tokenID in tokenIDs {
+        res[tokenID] = nil
+      }
+      return res
+    }
+
+    for tokenID in tokenIDs {
+      let resolver = collectionRef!.borrowViewResolver(id: tokenID)
+      if let display = MetadataViews.getDisplay(resolver) {
+        res[tokenID] = display
+      } else {
+        res[tokenID] = nil
+      }
+    }
+    return res
+  }
+  `
+  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
+
+  const displays = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(publicPathID, t.String),
+      arg(ids, t.Array(t.UInt64))
+    ]
+  }) 
+
+  return displays  
+}
+
+export const bulkGetNftDisplays = async (address, nft) => {
+  const tokenIDs = nft.nftIDs
+  const groups = splitList(tokenIDs, 20) 
+  const promises = groups.map((group) => {
+    return getNftDisplays(address, nft.path.replace("/public/", ""), group)
+  }) 
+  const displayGroups = await Promise.all(promises)
+  const displays = displayGroups.reduce((acc, current) => {
+    return Object.assign(acc, current)
+  }, {}) 
+
+  return displays
+}
+
 export const getNFTsWithCollectionID = (nfts, catalogTypeData) => {
   return nfts.map((nft) => {
     let typeInfo = catalogTypeData[nft.nftType]
@@ -17,21 +90,6 @@ export const getNFTsWithCollectionID = (nfts, catalogTypeData) => {
     }
     return {...nft, collectionIdentifier: collectionIdentifier}
   })
-}
-
-const splitList = (list, chunkSize) => {
-  const groups = []
-  let currentGroup = []
-  for (let i = 0; i < list.length; i++) {
-      const collectionID = list[i]
-      if (currentGroup.length >= chunkSize) {
-        groups.push([...currentGroup])
-        currentGroup = []
-      }
-      currentGroup.push(collectionID)
-  }
-  groups.push([...currentGroup])
-  return groups
 }
 
 export const getNftCatalog = async (nfts) => {
@@ -113,7 +171,7 @@ export const getNftIDs = async (address, publicPaths) => {
   // NOTE: publicPathIDs without domain "/public/"
   const publicPathIDs = publicPaths.map((p) => p.replace("/public/", ""))
 
-  let code = `
+  const code = `
   import NonFungibleToken from 0x631e88ae7f1d7c20
 
   pub fun main(address: Address, publicPathIDs: [String]): {String: [UInt64]} {

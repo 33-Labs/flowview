@@ -10,13 +10,16 @@ import Custom404 from "./404"
 import publicConfig from "../../publicConfig"
 import Spinner from "../../components/common/Spinner"
 import NFTList from "../../components/NFTList"
+import NFTView from "../../components/common/NFTView"
 
 const getNftsWithNftType = (nfts) => {
   return nfts.map((n) => {
     let collection = getResourceType(n.type)
     let contract = getContract(collection)
+    let comps = contract.split(".")
+    let contractName = comps[comps.length - 1]
     let nftType = `${contract}.NFT`
-    return { ...n, nftType: nftType, contract: contract }
+    return { ...n, nftType: nftType, contract: contract, contractName: contractName }
   }).filter((n) => n.nftType)
 }
 
@@ -81,7 +84,24 @@ export default function NFTs(props) {
       )
     } else {
       return (
-        <NFTList nfts={nfts} />
+        <div className="flex flex-col gap-y-4">
+          <div className="sm:flex-auto">
+          <h1 className="text-2xl font-bold text-gray-900">
+            {`Collections (${nfts.length})`}
+          </h1>
+          </div>
+          {
+            nfts.length > 0 ? 
+            nfts.map((nft, index) => {
+              return (
+                <NFTView nft={nft} key={`${nft.path}_${index}`} />
+              )
+            }) :
+            <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
+            You don't have any NFT
+          </div>
+          } 
+        </div>
       )
     }
   }
