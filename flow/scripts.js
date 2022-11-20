@@ -2,6 +2,9 @@ import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
 
 const NFTCatalogPath = "0xNFTCatalog"
+const NonFungibleTokenPath = "0xNonFungibleToken"
+const FungibleTokenPath = "0xFungibleToken"
+const MetadataViewsPath = "0xMetadataViews"
 
 const splitList = (list, chunkSize) => {
   const groups = []
@@ -21,8 +24,8 @@ const splitList = (list, chunkSize) => {
 export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
   const code = `
-  import NonFungibleToken from 0x631e88ae7f1d7c20
-  import MetadataViews from 0x631e88ae7f1d7c20
+  import NonFungibleToken from 0xNonFungibleToken
+  import MetadataViews from 0xMetadataViews
 
   pub fun main(address: Address, publicPathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
     let account = getAuthAccount(address)
@@ -48,7 +51,8 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
     return res
   }
   `
-  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
+  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
+  .replace(MetadataViewsPath, publicConfig.metadataViewsAddress)
 
   const displays = await fcl.query({
     cadence: code,
@@ -135,7 +139,7 @@ export const getNftsWithIDs = async (address, nfts) => {
 export const getCatalogOfCollections = async (collectionIDs) => {
   const code = `
   import NFTCatalog from 0xNFTCatalog
-  import MetadataViews from 0x631e88ae7f1d7c20
+  import MetadataViews from 0xMetadataViews
 
   pub struct Metadata {
     pub let squareImage: MetadataViews.Media
@@ -156,6 +160,7 @@ export const getCatalogOfCollections = async (collectionIDs) => {
   }
   `
   .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
+  .replace(MetadataViewsPath, publicConfig.metadataViewsAddress)
 
   const typeData = await fcl.query({
     cadence: code,
@@ -172,7 +177,7 @@ export const getNftIDs = async (address, publicPaths) => {
   const publicPathIDs = publicPaths.map((p) => p.replace("/public/", ""))
 
   const code = `
-  import NonFungibleToken from 0x631e88ae7f1d7c20
+  import NonFungibleToken from 0xNonFungibleToken
 
   pub fun main(address: Address, publicPathIDs: [String]): {String: [UInt64]} {
     let account = getAuthAccount(address)
@@ -186,6 +191,7 @@ export const getNftIDs = async (address, publicPaths) => {
     return res
   }
   `
+  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
 
   const amounts = await fcl.query({
     cadence: code,
@@ -218,7 +224,7 @@ export const getCatalogTypeData = async () => {
 
 export const getNfts = async (address) => {
   const code = `
-  import NonFungibleToken from 0x631e88ae7f1d7c20
+  import NonFungibleToken from 0xNonFungibleToken
 
   pub struct Item {
       pub let address: Address
@@ -255,6 +261,7 @@ export const getNfts = async (address) => {
       })
       return items
   }`
+  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
 
   const result = await fcl.query({
     cadence: code,
@@ -268,7 +275,7 @@ export const getNfts = async (address) => {
 
 export const getFTBalances = async (address) => {
   const code = `
-  import FungibleToken from 0x9a0766d93b6608b7
+  import FungibleToken from 0xFungibleToken
 
   pub struct Balance {
   pub let path: String
@@ -303,6 +310,7 @@ export const getFTBalances = async (address) => {
       return res
   }
   `
+  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
 
   const result = await fcl.query({
     cadence: code,
@@ -362,8 +370,8 @@ export const getAccountInfo = async (address) => {
 
 export const getStoredItems = async (address) => {
   const code = `
-  import FungibleToken from 0x9a0766d93b6608b7
-  import NonFungibleToken from 0x631e88ae7f1d7c20
+  import FungibleToken from 0xFungibleToken
+  import NonFungibleToken from 0xNonFungibleToken
    
   pub struct Item {
       pub let address: Address
@@ -396,6 +404,8 @@ export const getStoredItems = async (address) => {
       return items
   }
   `
+  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
+  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
 
   const items = await fcl.query({
     cadence: code,
