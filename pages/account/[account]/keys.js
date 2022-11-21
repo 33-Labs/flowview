@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
 import Key from "../../../components/common/Key"
+import KeyCreator from "../../../components/common/KeyCreator"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
 import { getKeys, getKeysWithSequenceNumber } from "../../../flow/scripts"
@@ -60,7 +61,11 @@ export default function Keys(props) {
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex flex-col gap-y-4">
-
+          {
+            user && user.loggedIn && user.addr == account ?
+              <KeyCreator account={account} user={user} />
+              : null
+          }
           {showKeys()}
         </div>
       </Layout>

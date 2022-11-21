@@ -100,7 +100,7 @@ export default function Key(props) {
         <div className="text-sm text-gray-500 whitespace-nowrap">{"Public Key"}</div>
         <div className="mt-1">
           <textarea
-            rows={4}
+            rows={3}
             name="publicKey"
             id="publicKey"
             className={classNames(

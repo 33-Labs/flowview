@@ -22,6 +22,61 @@ export const TxStatus = {
   }
 }
 
+export const createKey = async (
+  publicKey,
+  signAlgo,
+  hashAlgo,
+  weight,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doCreateKey(publicKey, signAlgo, hashAlgo, weight)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doCreateKey = async (publicKey, signAlgo, hashAlgo, weight) => {
+  const code = `
+  transaction(
+    publicKey: String,
+    signAlgo: UInt8,
+    hashAlgo: UInt8,
+    weight: UFix64
+  ) {
+    prepare(signer: AuthAccount) {
+      let pubkey = PublicKey(
+        publicKey: publicKey.decodeHex(),
+        signatureAlgorithm: SignatureAlgorithm(rawValue: signAlgo)!
+      )
+
+      signer.keys.add(
+        publicKey: pubkey,
+        hashAlgorithm: HashAlgorithm(rawValue: hashAlgo)!,
+        weight: weight
+      )
+    }
+  }
+  `
+
+  const transactionId = await fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(publicKey, t.String),
+      arg(signAlgo, t.UInt8),
+      arg(hashAlgo, t.UInt8),
+      arg(`${weight}.0`, t.UFix64),
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+
 export const revokeKey = async (
   keyIndex,
   setTransactionInProgress,
