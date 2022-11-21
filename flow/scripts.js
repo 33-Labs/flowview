@@ -404,13 +404,15 @@ export const getStoredItems = async (address) => {
       pub let address: Address
       pub let path: String
       pub let type: Type
+      pub let isResource: Bool
       pub let isNFTCollection: Bool
       pub let isVault: Bool
   
-      init(address: Address, path: String, type: Type, isNFTCollection: Bool, isVault: Bool) {
+      init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, isVault: Bool) {
           self.address = address
           self.path = path
           self.type = type
+          self.isResource = isResource
           self.isNFTCollection = isNFTCollection
           self.isVault = isVault
       }
@@ -419,12 +421,14 @@ export const getStoredItems = async (address) => {
   pub fun main(address: Address): [Item] {
       let account = getAuthAccount(address)
       let items: [Item] = []
+      let resourceType = Type<@AnyResource>()
       let vaultType = Type<@FungibleToken.Vault>()
       let collectionType = Type<@NonFungibleToken.Collection>()
       account.forEachStored(fun (path: StoragePath, type: Type): Bool {
+          let isResource = type.isSubtype(of: resourceType)
           let isNFTCollection = type.isSubtype(of: collectionType)
           let isVault = type.isSubtype(of: vaultType) 
-          let item = Item(address: address, path: path.toString(), type: type, isNFTCollection: isNFTCollection, isVault: isVault)
+          let item = Item(address: address, path: path.toString(), type: type, isResource: isResource, isNFTCollection: isNFTCollection, isVault: isVault)
           items.append(item)
           return true
       })

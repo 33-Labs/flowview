@@ -19,6 +19,7 @@
     "postcss": "^8.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-syntax-highlighter": "^15.5.0",
     "recoil": "^0.7.6",
     "spinners-react": "^1.0.7",
     "swr": "^1.3.0",

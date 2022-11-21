@@ -11,6 +11,9 @@ import { destroy, unlink } from "../../flow/transactions"
 import { useSWRConfig } from 'swr'
 import { useState } from "react"
 import { getStoredResource } from "../../flow/scripts"
+import SyntaxHighlighter from 'react-syntax-highlighter'
+import Spinner from "../../components/common/Spinner"
+import { vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs'
 
 const getPathType = (path) => {
   if (path.includes("/public")) {
@@ -86,7 +89,6 @@ const formatTypeID = (typeID) => {
 }
 
 const doGetTypeView = (type) => {
-  const kindColor = getTypeColor(type.kind)
   if (type.kind == "Restriction") {
     return (
       <div className="flex flex-col gap-y-1 items-start">
@@ -137,6 +139,7 @@ export default function ItemsView(props) {
   const [, setAlertModalContent] = useRecoilState(alertModalContentState)
 
   const { item, account, user } = props
+  const [showResource, setShowResource] = useState(false)
   const [resource, setResource] = useState(null)
 
   const { mutate } = useSWRConfig()
@@ -189,14 +192,16 @@ export default function ItemsView(props) {
           )
         }
         onClick={async () => {
-          let resource = await getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
-          console.log(resource)
-          if (resource) {
-            setResource(resource)
+          if (!showResource) {
+            setShowResource(true)
+            let resource = await getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
+            if (resource) {
+              setResource(resource)
+            }
           }
         }}
       >
-        LOAD
+        SHOW DETAIL
       </button>
     )
   }
@@ -234,12 +239,12 @@ export default function ItemsView(props) {
   const getTargetView = (pathType) => {
     return (
       pathType != "Storage" ?
-      <div className="flex gap-x-1">
-        <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-purple-800 bg-purple-100`}>
-          Target
-        </label>
-        <label>{item.linkTarget ? formatPath(item.linkTarget, "text-base text-gray-600") : "Unknown"}</label>
-      </div> : null
+        <div className="flex gap-x-1">
+          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-purple-800 bg-purple-100`}>
+            Target
+          </label>
+          <label>{item.linkTarget ? formatPath(item.linkTarget, "text-base text-gray-600") : "Unknown"}</label>
+        </div> : null
     )
   }
 
@@ -251,20 +256,20 @@ export default function ItemsView(props) {
             {formatPath(item.path, "text-base")}
             <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${tag.bg} ${tag.text}`}>{tag.title}</label>
           </div>
-            : 
-          <div className="flex flex-col gap-y-1">
-            {formatPath(item.path, "text-base")}
-            <div className="px-4">
-              {getTargetView(pathType)}
+            :
+            <div className="flex flex-col gap-y-1">
+              {formatPath(item.path, "text-base")}
+              <div className="px-4">
+                {getTargetView(pathType)}
+              </div>
             </div>
-          </div>
         }
         {
-          user && user.loggedIn && user.addr == account ? 
+          user && user.loggedIn && user.addr == account ?
             (pathType == "Storage" ? <div className="flex gap-x-2 items-center">
-              {getLoadResourceButton()}
+              {item.isResource ? getLoadResourceButton() : null}
               {getDestroyButton()}
-              </div> : getUnlinkButton()) : null
+            </div> : getUnlinkButton()) : null
         }
       </div>
 
@@ -272,15 +277,20 @@ export default function ItemsView(props) {
       <div className="mt-1">
         {getTypeView(item.type, 0)}
       </div>
-      {/* {
-        resource ? 
-        <div>
-      <textarea
-        readOnly
-        value={JSON.stringify(resource, null, 4)}
-      ></textarea>
-        </div> : null
-      } */}
+
+      { 
+        showResource ? 
+        (resource ?
+          <div className="mt-1 flex flex-col items-center">
+            <SyntaxHighlighter className="rounded-lg text-xs w-[1044px] overflow-auto max-h-[500px]" language="json" style={vs2015}>
+              {JSON.stringify(resource, null, 2)}
+            </SyntaxHighlighter>
+          </div> :
+          <div className="flex mt-1 h-[200px] justify-center">
+            <Spinner />
+          </div>)
+        : null
+      }
     </div>
   )
 }
