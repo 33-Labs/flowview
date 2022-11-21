@@ -98,7 +98,7 @@ export default function NFTs(props) {
               )
             }) :
             <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-            You don't have any NFT
+            No NFT found
           </div>
           } 
         </div>
