@@ -7,12 +7,11 @@ import { getAccountInfo } from "../../../flow/scripts";
 import { isValidFlowAddress, percentage } from "../../../lib/utils";
 import Custom404 from "./404";
 
-
 const basicInfoFetcher = async (funcName, address) => {
   return await getAccountInfo(address)
 }
 
-export default function Account() {
+export default function Account(props) {
   const router = useRouter()
   const { account } = router.query
 

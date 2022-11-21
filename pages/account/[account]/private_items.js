@@ -1,3 +1,4 @@
+import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
@@ -17,6 +18,9 @@ export default function PrivateItems(props) {
   const { account } = router.query
 
   const [privateItems, setPrivateItems] = useState(null)
+  const [user, setUser] = useState({loggedIn: null})
+
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: itemsData, error: itemsError } = useSWR(
     account && isValidFlowAddress(account) ? ["privateItemsFetcher", account] : null, privateItemsFetcher
@@ -51,7 +55,7 @@ export default function PrivateItems(props) {
         { privateItems.length > 0 ?
           privateItems.map((item, index) => {
             return (
-              <ItemsView key={`privateItems-${index}`} item={item} />
+              <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
             )
           }) : 
           <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">

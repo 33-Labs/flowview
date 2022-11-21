@@ -28,8 +28,8 @@ const getSignTagColor = (signAlgo) => {
 const dataField = (title, value) => {
   return (
     <div className="flex flex-col gap-y-1">
-      <div className="px-2 text-sm text-gray-500 whitespace-nowrap">{title}</div>
-      <div className="px-2 text-lg font-bold whitespace-nowrap">{value}</div>
+      <div className="text-sm text-gray-500 whitespace-nowrap">{title}</div>
+      <div className="text-lg font-bold whitespace-nowrap">{value}</div>
     </div>
   )
 }
@@ -41,11 +41,10 @@ export default function Key(props) {
   const [, setAlertModalContent] = useRecoilState(alertModalContentState)
   const { mutate } = useSWRConfig()
 
-  const { keyItem: key, account: account } = props
+  const { keyItem: key, account: account, user: user } = props
 
   const hashTag = getHashTagColor(key.hashAlgoString)
   const signTag = getSignTagColor(key.signAlgoString)
-
 
   const getRevokeButton = () => {
     return (
@@ -65,7 +64,6 @@ export default function Key(props) {
             content: "Revoked key can not be used for signing transactions, please make sure you know what you are doing",
             actionTitle: "REVOKE",
             action: async () => {
-              console.log("HELLO")
               await revokeKey(key.index, setTransactionInProgress, setTransactionStatus)
               mutate(["keysFetcher", account])
             }
@@ -92,26 +90,30 @@ export default function Key(props) {
           }
         </div>
         {
-          !key.revoked ? getRevokeButton() : null
+          (user && user.loggedIn && user.addr == account && !key.revoked) ? getRevokeButton() : null
         }
       </div>
 
       <div className="w-full border-b-2"></div>
-      <div className="mt-1">
-        <textarea
-          rows={4}
-          name="publicKey"
-          id="publicKey"
-          className={classNames(
-            key.revoked ? "bg-red-50 border-red-300" : "bg-drizzle-ultralight border-drizzle",
-            "resize-none block w-full border-2 rounded-xl p-2 font-flow text-lg"
-          )}
-          disabled={true}
-          value={key.publicKey}
-          spellCheck={false}
-        />
+
+      <div className="flex flex-col gap-y-1">
+        <div className="text-sm text-gray-500 whitespace-nowrap">{"Public Key"}</div>
+        <div className="mt-1">
+          <textarea
+            rows={4}
+            name="publicKey"
+            id="publicKey"
+            className={classNames(
+              key.revoked ? "bg-red-50 border-red-300" : "bg-drizzle-ultralight border-drizzle",
+              "resize-none block w-full border-2 rounded-xl p-2 font-flow text-lg"
+            )}
+            disabled={true}
+            value={key.publicKey}
+            spellCheck={false}
+          />
+        </div>
       </div>
-      <div className="flex gap-x-3 justify-start">
+      <div className="flex gap-x-4 justify-start">
         {dataField("Sequence Number", `${key.sequenceNumber}`)}
         {dataField("Weight", `${key.weight} / 1000`)}
       </div>

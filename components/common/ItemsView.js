@@ -134,7 +134,7 @@ export default function ItemsView(props) {
   const [, setShowAlertModal] = useRecoilState(showAlertModalState)
   const [, setAlertModalContent] = useRecoilState(alertModalContentState)
 
-  const { item } = props
+  const { item, account, user } = props
   const { mutate } = useSWRConfig()
   const pathType = getPathType(item.path)
 
@@ -232,7 +232,8 @@ export default function ItemsView(props) {
           </div>
         }
         {
-          pathType == "Storage" ? getDestroyButton() : getUnlinkButton()
+          user && user.loggedIn && user.addr == account ? 
+            (pathType == "Storage" ? getDestroyButton() : getUnlinkButton()) : null
         }
       </div>
 

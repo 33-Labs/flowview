@@ -1,3 +1,4 @@
+import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
@@ -11,21 +12,21 @@ const keysFetcher = async (funcName, address) => {
   return await getKeys(address)
 }
 
-export default function Keys() {
+export default function Keys(props) {
   const router = useRouter()
   const { account } = router.query
 
   const [keys, setKeys] = useState(null)
+  const [user, setUser] = useState({loggedIn: null})
+
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: keysData, error: keysError } = useSWR(
     account && isValidFlowAddress(account) ? ["keysFetcher", account] : null, keysFetcher
   )
 
-  console.log(keysError)
-
   useEffect(() => {
     if (keysData) {
-      console.log("keysData", keysData)
       setKeys(keysData)
     }
   }, [keysData])
@@ -44,7 +45,7 @@ export default function Keys() {
         {keys.length > 0 ?
           keys.map((key, index) => {
             return (
-              <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} account={account} />
+              <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} account={account} user={user} />
             )
           }) :
           <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
@@ -55,17 +56,13 @@ export default function Keys() {
     )
   }
 
-  // hashAlgoString : "SHA2_256"
-  // index : 0
-  // publicKey : "ef699ce71f46354ed8b77056f8fbfec1688ff0265a83c2dc9834c154096f1cc9eafbe49fe4a3b6c2d143623fbd72dcb26df50131ae06c2adef1154e5a1ce9bba"
-  // revoked : false
-  // sequenceNumber : 587
-  // signAlgoString : "ECDSA_secp256k1"
-  // weight : 1000
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        {showKeys()}
+        <div className="flex flex-col gap-y-4">
+
+          {showKeys()}
+        </div>
       </Layout>
     </div>
   )

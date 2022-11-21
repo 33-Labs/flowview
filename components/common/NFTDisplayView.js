@@ -45,9 +45,6 @@ export default function NFTDisplayView(props) {
     }
   }, [displayData])
 
-  console.log("displayData", displayData)
-  console.log("displayError", displayError)
-
   const showDisplays = () => {
     if (!displays) {
       return (

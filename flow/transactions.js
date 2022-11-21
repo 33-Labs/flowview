@@ -46,7 +46,7 @@ const doRevokeKey = async (keyIndex) => {
   const transactionId = await fcl.mutate({
     cadence: code,
     args: (arg, t) => [
-      arg(keyIndex, t.Int)
+      arg(`${keyIndex}`, t.Int)
     ],
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

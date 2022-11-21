@@ -48,7 +48,6 @@ export default function NavigationBar(props) {
           className="shrink-0 bg-drizzle rounded-full p-2"
           onClick={() => {
             fcl.unauthenticate()
-            router.push("/")
           }}>
           <LogoutIcon className="h-5 w-5 text-black" />
         </button>
