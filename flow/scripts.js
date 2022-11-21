@@ -5,6 +5,7 @@ const NFTCatalogPath = "0xNFTCatalog"
 const NonFungibleTokenPath = "0xNonFungibleToken"
 const FungibleTokenPath = "0xFungibleToken"
 const MetadataViewsPath = "0xMetadataViews"
+const FlowboxPath = "0xFlowbox"
 
 export const getKeys = async (address) => {
   const accountInfo = await fcl.send([ fcl.getAccount(fcl.sansPrefix(address)) ])
@@ -371,6 +372,31 @@ export const getAccountInfo = async (address) => {
   }) 
 
   return result
+}
+
+export const getAddressOfDomain = async (domain) => {
+  const comps = domain.split(".")
+  const name = comps[0]
+  const root = comps[1]
+
+  const code = `
+  import DomainUtils from 0xFlowbox
+
+  pub fun main(name: String, root: String): Address? {
+    return DomainUtils.getAddressOfDomain(name: name, root: root)
+  }
+  `
+  .replace(FlowboxPath, publicConfig.flowboxAddress)
+
+  const address = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(name, t.String),
+      arg(root, t.String),
+    ]
+  }) 
+
+  return address
 }
 
 export const getStoredResource = async (address, path) => {

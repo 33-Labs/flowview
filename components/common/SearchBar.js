@@ -1,11 +1,12 @@
 import { SearchIcon } from "@heroicons/react/outline";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { isValidFlowAddress } from "../../lib/utils";
+import { isValidFlowAddress, maybeDomain } from "../../lib/utils";
 import { useRecoilState } from "recoil"
 import {
   transactionInProgressState,
 } from "../../lib/atoms"
+import { getAddressOfDomain } from "../../flow/scripts";
 
 export default function SearchBar(props) {
   const router = useRouter()
@@ -34,13 +35,23 @@ export default function SearchBar(props) {
           aria-invalid={false}
           aria-describedby="address-error"
           value={inputValue}
-          onKeyUp={(event) => {
+          onKeyUp={async (event) => {
             if (event.key == "Enter") {
               if (isValidFlowAddress(event.target.value)) {
                 setIsValidInput(true)
                 router.push(`/account/${event.target.value}`)
                 return
               }
+
+              if (maybeDomain(event.target.value)) {
+                const address = await getAddressOfDomain(event.target.value)
+                if (address) {
+                  setIsValidInput(true)
+                  router.push(`/account/${address}`)
+                  return
+                }
+              }
+
               setIsValidInput(false)
             }
           }}
