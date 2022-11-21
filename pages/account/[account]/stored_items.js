@@ -29,6 +29,7 @@ export default function StoredItems(props) {
   useEffect(() => {
     if (itemsData) {
       const data = itemsData.sort((a, b) => a.path.localeCompare(b.path))
+      console.log(data)
       setStoredItems(data)
     }
   }, [itemsData])

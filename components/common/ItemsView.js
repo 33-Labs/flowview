@@ -9,6 +9,8 @@ import {
 import { classNames, getContract } from "../../lib/utils"
 import { destroy, unlink } from "../../flow/transactions"
 import { useSWRConfig } from 'swr'
+import { useState } from "react"
+import { getStoredResource } from "../../flow/scripts"
 
 const getPathType = (path) => {
   if (path.includes("/public")) {
@@ -135,6 +137,8 @@ export default function ItemsView(props) {
   const [, setAlertModalContent] = useRecoilState(alertModalContentState)
 
   const { item, account, user } = props
+  const [resource, setResource] = useState(null)
+
   const { mutate } = useSWRConfig()
   const pathType = getPathType(item.path)
 
@@ -169,6 +173,30 @@ export default function ItemsView(props) {
         }}
       >
         UNLINK
+      </button>
+    )
+  }
+
+  const getLoadResourceButton = () => {
+    return (
+      <button
+        type="button"
+        disabled={transactionInProgress}
+        className={
+          classNames(
+            transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+            `px-3 py-2 text-sm rounded-2xl font-semibold`
+          )
+        }
+        onClick={async () => {
+          let resource = await getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
+          console.log(resource)
+          if (resource) {
+            setResource(resource)
+          }
+        }}
+      >
+        LOAD
       </button>
     )
   }
@@ -233,7 +261,10 @@ export default function ItemsView(props) {
         }
         {
           user && user.loggedIn && user.addr == account ? 
-            (pathType == "Storage" ? getDestroyButton() : getUnlinkButton()) : null
+            (pathType == "Storage" ? <div className="flex gap-x-2 items-center">
+              {getLoadResourceButton()}
+              {getDestroyButton()}
+              </div> : getUnlinkButton()) : null
         }
       </div>
 
@@ -241,6 +272,15 @@ export default function ItemsView(props) {
       <div className="mt-1">
         {getTypeView(item.type, 0)}
       </div>
+      {/* {
+        resource ? 
+        <div>
+      <textarea
+        readOnly
+        value={JSON.stringify(resource, null, 4)}
+      ></textarea>
+        </div> : null
+      } */}
     </div>
   )
 }

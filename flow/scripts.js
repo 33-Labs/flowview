@@ -373,6 +373,28 @@ export const getAccountInfo = async (address) => {
   return result
 }
 
+export const getStoredResource = async (address, path) => {
+  const pathIdentifier = path.replace("/storage/", "")
+
+  const code = `
+  pub fun main(address: Address, pathStr: String): &AnyResource? {
+    let account = getAuthAccount(address)
+    let path = StoragePath(identifier: pathStr)!
+    return account.borrow<&AnyResource>(from: path)
+  }
+  `
+
+  const resource = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(pathIdentifier, t.String),
+    ]
+  }) 
+
+  return resource
+}
+
 export const getStoredItems = async (address) => {
   const code = `
   import FungibleToken from 0xFungibleToken
