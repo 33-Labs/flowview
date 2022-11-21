@@ -18,7 +18,7 @@ export default function StoredItems(props) {
   const { account } = router.query
 
   const [storedItems, setStoredItems] = useState(null)
-  const [user, setUser] = useState({loggedIn: null})
+  const [user, setUser] = useState({ loggedIn: null })
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
@@ -29,7 +29,6 @@ export default function StoredItems(props) {
   useEffect(() => {
     if (itemsData) {
       const data = itemsData.sort((a, b) => a.path.localeCompare(b.path))
-      console.log(data)
       setStoredItems(data)
     }
   }, [itemsData])
@@ -53,14 +52,14 @@ export default function StoredItems(props) {
 
     return (
       <div className="flex flex-col gap-y-4">
-        { storedItems.length > 0 ?
+        {storedItems.length > 0 ?
           storedItems.map((item, index) => {
             return (
               <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
             )
-          }) : 
-          <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-            There is nothing here
+          }) :
+          <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+            Nothing found
           </div>
         }
       </div>

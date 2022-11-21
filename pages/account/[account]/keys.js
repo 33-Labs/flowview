@@ -18,7 +18,7 @@ export default function Keys(props) {
   const { account } = router.query
 
   const [keys, setKeys] = useState(null)
-  const [user, setUser] = useState({loggedIn: null})
+  const [user, setUser] = useState({ loggedIn: null })
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
@@ -49,8 +49,8 @@ export default function Keys(props) {
               <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} account={account} user={user} />
             )
           }) :
-          <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-            There is nothing here
+          <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+            Nothing found
           </div>
         }
       </div>

@@ -18,9 +18,12 @@ const formatBalancesData = (balances) => {
   return balances.map((data) => {
     const resource = getResourceType(data.type)
     const contract = resource.replace(".Vault", "")
+    let comps = contract.split(".")
+    let contractName = comps[comps.length - 1]
     return {
       balance: data.balance,
-      contract: contract
+      contract: contract,
+      contractName: contractName
     }
   })
 }
@@ -64,7 +67,7 @@ export default function FungibleTokens(props) {
       }
 
       const info = tokensInfo.map((t) => {
-        let order = t.symbol
+        let order = t.symbol || t.contractName
         // Make sure FLOW is the first one
         if (t.symbol == "FLOW") order = ""
         return {...t, order: order }

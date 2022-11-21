@@ -105,9 +105,9 @@ export default function NFTList(props) {
             </div> : null
           }
         </div> :
-        <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-          There is nothing here
-        </div>}
+        <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+            Nothing found
+          </div>}
     </div>
   )
 }

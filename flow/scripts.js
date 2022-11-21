@@ -41,7 +41,11 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
     let collectionRef = account.getCapability<&{MetadataViews.ResolverCollection}>(path).borrow()
     if (collectionRef == nil) {
       for tokenID in tokenIDs {
-        res[tokenID] = nil
+        res[tokenID] = MetadataViews.Display(
+          name: publicPathID,
+          description: "",
+          thumbnail: MetadataViews.HTTPFile(url: "")
+        )
       }
       return res
     }
@@ -51,7 +55,11 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
       if let display = MetadataViews.getDisplay(resolver) {
         res[tokenID] = display
       } else {
-        res[tokenID] = nil
+        res[tokenID] = MetadataViews.Display(
+          name: publicPathID,
+          description: "",
+          thumbnail: MetadataViews.HTTPFile(url: "")
+        )
       }
     }
     return res
@@ -253,6 +261,10 @@ export const getNfts = async (address) => {
       let items: [Item] = []
       let collectionType = Type<Capability<&AnyResource{NonFungibleToken.CollectionPublic}>>()
       account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+          if (path == /public/kittyItemsCollectionV10) {
+            return true
+          }
+
           let isNFTCollection = type.isSubtype(of: collectionType)
           if (isNFTCollection) {
               let item = Item(
@@ -300,6 +312,10 @@ export const getFTBalances = async (address) => {
       let res: [Balance] = []
       let balanceCapType = Type<Capability<&AnyResource{FungibleToken.Balance}>>()
       account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+          if (path == /public/kittyItemsCollectionV10) {
+            return true
+          }
+
           if (type.isSubtype(of: balanceCapType)) {
               let vaultRef = account
                   .getCapability(path)
@@ -451,6 +467,10 @@ export const getStoredItems = async (address) => {
       let vaultType = Type<@FungibleToken.Vault>()
       let collectionType = Type<@NonFungibleToken.Collection>()
       account.forEachStored(fun (path: StoragePath, type: Type): Bool {
+          if (path == /storage/kittyItemsCollectionV10) {
+            return true
+          }
+
           let isResource = type.isSubtype(of: resourceType)
           let isNFTCollection = type.isSubtype(of: collectionType)
           let isVault = type.isSubtype(of: vaultType) 
@@ -503,6 +523,11 @@ export const getLinkedItems = async (path, address) => {
     let account = getAuthAccount(address)
     let items: [Item] = []
     account.${func}(fun (path: ${pathType}, type: Type): Bool {
+      let pathStr = path.toString()
+      if (pathStr == "/public/kittyItemsCollectionV10" || pathStr == "/private/kittyItemsCollectionProviderV10") {
+        return true
+      }
+      
       let target = account.getLinkTarget(path)
       var targetPath: String? = nil
       if let t = target {

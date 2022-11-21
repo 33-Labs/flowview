@@ -64,7 +64,7 @@ const formatPath = (path, classes) => {
   const domain = comps[1]
   const itemPath = comps[2]
   return (
-    <label className={classes}>
+    <label className={`${classes} max-w-[830px] truncate text-ellipsis overflow-hidden shrink`}>
       {`/${domain}/`}<span className="font-bold">{`${itemPath}`}</span>
     </label>
   )
@@ -163,7 +163,7 @@ export default function ItemsView(props) {
         className={
           classNames(
             transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
-            `px-3 py-2 text-sm rounded-2xl font-semibold`
+            `px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`
           )
         }
         onClick={async () => {
@@ -188,7 +188,7 @@ export default function ItemsView(props) {
         className={
           classNames(
             transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
-            `px-3 py-2 text-sm rounded-2xl font-semibold`
+            `px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`
           )
         }
         onClick={async () => {
@@ -214,7 +214,7 @@ export default function ItemsView(props) {
         className={
           classNames(
             transactionInProgress ? "bg-red-400 text-white" : "text-white bg-red-600 hover:bg-red-800",
-            `px-3 py-2 text-sm rounded-2xl font-semibold`
+            `px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`
           )
         }
         onClick={async () => {
@@ -250,9 +250,9 @@ export default function ItemsView(props) {
 
   return (
     <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
-      <div className="flex justify-between items-center">
+      <div className="flex gap-x-2 justify-between items-center">
         {
-          tag ? <div className="flex gap-x-1 items-center">
+          tag ? <div className="flex gap-x-1 items-center shrink truncate">
             {formatPath(item.path, "text-base")}
             <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${tag.bg} ${tag.text}`}>{tag.title}</label>
           </div>

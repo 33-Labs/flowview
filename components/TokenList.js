@@ -47,7 +47,7 @@ export default function TokenList(props) {
                               <Image className="rounded-lg object-contain" src={token.logoURL || "/token_placeholder.png"} alt="" fill sizes="33vw" />
                             </div>
                             <div className="flex flex-col ml-2">
-                              <label className="block font-bold text-base text-gray-900 break-words max-w-[300px] min-w-[60px]">{token.symbol || "Unknown"}</label>
+                              <label className="block font-bold text-base text-gray-900 break-words max-w-[300px] min-w-[60px]">{token.symbol || token.contractName}</label>
                             </div>
                           </div>
                         </td>
@@ -105,8 +105,8 @@ export default function TokenList(props) {
             </div> : null
           }
         </div> :
-        <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-          There is nothing here
+        <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+          Nothing found
         </div>}
     </div>
   )

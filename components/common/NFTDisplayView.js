@@ -10,7 +10,6 @@ const displayFetcher = async (funcName, account, nft) => {
   return await bulkGetNftDisplays(account, nft)
 }
 
-
 export default function NFTDisplayView(props) {
   const router = useRouter()
   const { account } = router.query
@@ -65,8 +64,8 @@ export default function NFTDisplayView(props) {
                 )
               })
             }
-          </div> : <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-            You do not have NFT of this collection
+          </div> : <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+            Nothing found
           </div>
         }
       </div>

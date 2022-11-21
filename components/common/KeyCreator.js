@@ -60,10 +60,6 @@ export default function KeyCreator(props) {
             return 
           }
 
-          console.log(publicKey)
-          console.log(weight)
-          console.log(signAlgo.code)
-          console.log(hashAlgo.code)
           await createKey(publicKey, signAlgo.code, hashAlgo.code, weight, setTransactionInProgress, setTransactionStatus)
           mutate(["keysFetcher", account])
 

@@ -15,10 +15,16 @@ import NFTView from "../../../components/common/NFTView"
 const getNftsWithNftType = (nfts) => {
   return nfts.map((n) => {
     let collection = getResourceType(n.type)
-    let contract = getContract(collection)
-    let comps = contract.split(".")
-    let contractName = comps[comps.length - 1]
-    let nftType = `${contract}.NFT`
+    let contract = n.path.replace("/public/", "")
+    let contractName = contract
+    let nftType = contract
+    if (collection != "AnyResource") {
+      contract = getContract(collection)
+      let comps = contract.split(".")
+      contractName = comps[comps.length - 1]
+      nftType = `${contract}.NFT`
+    }
+
     return { ...n, nftType: nftType, contract: contract, contractName: contractName }
   }).filter((n) => n.nftType)
 }
@@ -30,7 +36,6 @@ const catalogFetcher = async (funcName, nfts) => {
 const nftsFetcher = async (funcName, address) => {
   const nfts = await getNfts(address)
   const nftsWithIDs = (await getNftsWithIDs(address, nfts)).filter((n) => n.nftIDs.length > 0)
-
   const nftsWithNftType = getNftsWithNftType(nftsWithIDs)
   const typeData = await getCatalogTypeData()
   return getNFTsWithCollectionID(nftsWithNftType, typeData).sort((a, b) => a.path.localeCompare(b.path))
@@ -61,7 +66,7 @@ export default function NFTs(props) {
         if (n.collectionIdentifier) {
           catalog = catalogData[n.collectionIdentifier]
         }
-        return {...n, catalog: catalog}
+        return { ...n, catalog: catalog }
       })
       setNFTs(nftsWithCatalog)
     }
@@ -86,21 +91,21 @@ export default function NFTs(props) {
       return (
         <div className="flex flex-col gap-y-4">
           <div className="sm:flex-auto">
-          <h1 className="text-2xl font-bold text-gray-900">
-            {`Collections (${nfts.length})`}
-          </h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              {`Collections (${nfts.length})`}
+            </h1>
           </div>
           {
-            nfts.length > 0 ? 
-            nfts.map((nft, index) => {
-              return (
-                <NFTView nft={nft} key={`${nft.path}_${index}`} />
-              )
-            }) :
-            <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">
-            No NFT found
-          </div>
-          } 
+            nfts.length > 0 ?
+              nfts.map((nft, index) => {
+                return (
+                  <NFTView nft={nft} key={`${nft.path}_${index}`} />
+                )
+              }) :
+              <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+                Nothing found
+              </div>
+          }
         </div>
       )
     }

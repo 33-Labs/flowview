@@ -28,13 +28,18 @@ export default function NFTView(props) {
               <label className="font-bold text-lg">{`${nft.contractName} (${nft.nftIDs.length})`}</label>
           }
           <label>
-            <a
-              href={`${publicConfig.flowscanURL}/contract/${nft.contract}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline font-sm font-bold decoration-drizzle decoration-2">
-              {nft.contract}
-            </a>
+            {
+              nft.contract.startsWith("A.") ?
+                <a
+                  href={`${publicConfig.flowscanURL}/contract/${nft.contract}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline font-sm font-bold decoration-drizzle decoration-2">
+                  {nft.contract}
+                </a> :
+                <span>{nft.contract}</span>
+            }
+
           </label>
         </div>
       </div>
