@@ -44,7 +44,7 @@ export default function Keys() {
         {keys.length > 0 ?
           keys.map((key, index) => {
             return (
-              <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} />
+              <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} account={account} />
             )
           }) :
           <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">

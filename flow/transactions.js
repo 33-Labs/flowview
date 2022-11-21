@@ -22,6 +22,41 @@ export const TxStatus = {
   }
 }
 
+export const revokeKey = async (
+  keyIndex,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doRevokeKey(keyIndex)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doRevokeKey = async (keyIndex) => {
+  const code = `
+  transaction(keyIndex: Int) {
+    prepare(signer: AuthAccount) {
+      signer.keys.revoke(keyIndex: keyIndex)
+    }
+  }
+  `
+
+  const transactionId = await fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(keyIndex, t.Int)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+
 export const unlink = async (
   path,
   setTransactionInProgress,

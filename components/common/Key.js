@@ -1,4 +1,13 @@
 import { classNames } from "../../lib/utils"
+import { useRecoilState } from "recoil"
+import {
+  transactionStatusState,
+  transactionInProgressState,
+  showAlertModalState,
+  alertModalContentState
+} from "../../lib/atoms"
+import { useSWRConfig } from 'swr'
+import { revokeKey } from "../../flow/transactions"
 
 const getHashTagColor = (hashAlgo) => {
   const colorMap = {
@@ -26,23 +35,67 @@ const dataField = (title, value) => {
 }
 
 export default function Key(props) {
-  const { keyItem: key } = props
+  const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
+  const [, setTransactionStatus] = useRecoilState(transactionStatusState)
+  const [, setShowAlertModal] = useRecoilState(showAlertModalState)
+  const [, setAlertModalContent] = useRecoilState(alertModalContentState)
+  const { mutate } = useSWRConfig()
+
+  const { keyItem: key, account: account } = props
 
   const hashTag = getHashTagColor(key.hashAlgoString)
   const signTag = getSignTagColor(key.signAlgoString)
 
+
+  const getRevokeButton = () => {
+    return (
+      <button
+        type="button"
+        disabled={transactionInProgress}
+        className={
+          classNames(
+            transactionInProgress ? "bg-red-400 text-white" : "text-white bg-red-600 hover:bg-red-800",
+            `px-3 py-2 text-sm rounded-2xl font-semibold`
+          )
+        }
+        onClick={async () => {
+          setShowAlertModal(false)
+          setAlertModalContent({
+            title: "Attention Needed",
+            content: "Revoked key can not be used for signing transactions, please make sure you know what you are doing",
+            actionTitle: "REVOKE",
+            action: async () => {
+              console.log("HELLO")
+              await revokeKey(key.index, setTransactionInProgress, setTransactionStatus)
+              mutate(["keysFetcher", account])
+            }
+          })
+          setShowAlertModal(true)
+        }}
+      >
+        REVOKE
+      </button>
+    )
+  }
+
   return (
     <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
-      <div className="flex gap-x-1 items-center">
-        <label className="font-bold text-xl">{`#${key.index}`}&nbsp;&nbsp;</label>
-        <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${hashTag.bg} ${hashTag.text}`}>{key.hashAlgoString}</label>
-        <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${signTag.bg} ${signTag.text}`}>{key.signAlgoString}</label>
+      <div className="flex justify-between items-center">
+        <div className="flex gap-x-1 items-center">
+          <label className="font-bold text-xl">{`#${key.index}`}&nbsp;&nbsp;</label>
+          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${hashTag.bg} ${hashTag.text}`}>{key.hashAlgoString}</label>
+          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${signTag.bg} ${signTag.text}`}>{key.signAlgoString}</label>
+          {
+            key.revoked ?
+              <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-white bg-red-600`}>{"Revoked"}</label>
+              : null
+          }
+        </div>
         {
-          key.revoked ?
-          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-white bg-red-600`}>{"Revoked"}</label>
-          : null
+          !key.revoked ? getRevokeButton() : null
         }
       </div>
+
       <div className="w-full border-b-2"></div>
       <div className="mt-1">
         <textarea
