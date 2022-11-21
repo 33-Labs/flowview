@@ -1,6 +1,7 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
+import Key from "../../../components/common/Key"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
 import { getKeys, getKeysWithSequenceNumber } from "../../../flow/scripts"
@@ -43,15 +44,7 @@ export default function Keys() {
         {keys.length > 0 ?
           keys.map((key, index) => {
             return (
-              <div key={`key_${key.keyIndex}_${index}`} className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
-                <label className="text-black"><span>Public Key:</span>{key.publicKey}</label>
-                <label className="text-black"><span>Key Index:</span>{key.index}</label>
-                <label className="text-black"><span>Hash Algorithm:</span>{key.hashAlgoString}</label>
-                <label className="text-black"><span>Sign Algorithm:</span>{key.signAlgoString}</label>
-                <label className="text-black"><span>Sequence Number:</span>{key.sequenceNumber}</label>
-                <label className="text-black"><span>Weight:</span>{key.weight}</label>
-                <label className="text-black"><span>Revoked:</span>{`${key.revoked}`}</label>
-              </div>
+              <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} />
             )
           }) :
           <div className="flex mt-10 h-[200] text-gray-400 text-xl justify-center">

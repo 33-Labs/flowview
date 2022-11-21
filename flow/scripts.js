@@ -6,6 +6,11 @@ const NonFungibleTokenPath = "0xNonFungibleToken"
 const FungibleTokenPath = "0xFungibleToken"
 const MetadataViewsPath = "0xMetadataViews"
 
+export const getKeys = async (address) => {
+  const accountInfo = await fcl.send([ fcl.getAccount(fcl.sansPrefix(address)) ])
+  return accountInfo.account.keys.sort((a, b) => a.keyIndex - b.keyIndex)
+}
+
 const splitList = (list, chunkSize) => {
   const groups = []
   let currentGroup = []

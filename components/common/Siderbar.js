@@ -10,13 +10,14 @@ export default function Sidebar(props) {
 
   const menuItems = [
     { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },
-    { id: "1", label: `FT`, link: { pathname: "/account/[account]/fungible_tokens", query: { account: account } } },
-    { id: "2", label: `NFT`, link: { pathname: "/account/[account]/nfts", query: { account: account } } },
+    { id: "1", label: `Key`, link: { pathname: "/account/[account]/keys", query: { account: account } } },
+    { id: "2", label: `FT`, link: { pathname: "/account/[account]/fungible_tokens", query: { account: account } } },
+    { id: "3", label: `NFT`, link: { pathname: "/account/[account]/nfts", query: { account: account } } },
     {
-      id: "3", label: "Storage", subItems: [
-        { id: "3-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_items", query: { account: account } } },
-        { id: "3-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_items", query: { account: account } } },
-        { id: "3-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_items", query: { account: account } } },
+      id: "4", label: "Storage", subItems: [
+        { id: "4-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_items", query: { account: account } } },
+        { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_items", query: { account: account } } },
+        { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_items", query: { account: account } } },
       ]
     }
   ]
