@@ -286,7 +286,7 @@ export default function ItemsView(props) {
               {JSON.stringify(resource, null, 2)}
             </SyntaxHighlighter>
           </div> :
-          <div className="flex mt-1 h-[200px] justify-center">
+          <div className="flex mt-1 h-[100px] justify-center">
             <Spinner />
           </div>)
         : null
