@@ -4,7 +4,6 @@ import { useRouter } from 'next/router'
 
 import * as fcl from "@onflow/fcl"
 import config from "../flow/config.js"
-// import { LogoutIcon } from "@heroicons/react/v1/outline"
 import publicConfig from "../publicConfig.js"
 import { useEffect } from "react"
 

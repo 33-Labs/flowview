@@ -390,6 +390,26 @@ export const getAccountInfo = async (address) => {
   return result
 }
 
+export const getDefaultDomainsOfAddress = async (address) => {
+  const code = `
+  import DomainUtils from 0xFlowbox
+
+  pub fun main(address: Address): {String: String} {
+    return DomainUtils.getDefaultDomainsOfAddress(address)
+  }
+  `
+  .replace(FlowboxPath, publicConfig.flowboxAddress)
+
+  const domains = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return domains
+}
+
 export const getAddressOfDomain = async (domain) => {
   const comps = domain.split(".")
   const name = comps[0]
