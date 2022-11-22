@@ -45,7 +45,6 @@ export default function Layout({ children }) {
           url: url
         })
       }
-      console.log("domains", domains)
       setDefaultDomains(domains)
     }
   }, [domainsData])
@@ -61,11 +60,11 @@ export default function Layout({ children }) {
           <div className="flex gap-x-1 items-center">
             <label className="text-2xl sm:text-3xl font-bold">{`${account}`}</label>
             <DocumentDuplicateIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
-            onClick={async () => {
-              await navigator.clipboard.writeText(account)
-              setShowBasicNotification(true)
-              setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
-            }} />
+              onClick={async () => {
+                await navigator.clipboard.writeText(account)
+                setShowBasicNotification(true)
+                setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
+              }} />
           </div>
         </div>
         {defaultDomains && defaultDomains.length > 0 ?

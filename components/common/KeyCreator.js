@@ -13,13 +13,13 @@ import Decimal from "decimal.js"
 import { createKey } from "../../flow/transactions"
 
 const hashAlgoOptions = [
-  {id: 1, name: "SHA3_256", code: "3"}, 
-  {id: 2, name: "SHA2_256", code: "1"}
+  { id: 1, name: "SHA3_256", code: "3" },
+  { id: 2, name: "SHA2_256", code: "1" }
 ]
 
 const signAlgoOptions = [
-  {id: 1, name: "ECDSA_P256", code: "1"}, 
-  {id: 2, name: "ECDSA_secp256k1", code: "2"}
+  { id: 1, name: "ECDSA_P256", code: "1" },
+  { id: 2, name: "ECDSA_secp256k1", code: "2" }
 ]
 
 export default function KeyCreator(props) {
@@ -52,12 +52,12 @@ export default function KeyCreator(props) {
             setShowBasicNotification(true)
             setBasicNotificationContent({ type: "exclamation", title: "Invalid Public Key", detail: null })
             return
-          } 
+          }
 
           if (weight.trim() == "" || new Decimal(weight).comparedTo(new Decimal(1000)) == 1) {
             setShowBasicNotification(true)
             setBasicNotificationContent({ type: "exclamation", title: "Invalid Weight", detail: null })
-            return 
+            return
           }
 
           await createKey(publicKey, signAlgo.code, hashAlgo.code, weight, setTransactionInProgress, setTransactionStatus)

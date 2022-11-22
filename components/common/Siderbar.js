@@ -83,9 +83,9 @@ export default function Sidebar(props) {
                 ) : null
               }
             </div>
-      )
+          )
         })}
-    </div>
+      </div>
 
     </div >
   )

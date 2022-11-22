@@ -20,22 +20,22 @@ export default function NFTView(props) {
                   {`${nft.collectionIdentifier} (${nft.nftIDs.length})`}
                 </label>
                 <div className="flex gap-x-1">
-                <label className={`cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-catalog text-white`}>
-                  <a href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View on NFTCatalog
-                  </a>
-                </label>
-                <label className={`cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-drizzle text-black`}>
-                  <a href={`${publicConfig.drizzleURL}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Create raffle
-                  </a>
-                </label>
+                  <label className={`cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-catalog text-white`}>
+                    <a href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      View on NFTCatalog
+                    </a>
+                  </label>
+                  <label className={`cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-drizzle text-black`}>
+                    <a href={`${publicConfig.drizzleURL}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Create raffle
+                    </a>
+                  </label>
                 </div>
               </div>
               :

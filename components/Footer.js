@@ -61,7 +61,7 @@ export default function Footer() {
           rel="noopener noreferrer"
           className="font-flow text-sm whitespace-pre"
         >
-           Get support on <span className="underline font-bold decoration-drizzle decoration-2">Emerald City DAO</span>
+          Get support on <span className="underline font-bold decoration-drizzle decoration-2">Emerald City DAO</span>
         </a>
       </div>
 
