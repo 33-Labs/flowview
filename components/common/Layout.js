@@ -7,12 +7,21 @@ import publicConfig from "../../publicConfig";
 import AlertModal from "./AlertModal";
 import SearchBar from "./SearchBar";
 import Sidebar from "./Siderbar";
+import { useRecoilState } from "recoil"
+import {
+  showBasicNotificationState,
+  basicNotificationContentState
+} from "../../lib/atoms"
+import { DocumentDuplicateIcon } from "@heroicons/react/outline"
 
 const defaultDomainsFetcher = async (funcName, address) => {
   return await getDefaultDomainsOfAddress(address)
 }
 
 export default function Layout({ children }) {
+  const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
+  const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
+
   const router = useRouter()
   const { account } = router.query
 
@@ -49,11 +58,19 @@ export default function Layout({ children }) {
         </div>
         <div className="px-5 flex flex-col gap-y-1">
           <label className="text-lg sm:text-xl text-gray-500">Account</label>
-          <label className="text-2xl sm:text-3xl font-bold">{`${account}`}</label>
+          <div className="flex gap-x-1 items-center">
+            <label className="text-2xl sm:text-3xl font-bold">{`${account}`}</label>
+            <DocumentDuplicateIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
+            onClick={async () => {
+              await navigator.clipboard.writeText(account)
+              setShowBasicNotification(true)
+              setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
+            }} />
+          </div>
         </div>
         {defaultDomains && defaultDomains.length > 0 ?
           <div className="mt-2 px-4 flex gap-x-2">{
-           defaultDomains.map((domain, index) => {
+            defaultDomains.map((domain, index) => {
               return (
                 <label key={`${domain.domain}_${index}`} className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
                   <a href={domain.url}

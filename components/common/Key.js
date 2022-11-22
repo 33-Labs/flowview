@@ -3,11 +3,14 @@ import { useRecoilState } from "recoil"
 import {
   transactionStatusState,
   transactionInProgressState,
+  showBasicNotificationState,
+  basicNotificationContentState,
   showAlertModalState,
   alertModalContentState
 } from "../../lib/atoms"
 import { useSWRConfig } from 'swr'
 import { revokeKey } from "../../flow/transactions"
+import { DocumentDuplicateIcon } from "@heroicons/react/outline"
 
 const getHashTagColor = (hashAlgo) => {
   const colorMap = {
@@ -37,6 +40,8 @@ const dataField = (title, value) => {
 export default function Key(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
+  const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
+  const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
   const [, setShowAlertModal] = useRecoilState(showAlertModalState)
   const [, setAlertModalContent] = useRecoilState(alertModalContentState)
   const { mutate } = useSWRConfig()
@@ -97,7 +102,15 @@ export default function Key(props) {
       <div className="w-full border-b-2"></div>
 
       <div className="flex flex-col gap-y-1">
-        <div className="text-sm text-gray-500 whitespace-nowrap">{"Public Key"}</div>
+        <div className="flex gap-x-1 items-center">
+          <div className="text-sm text-gray-500 whitespace-nowrap">{"Public Key"}</div>
+          <DocumentDuplicateIcon className="text-gray-500 hover:text-drizzle w-4 h-4"
+            onClick={async () => {
+              await navigator.clipboard.writeText(key.publicKey)
+              setShowBasicNotification(true)
+              setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
+            }} />
+        </div>
         <div className="mt-1">
           <textarea
             rows={3}
