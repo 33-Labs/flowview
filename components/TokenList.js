@@ -36,6 +36,9 @@ export default function TokenList(props) {
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Balance
                       </th>
+                      <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
@@ -64,6 +67,36 @@ export default function TokenList(props) {
                         </td>
                         <td className="px-3 py-4 text-sm text-black min-w-[140px]">
                           {token.balance}
+                        </td>
+                        <td className="px-3 py-4 text-sm text-black min-w-[140px]">
+                          {token.symbol ?
+                            <div className="flex flex-col gap-y-1 items-start">
+                              <label className={`text-center w-[130px] cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-flow text-black`}>
+                                <a href={`${publicConfig.bayouURL}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  Bulk transfer
+                                </a>
+                              </label>
+                              <label className={`text-center w-[130px] cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-drizzle text-black`}>
+                                <a href={`${publicConfig.drizzleURL}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  Create airdrop
+                                </a>
+                              </label>
+                              <label className={`text-center w-[130px] cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-increment text-white`}>
+                                <a href={`${publicConfig.drizzleURL}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  Trade at Increment
+                                </a>
+                              </label>
+                            </div>
+                            : null}
                         </td>
                       </tr>
                     ))}

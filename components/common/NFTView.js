@@ -19,7 +19,8 @@ export default function NFTView(props) {
                 <label className="text-lg font-bold">
                   {`${nft.collectionIdentifier} (${nft.nftIDs.length})`}
                 </label>
-                <label className={`cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-catalog text-white`}>
+                <div className="flex gap-x-1">
+                <label className={`cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-catalog text-white`}>
                   <a href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -27,6 +28,15 @@ export default function NFTView(props) {
                     View on NFTCatalog
                   </a>
                 </label>
+                <label className={`cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-drizzle text-black`}>
+                  <a href={`${publicConfig.drizzleURL}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Create raffle
+                  </a>
+                </label>
+                </div>
               </div>
               :
               <label className="font-bold text-lg">{`${nft.contractName} (${nft.nftIDs.length})`}</label>

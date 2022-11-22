@@ -37,6 +37,15 @@ if (!flownsURL) throw "Missing NEXT_PUBLIC_FLOWNS_URL"
 const findURL = process.env.NEXT_PUBLIC_FIND_URL
 if (!findURL) throw "Missing NEXT_PUBLIC_FIND_URL"
 
+const bayouURL = process.env.NEXT_PUBLIC_BAYOU_URL
+if (!bayouURL) throw "Missing NEXT_PUBLIC_BAYOU_URL"
+
+const drizzleURL = process.env.NEXT_PUBLIC_DRIZZLE_URL
+if (!drizzleURL) throw "Missing NEXT_PUBLIC_DRIZZLE_URL"
+
+const incrementURL = process.env.NEXT_PUBLIC_INCREMENT_URL
+if (!incrementURL) throw "Missing NEXT_PUBLIC_INCREMENT_URL"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -50,7 +59,9 @@ const publicConfig = {
   fungibleTokenAddress,
   flowboxAddress,
   flownsURL,
-  findURL
+  findURL,
+  bayouURL,
+  drizzleURL
 }
 
 export default publicConfig
