@@ -5,20 +5,30 @@ import { useRouter } from 'next/router'
 import * as fcl from "@onflow/fcl"
 import config from "../flow/config.js"
 import publicConfig from "../publicConfig.js"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 
 import { useRecoilState } from "recoil"
 import {
   showBasicNotificationState,
-  basicNotificationContentState
+  basicNotificationContentState,
 } from "../lib/atoms.js"
 import { LogoutIcon } from "@heroicons/react/outline"
 
-export default function NavigationBar(props) {
-  const user = props.user
-  const router = useRouter()
+export default function NavigationBar() {
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
+
+  const router = useRouter()
+  const [user, setUser] = useState({ loggedIn: null })
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
+
+  useEffect(() => {
+    const shouldDoConnectionJump = localStorage.getItem("shouldDoConnectionJump") || "YES"
+    if ((user && user.loggedIn && shouldDoConnectionJump) == "YES") {
+      localStorage.setItem("shouldDoConnectionJump", "NO")
+      router.push(`/account/${user.addr}`)
+    }
+  }, [user])
 
   useEffect(() => {
     window.addEventListener("message", async (d) => {
@@ -28,6 +38,7 @@ export default function NavigationBar(props) {
         setBasicNotificationContent({ type: "exclamation", title: "WRONG NETWORK", detail: null })
         await new Promise(r => setTimeout(r, 2))
         fcl.unauthenticate()
+        localStorage.setItem("shouldDoConnectionJump", "YES")
       }
     })
   }, [])
@@ -47,6 +58,7 @@ export default function NavigationBar(props) {
           className="shrink-0 bg-drizzle rounded-full p-2"
           onClick={() => {
             fcl.unauthenticate()
+            localStorage.setItem("shouldDoConnectionJump", "YES")
           }}>
           <LogoutIcon className="h-5 w-5 text-black" />
         </button>
