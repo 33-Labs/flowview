@@ -11,6 +11,7 @@ module.exports = {
         'drizzle-dark': '#00a368',
         'drizzle-light': '#95e7c1',
         'drizzle-ultralight': '#e9faf3', 
+        'catalog': '#4F517D'
       },
       light: {
         DEFAULT: "#FAFBFC",

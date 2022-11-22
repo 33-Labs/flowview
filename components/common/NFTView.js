@@ -12,19 +12,23 @@ export default function NFTView(props) {
         <div className="w-11 aspect-square relative">
           <Image src={nft.catalog ? getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file) : "/token_placeholder.png"} alt="" fill sizes="33vw" priority={true} />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           {
             nft.collectionIdentifier ?
-              <label className="text-lg font-bold">
-                <a
-                  href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline decoration-drizzle decoration-2">
-                  {`${nft.collectionIdentifier}`}
-                </a>
-                {` (${nft.nftIDs.length})`}
-              </label> :
+              <div className="flex gap-x-1 w-full justify-between">
+                <label className="text-lg font-bold">
+                  {`${nft.collectionIdentifier} (${nft.nftIDs.length})`}
+                </label>
+                <label className={`cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-catalog text-white`}>
+                  <a href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View on NFTCatalog
+                  </a>
+                </label>
+              </div>
+              :
               <label className="font-bold text-lg">{`${nft.contractName} (${nft.nftIDs.length})`}</label>
           }
           <label>
