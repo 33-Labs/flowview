@@ -31,6 +31,12 @@ if (!fungibleTokenAddress) throw "Missing NEXT_PUBLIC_FUNGIBLE_TOKEN_ADDRESS"
 const flowboxAddress = process.env.NEXT_PUBLIC_FLOWBOX_ADDRESS
 if (!flowboxAddress) throw "Missing NEXT_PUBLIC_FLOWBOX_ADDRESS"
 
+const flownsURL = process.env.NEXT_PUBLIC_FLOWNS_URL
+if (!flownsURL) throw "Missing NEXT_PUBLIC_FLOWNS_URL"
+
+const findURL = process.env.NEXT_PUBLIC_FIND_URL
+if (!findURL) throw "Missing NEXT_PUBLIC_FIND_URL"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -42,7 +48,9 @@ const publicConfig = {
   metadataViewsAddress,
   nonFungibleTokenAddress,
   fungibleTokenAddress,
-  flowboxAddress
+  flowboxAddress,
+  flownsURL,
+  findURL
 }
 
 export default publicConfig
