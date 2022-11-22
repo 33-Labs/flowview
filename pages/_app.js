@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }) {
       <div className="bg-white text-black bg-[url('/bg.png')] bg-cover bg-center min-h-screen">
         <RecoilRoot>
           <Head>
-            <title>Floview | Flow Account Viewer</title>
+            <title>flowview | Flow Account Viewer</title>
             <meta property="og:title" content="Link | NFT catalog link tool" key="title" />
             <link rel="icon" href="/favicon.ico" />
           </Head>

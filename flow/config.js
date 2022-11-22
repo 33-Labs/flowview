@@ -6,6 +6,6 @@ config({
   "accessNode.api": publicConfig.accessNodeAPI,
   "discovery.wallet": publicConfig.walletDiscovery,
   "sdk.transport": httpSend,
-  "app.detail.title": "floview",
+  "app.detail.title": "flowview",
   "app.detail.icon": "https://i.imgur.com/YL8MLEd.png"
 })

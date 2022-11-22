@@ -92,7 +92,7 @@ export default function NavigationBar() {
 
         <Link href="/">
           <label className="font-flow font-bold text-3xl">
-            floview
+            flowview
           </label>
         </Link>
         <label className="hidden sm:block px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">

@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="m-auto mt-60 max-w-[920px] flex flex-1 justify-center items-center py-8 border-t border-solid box-border">
       <div className="flex flex-col gap-y-2 items-center">
         <div className="flex gap-x-2">
-          <a href="https://github.com/33-Labs/drizzle"
+          <a href="https://github.com/33-Labs/flowview"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -46,7 +46,6 @@ export default function Footer() {
             </div>
           </a>
         </div>
-
         <a
           href="https://github.com/33-Labs"
           target="_blank"
@@ -64,7 +63,6 @@ export default function Footer() {
           Get support on <span className="underline font-bold decoration-drizzle decoration-2">Emerald City DAO</span>
         </a>
       </div>
-
     </footer>
   )
 }
