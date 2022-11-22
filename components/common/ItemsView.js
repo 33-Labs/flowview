@@ -269,7 +269,9 @@ export default function ItemsView(props) {
             (pathType == "Storage" ? <div className="flex gap-x-2 items-center">
               {item.isResource ? getLoadResourceButton() : null}
               {getDestroyButton()}
-            </div> : getUnlinkButton()) : null
+            </div> : getUnlinkButton()) : (
+              pathType == "Storage" && item.isResource ? getLoadResourceButton() : null
+            )
         }
       </div>
 
@@ -278,18 +280,18 @@ export default function ItemsView(props) {
         {getTypeView(item.type, 0)}
       </div>
 
-      { 
-        showResource ? 
-        (resource ?
-          <div className="mt-1 flex flex-col items-center">
-            <SyntaxHighlighter className="rounded-lg text-xs w-[1044px] overflow-auto max-h-[500px]" language="json" style={vs2015}>
-              {JSON.stringify(resource, null, 2)}
-            </SyntaxHighlighter>
-          </div> :
-          <div className="flex mt-1 h-[100px] justify-center">
-            <Spinner />
-          </div>)
-        : null
+      {
+        showResource ?
+          (resource ?
+            <div className="mt-1 flex flex-col items-center">
+              <SyntaxHighlighter className="rounded-lg text-xs w-[1044px] overflow-auto max-h-[500px]" language="json" style={vs2015}>
+                {JSON.stringify(resource, null, 2)}
+              </SyntaxHighlighter>
+            </div> :
+            <div className="flex mt-1 h-[100px] justify-center">
+              <Spinner />
+            </div>)
+          : null
       }
     </div>
   )
