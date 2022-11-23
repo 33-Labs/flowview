@@ -142,7 +142,7 @@ export const bulkGetNftDisplays = async (address, nft, limit, offset) => {
   const totalTokenIDs = nft.nftIDs
   const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
 
-  const groups = splitList(tokenIDs, 10) 
+  const groups = splitList(tokenIDs, 20) 
   const promises = groups.map((group) => {
     return getNftDisplays(address, nft.path.replace("/public/", ""), group)
   }) 

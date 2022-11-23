@@ -13,7 +13,7 @@ export default function NFTDisplayView(props) {
 
   const [displayData, setDisplayData] = useState(null)
   const [displays, setDisplays] = useState(null)
-  const limit = 10
+  const limit = 20
 
   const loadDisplays = () => {
     if (nft && account && isValidFlowAddress(account)) {
