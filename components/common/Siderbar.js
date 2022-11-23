@@ -61,7 +61,7 @@ export default function Sidebar(props) {
               {
                 menu.link ? (
                   <button className={classes} onClick={() => {
-                    router.push(menu.link, undefined, { shallow: true })
+                    router.push(menu.link, undefined, { shallow: true, scroll: false })
                   }}>
                     <label>{label}</label>
                   </button>
@@ -76,7 +76,7 @@ export default function Sidebar(props) {
                       return (
                         <div key={`${subLabel}_${index}`} className="w-full pl-1">
                           <button className={classes} onClick={() => {
-                           router.push(subMenu.link, undefined, { shallow: true }) 
+                            router.push(subMenu.link, undefined, { shallow: true, scroll: false })
                           }}>
                             <label className={`hidden sm:block`}>{subLabel}</label>
                             <label className={`block sm:hidden`}>{subMenu.smLabel}</label>
