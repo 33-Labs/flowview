@@ -13,6 +13,7 @@ module.exports = {
         'drizzle-ultralight': '#e9faf3', 
         'flow': '#00ee8a',
         'catalog': '#4F517D',
+        'catalog-dark': '#3C3F70',
         'increment': '#3F64AD'
       },
       light: {
