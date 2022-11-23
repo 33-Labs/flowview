@@ -141,6 +141,7 @@ export default function ItemsView(props) {
   const { item, account, user } = props
   const [showResource, setShowResource] = useState(false)
   const [resource, setResource] = useState(null)
+  const [resourceError, setResourceError] = useState(null)
 
   const { mutate } = useSWRConfig()
   const pathType = getPathType(item.path)
@@ -192,12 +193,16 @@ export default function ItemsView(props) {
           )
         }
         onClick={async () => {
-          if (!showResource) {
+          if (!showResource || resourceError) {
             setShowResource(true)
-            let resource = await getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
-            if (resource) {
-              setResource(resource)
-            }
+            setResourceError(null)
+            getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
+              .then((resource) => {
+                setResource(resource)
+              })
+              .catch((e) => {
+                setResourceError(e)
+              })
           }
         }}
       >
@@ -288,9 +293,14 @@ export default function ItemsView(props) {
                 {JSON.stringify(resource, null, 2)}
               </SyntaxHighlighter>
             </div> :
-            <div className="flex mt-1 h-[100px] justify-center">
-              <Spinner />
-            </div>)
+            (
+              resourceError ? <div className="flex mt-1 h-[100px] text-gray-400 text-base justify-center items-center">
+                Load resource failed
+              </div> :
+                <div className="flex mt-1 h-[100px] justify-center">
+                  <Spinner />
+                </div>)
+          )
           : null
       }
     </div>
