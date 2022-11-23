@@ -75,7 +75,7 @@ export default function NFTView(props) {
             >
               {`RELINK`}
             </a>
-            &nbsp;to see the metadata</label> : null
+            &nbsp;to show the metadata</label> : null
       }
       {
         showNFTs ?
