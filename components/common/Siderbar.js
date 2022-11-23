@@ -60,10 +60,10 @@ export default function Sidebar(props) {
             <div key={`${label}_${index}`} className="w-full">
               {
                 menu.link ? (
-                  <button onClick={() => {
-                    router.push(menu.link, null, { shallow: true })
+                  <button className={classes} onClick={() => {
+                    router.push(menu.link, undefined, { shallow: true })
                   }}>
-                    <label className={classes}>{label}</label>
+                    <label>{label}</label>
                   </button>
                 ) : <label className={classes}>{label}</label>
               }
@@ -75,11 +75,11 @@ export default function Sidebar(props) {
                       const classes = getNavItemClasses(subMenu)
                       return (
                         <div key={`${subLabel}_${index}`} className="w-full pl-1">
-                          <button onClick={() => {
-                           router.push(subMenu.link, null, { shallow: true }) 
+                          <button className={classes} onClick={() => {
+                           router.push(subMenu.link, undefined, { shallow: true }) 
                           }}>
-                            <label className={`${classes} hidden sm:block`}>{subLabel}</label>
-                            <label className={`${classes} block sm:hidden`}>{subMenu.smLabel}</label>
+                            <label className={`hidden sm:block`}>{subLabel}</label>
+                            <label className={`block sm:hidden`}>{subMenu.smLabel}</label>
                           </button>
                         </div>
                       )

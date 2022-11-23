@@ -72,22 +72,22 @@ export default function Layout({ children }) {
           </div>
         </div>
         {defaultDomains && defaultDomains.length > 0 ?
-         <div className="mt-4 px-5 flex flex-col gap-y-1">
-         <label className="text-base sm:text-lg text-gray-500">Default Domains</label>
-          <div className="mt-1 flex gap-x-2">{
-            defaultDomains.map((domain, index) => {
-              return (
-                <label key={`${domain.domain}_${index}`} className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
-                  <a href={domain.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {domain.domain}
-                  </a>
-                </label>
-              )
-            })}
-          </div>
+          <div className="mt-4 px-5 flex flex-col gap-y-1">
+            <label className="text-base sm:text-lg text-gray-500">Default Domains</label>
+            <div className="mt-1 flex gap-x-2">{
+              defaultDomains.map((domain, index) => {
+                return (
+                  <label key={`${domain.domain}_${index}`} className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
+                    <a href={domain.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {domain.domain}
+                    </a>
+                  </label>
+                )
+              })}
+            </div>
           </div>
           : null
         }

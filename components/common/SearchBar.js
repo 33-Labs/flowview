@@ -47,7 +47,7 @@ export default function SearchBar(props) {
                 const address = await getAddressOfDomain(event.target.value)
                 if (address) {
                   setIsValidInput(true)
-                  router.push(`/account/${address}`, null, { shallow: true })
+                  router.push(`/account/${address}`, undefined, { shallow: true })
                   return
                 }
               }
