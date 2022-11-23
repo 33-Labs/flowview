@@ -128,9 +128,11 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
   return displays  
 }
 
-export const bulkGetNftDisplays = async (address, nft) => {
-  const tokenIDs = nft.nftIDs
-  const groups = splitList(tokenIDs, 20) 
+export const bulkGetNftDisplays = async (address, nft, limit, offset) => {
+  const totalTokenIDs = nft.nftIDs
+  const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
+
+  const groups = splitList(tokenIDs, 200) 
   const promises = groups.map((group) => {
     return getNftDisplays(address, nft.path.replace("/public/", ""), group)
   }) 
@@ -163,7 +165,7 @@ export const getNftCatalog = async (nfts) => {
     return n.collectionIdentifier != null
   }).map((n) => n.collectionIdentifier)
 
-  const groups = splitList(collectionIDs, 20) 
+  const groups = splitList(collectionIDs, 30) 
   const promises = groups.map((group) => {
     return getCatalogOfCollections(group)
   }) 
@@ -177,7 +179,7 @@ export const getNftCatalog = async (nfts) => {
 
 export const getNftsWithIDs = async (address, nfts) => {
   const publicPaths = nfts.map((n) => n.path)
-  const groups = splitList(publicPaths, 20)
+  const groups = splitList(publicPaths, 30)
   const promises = groups.map(async (group) => {
     const nftIDs = await getNftIDs(address, group)
     const result = {}

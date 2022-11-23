@@ -7,7 +7,7 @@ export default function NFTDisplay(props) {
       <div className="w-full aspect-square bg-drizzle-ultralight relative">
         <Image className={"object-contain"} src={display.imageSrc || "/token_placeholder.png"} fill alt="" priority sizes="33vw" />
       </div>
-      <label className="px-3 max-h-12 break-all overflow-hidden text-ellipsis font-flow font-semibold text-xs text-black">
+      <label className="px-3 max-h-12 break-words overflow-hidden text-ellipsis font-flow font-semibold text-xs text-black">
         {`${display.name}`}
       </label>
       <label className="px-3 font-flow font-medium text-xs text-gray-400">

@@ -6,21 +6,28 @@ import { getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../lib/
 import NFTDisplay from "./NFTDisplay"
 import Spinner from "./Spinner"
 
-const displayFetcher = async (funcName, account, nft) => {
-  return await bulkGetNftDisplays(account, nft)
-}
-
 export default function NFTDisplayView(props) {
   const router = useRouter()
   const { account } = router.query
   const { nft } = props
 
+  const [displayData, setDisplayData] = useState(null)
   const [displays, setDisplays] = useState(null)
+  const limit = 200 
 
-  const { data: displayData, error: displayError } = useSWR(
-    account && isValidFlowAddress(account) && nft && nft.nftIDs && nft.nftIDs.length > 0 ?
-      ["displayFetcher", account, nft] : null, displayFetcher
-  )
+  const loadDisplays = () => {
+    bulkGetNftDisplays(account, nft, limit, (displays || []).length)
+    .then((data) => {
+      setDisplayData(data)
+    })
+    .catch((e) => {
+      console.error(e)
+    })
+  }
+
+  useEffect(() => {
+    loadDisplays()
+  }, [])
 
   useEffect(() => {
     if (displayData) {
@@ -40,7 +47,15 @@ export default function NFTDisplayView(props) {
         copyDisplay.tokenID = tokenID
         displayArray.push(copyDisplay)
       }
-      setDisplays(displayArray.sort((a, b) => a.tokenID - b.tokenID))
+
+      setDisplays((oldState) => {
+        const oldArray = oldState || []
+        const newArray = displayArray.sort((a, b) => a.tokenID - b.tokenID)
+        if (oldArray.length == 0 || (newArray.length > 0 && oldArray[0].tokenID != newArray[0].tokenID)) {
+          return oldArray.concat(newArray)
+        }
+        return oldArray
+      })
     }
   }, [displayData])
 
@@ -63,6 +78,18 @@ export default function NFTDisplayView(props) {
                   <NFTDisplay display={display} key={`${display.tokenID}_${index}`} />
                 )
               })
+            }
+            {
+              displays.length < nft.nftIDs.length ? 
+              <div className="w-32 rounded-2xl shadow-md bg-drizzle-light hover:bg-drizzle font-bold">
+                <button 
+                className="w-full h-full"
+                onClick={() => {
+                  loadDisplays()
+                }}>
+                  Load more
+                </button>
+              </div> : null
             }
           </div> : <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
             Nothing found
