@@ -626,8 +626,6 @@ export const getLinkedItems = async (path, address) => {
   }
   `
 
-  console.log(code)
-
   const items = await fcl.query({
     cadence: code,
     args: (arg, t) => [
