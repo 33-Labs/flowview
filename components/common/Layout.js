@@ -32,6 +32,10 @@ export default function Layout({ children }) {
   )
 
   useEffect(() => {
+    if (domainsError) {
+      setDefaultDomains([])
+      return
+    }
     if (domainsData) {
       const domains = []
       for (const [service, domain] of Object.entries(domainsData)) {
@@ -47,7 +51,7 @@ export default function Layout({ children }) {
       }
       setDefaultDomains(domains)
     }
-  }, [domainsData])
+  }, [domainsData, domainsError])
 
   return (
     <>
@@ -68,7 +72,9 @@ export default function Layout({ children }) {
           </div>
         </div>
         {defaultDomains && defaultDomains.length > 0 ?
-          <div className="mt-2 px-4 flex gap-x-2">{
+         <div className="mt-2 px-5 flex flex-col gap-y-1">
+         <label className="text-base sm:text-lg text-gray-500">Default Domains</label>
+          <div className="flex gap-x-2">{
             defaultDomains.map((domain, index) => {
               return (
                 <label key={`${domain.domain}_${index}`} className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
@@ -81,6 +87,7 @@ export default function Layout({ children }) {
                 </label>
               )
             })}
+          </div>
           </div>
           : null
         }

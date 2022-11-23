@@ -22,10 +22,15 @@ export default function Account(props) {
   )
 
   useEffect(() => {
+    if (infoError) {
+      setBasicInfo(null)
+      return
+    }
+
     if (infoData) {
       setBasicInfo(infoData)
     }
-  }, [infoData])
+  }, [infoData, infoError])
 
   if (!account) {
     return <></>
