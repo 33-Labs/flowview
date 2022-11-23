@@ -7,6 +7,54 @@ const FungibleTokenPath = "0xFungibleToken"
 const MetadataViewsPath = "0xMetadataViews"
 const FlowboxPath = "0xFlowbox"
 
+const outdatedPaths = (network) => {
+  if (network == "mainnet") {
+    return outdatedPathsMainnet
+  }
+  return outdatedPathsTestnet
+}
+
+const outdatedPathsMainnet = {
+  storage: `
+  let outdatedPaths: {StoragePath: Bool} = {
+    /storage/FantastecNFTCollection: true,
+    /storage/jambbLaunchCollectiblesCollection: true,
+    /storage/MusicBlockCollection: true
+  }
+  `,
+  public: `
+  let outdatedPaths: {PublicPath: Bool} = {
+    /public/FantastecNFTCollection: true,
+    /public/jambbLaunchCollectiblesCollection: true,
+    /public/MusicBlockCollection: true
+  }
+  `,
+  private: `
+  let outdatedPaths: {PrivatePath: Bool} = {
+    /private/FantastecNFTCollection: true,
+    /private/jambbLaunchCollectiblesCollection: true,
+    /private/MusicBlockCollection: true
+  }
+  `
+}
+
+const outdatedPathsTestnet = {
+  storage: `
+  let outdatedPaths: {StoragePath: Bool} = {
+    /storage/kittyItemsCollectionV10: true
+  }
+  `,
+  public: `
+  let outdatedPaths: {PublicPath: Bool} = {
+    /public/kittyItemsCollectionV10: true
+  }
+  `,
+  private: `
+  let outdatedPaths: {PrivatePath: Bool} = {
+    /private/kittyItemsCollectionProviderV10: true
+  }`
+}
+
 export const getKeys = async (address) => {
   const accountInfo = await fcl.send([ fcl.getAccount(fcl.sansPrefix(address)) ])
   return accountInfo.account.keys.sort((a, b) => a.keyIndex - b.keyIndex)
@@ -257,11 +305,12 @@ export const getNfts = async (address) => {
   }
 
   pub fun main(address: Address): [Item] {
+      ${outdatedPaths(publicConfig.chainEnv).public}
       let account = getAuthAccount(address)
       let items: [Item] = []
       let collectionType = Type<Capability<&AnyResource{NonFungibleToken.CollectionPublic}>>()
       account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
-          if (path == /public/kittyItemsCollectionV10) {
+          if (outdatedPaths.containsKey(path)) {
             return true
           }
 
@@ -308,11 +357,12 @@ export const getFTBalances = async (address) => {
   }
 
   pub fun main(address: Address): [Balance] {
+      ${outdatedPaths(publicConfig.chainEnv).public}
       let account = getAccount(address)
       let res: [Balance] = []
       let balanceCapType = Type<Capability<&AnyResource{FungibleToken.Balance}>>()
       account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
-          if (path == /public/kittyItemsCollectionV10) {
+          if (outdatedPaths.containsKey(path)) {
             return true
           }
 
@@ -481,13 +531,14 @@ export const getStoredItems = async (address) => {
   }
   
   pub fun main(address: Address): [Item] {
+      ${outdatedPaths(publicConfig.chainEnv).storage} 
       let account = getAuthAccount(address)
       let items: [Item] = []
       let resourceType = Type<@AnyResource>()
       let vaultType = Type<@FungibleToken.Vault>()
       let collectionType = Type<@NonFungibleToken.Collection>()
       account.forEachStored(fun (path: StoragePath, type: Type): Bool {
-          if (path == /storage/kittyItemsCollectionV10) {
+          if (outdatedPaths.containsKey(path)) {
             return true
           }
 
@@ -519,9 +570,11 @@ export const getLinkedItems = async (path, address) => {
 
   let func = "forEachPublic"
   let pathType = "PublicPath"
+  let outdated = outdatedPaths(publicConfig.chainEnv).public
   if (path == "private") {
     func = "forEachPrivate"
     pathType = "PrivatePath"
+    outdated = outdatedPaths(publicConfig.chainEnv).private
   }
 
   const code = `
@@ -540,11 +593,11 @@ export const getLinkedItems = async (path, address) => {
   }
 
   pub fun main(address: Address): [Item] {
+    ${outdated}
     let account = getAuthAccount(address)
     let items: [Item] = []
     account.${func}(fun (path: ${pathType}, type: Type): Bool {
-      let pathStr = path.toString()
-      if (pathStr == "/public/kittyItemsCollectionV10" || pathStr == "/private/kittyItemsCollectionProviderV10") {
+      if (outdatedPaths.containsKey(path)) {
         return true
       }
       

@@ -1,3 +1,4 @@
+import Decimal from "decimal.js";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
@@ -56,7 +57,7 @@ export default function Account(props) {
           {dataField("Balance", `${basicInfo.balance} FLOW`)}
           {dataField("Available Balance", `${basicInfo.availableBalance} FLOW`)}
           {dataField("Storage Used", `${basicInfo.storageUsed} Bytes / ${percentage(basicInfo.storageUsed, basicInfo.storageCapacity)}`)}
-          {dataField("Storage Capacity", `${basicInfo.storageCapacity} Bytes`)}
+          {dataField("Storage Capacity", `${basicInfo.storageCapacity} Bytes / ${new Decimal(basicInfo.storageCapacity).div(new Decimal("1024").mul(new Decimal("1024"))).toFixed(4)} MB`)}
         </div>
       )
     }

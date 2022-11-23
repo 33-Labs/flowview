@@ -19,7 +19,8 @@ export default function Sidebar(props) {
         { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_items", query: { account: account } } },
         { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_items", query: { account: account } } },
       ]
-    }
+    },
+    // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
   ]
   const activeMenu = useMemo(
     () => {
@@ -59,9 +60,11 @@ export default function Sidebar(props) {
             <div key={`${label}_${index}`} className="w-full">
               {
                 menu.link ? (
-                  <Link href={menu.link}>
+                  <button onClick={() => {
+                    router.push(menu.link, null, { shallow: true })
+                  }}>
                     <label className={classes}>{label}</label>
-                  </Link>
+                  </button>
                 ) : <label className={classes}>{label}</label>
               }
 
@@ -72,10 +75,12 @@ export default function Sidebar(props) {
                       const classes = getNavItemClasses(subMenu)
                       return (
                         <div key={`${subLabel}_${index}`} className="w-full pl-1">
-                          <Link href={subMenu.link}>
+                          <button onClick={() => {
+                           router.push(subMenu.link, null, { shallow: true }) 
+                          }}>
                             <label className={`${classes} hidden sm:block`}>{subLabel}</label>
                             <label className={`${classes} block sm:hidden`}>{subMenu.smLabel}</label>
-                          </Link>
+                          </button>
                         </div>
                       )
                     })}
