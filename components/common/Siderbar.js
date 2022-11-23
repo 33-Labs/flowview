@@ -19,8 +19,8 @@ export default function Sidebar(props) {
         { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_items", query: { account: account } } },
         { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_items", query: { account: account } } },
       ]
-    },
-    { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
+    }
+    // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
   ]
   const activeMenu = useMemo(
     () => {
