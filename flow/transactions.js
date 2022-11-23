@@ -205,31 +205,3 @@ export const txHandler = async (
     setTimeout(() => setTransactionInProgress(false), 3000)
   }
 }
-
-const parseCollectionData = (collectionData) => {
-  const storagePath = `/${collectionData.storagePath.domain}/${collectionData.storagePath.identifier}`
-  const publicPath = `/${collectionData.publicPath.domain}/${collectionData.publicPath.identifier}`
-
-  const contracts = {}
-
-  const typeID = collectionData.publicLinkedType.type.typeID
-  const [, address, name, interf] = typeID.split(".")
-  contracts[name] = address
-  const type = `${name}.${interf}`
-
-  const restrictions = collectionData.publicLinkedType.restrictions
-  const interfacesArr = []
-  for (let i = 0; i < restrictions.length; i++) {
-    const r = restrictions[i].typeID
-    const [, address, name, interf] = r.split(".")
-    contracts[name] = address
-    interfacesArr.push(`${name}.${interf}`)
-  }
-
-  let imports = ``
-  for (const [name, address] of Object.entries(contracts)) {
-    imports = imports.concat(`import ${name} from 0x${address}\n`)
-  }
-  const interfaces = interfacesArr.join(", ")
-  return { storagePath: storagePath, publicPath: publicPath, interfaces: interfaces, imports: imports, collectionType: type, contracts: contracts }
-}

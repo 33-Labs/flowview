@@ -13,37 +13,38 @@ export default function NFTDisplayView(props) {
 
   const [displayData, setDisplayData] = useState(null)
   const [displays, setDisplays] = useState(null)
-  const limit = 200 
+  const limit = 200
 
   const loadDisplays = () => {
-    bulkGetNftDisplays(account, nft, limit, (displays || []).length)
-    .then((data) => {
-      setDisplayData(data)
-    })
-    .catch((e) => {
-      console.error(e)
-    })
+    if (nft && account && isValidFlowAddress(account)) {
+      bulkGetNftDisplays(account, nft, limit, (displays || []).length)
+        .then((data) => {
+          setDisplayData(data)
+        })
+        .catch((e) => {
+          console.error(e)
+        })
+    }
   }
 
   useEffect(() => {
     loadDisplays()
   }, [])
 
+  const getImageSrc = (file) => {
+    const src = getImageSrcFromMetadataViewsFile(file)
+    if (src == "/token_placeholder.png") {
+      return nft.catalog ? getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file) : "/token_placeholder.png"
+    }
+    return src
+  }
+
   useEffect(() => {
     if (displayData) {
       const displayArray = []
       for (const [tokenID, display] of Object.entries(displayData)) {
-        if (!display) {
-          displayArray.push({
-            tokenID: tokenID,
-            imageSrc: null,
-            name: `${nft.contractName}`
-          })
-          continue
-        }
-
         const copyDisplay = Object.assign({}, display)
-        copyDisplay.imageSrc = getImageSrcFromMetadataViewsFile(display.thumbnail)
+        copyDisplay.imageSrc = getImageSrc(display.thumbnail)
         copyDisplay.tokenID = tokenID
         displayArray.push(copyDisplay)
       }
@@ -80,16 +81,16 @@ export default function NFTDisplayView(props) {
               })
             }
             {
-              displays.length < nft.nftIDs.length ? 
-              <div className="w-32 rounded-2xl shadow-md bg-drizzle-light hover:bg-drizzle font-bold">
-                <button 
-                className="w-full h-full"
-                onClick={() => {
-                  loadDisplays()
-                }}>
-                  Load more
-                </button>
-              </div> : null
+              displays.length < nft.nftIDs.length ?
+                <div className="w-32 rounded-2xl shadow-md bg-drizzle-light hover:bg-drizzle font-bold">
+                  <button
+                    className="w-full h-full"
+                    onClick={() => {
+                      loadDisplays()
+                    }}>
+                    Load more
+                  </button>
+                </div> : null
             }
           </div> : <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
             Nothing found
