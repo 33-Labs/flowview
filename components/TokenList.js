@@ -73,7 +73,7 @@ export default function TokenList(props) {
                         <td className="py-4 px-3 text-sm">
                           <div className="flex items-center">
                             <div className="h-6 w-6 flex-shrink-0 relative">
-                              <Image className="rounded-lg object-contain" src={token.logoURL || "/token_placeholder.png"} alt="" fill sizes="33vw" />
+                              <Image className="rounded-lg object-contain" src={token.logoURL || "/token_placeholder.png"} alt="" fill sizes="10vw" />
                             </div>
                             <div className="flex flex-col ml-2">
                               <label className="block font-bold text-base text-gray-900 break-words max-w-[300px] min-w-[60px]">{token.symbol || token.contractName}</label>

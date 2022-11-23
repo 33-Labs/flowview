@@ -56,7 +56,7 @@ const getTypeColor = (typeKind) => {
       text: "text-slate-800"
     }
   }
-  return colorMap[typeKind] || { bg: "bg-gray-100", text: "bg-gray-800" }
+  return colorMap[typeKind] || { bg: "bg-gray-100", text: "text-gray-800" }
 }
 
 const formatPath = (path, classes) => {

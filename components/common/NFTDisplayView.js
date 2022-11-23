@@ -52,7 +52,7 @@ export default function NFTDisplayView(props) {
       setDisplays((oldState) => {
         const oldArray = oldState || []
         const newArray = displayArray.sort((a, b) => a.tokenID - b.tokenID)
-        if (oldArray.length == 0 || (newArray.length > 0 && oldArray[0].tokenID != newArray[0].tokenID)) {
+        if (oldArray.length == 0 || (newArray.length > 0 && oldArray[oldArray.length - 1].tokenID != newArray[newArray.length - 1].tokenID)) {
           return oldArray.concat(newArray)
         }
         return oldArray

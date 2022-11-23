@@ -19,21 +19,30 @@ const outdatedPathsMainnet = {
   let outdatedPaths: {StoragePath: Bool} = {
     /storage/FantastecNFTCollection: true,
     /storage/jambbLaunchCollectiblesCollection: true,
-    /storage/MusicBlockCollection: true
+    /storage/RacingTimeCollection: true,
+    /storage/MusicBlockCollection: true,
+    /storage/SupportUkraineCollectionV10: true,
+    /storage/DropzTokenCollection: true
   }
   `,
   public: `
   let outdatedPaths: {PublicPath: Bool} = {
     /public/FantastecNFTCollection: true,
     /public/jambbLaunchCollectiblesCollection: true,
-    /public/MusicBlockCollection: true
+    /public/RacingTimeCollection: true,
+    /public/MusicBlockCollection: true,
+    /public/SupportUkraineCollectionV10: true,
+    /public/DropzTokenCollection: true
   }
   `,
   private: `
   let outdatedPaths: {PrivatePath: Bool} = {
     /private/FantastecNFTCollection: true,
     /private/jambbLaunchCollectiblesCollection: true,
-    /private/MusicBlockCollection: true
+    /private/RacingTimeCollection: true,
+    /private/MusicBlockCollection: true,
+    /private/SupportUkraineCollectionV10: true,
+    /private/DropzTokenCollection: true
   }
   `
 }

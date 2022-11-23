@@ -9,8 +9,8 @@ export default function NFTView(props) {
   return (
     <div className="flex flex-col max-w-[1076px] gap-y-3 p-4 shadow-md rounded-2xl bg-white">
       <div className="flex items-center gap-x-3">
-        <div className="w-11 aspect-square relative">
-          <Image src={nft.catalog ? getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file) : "/token_placeholder.png"} alt="" fill sizes="33vw" priority={true} />
+        <div className="w-11 rounded-full overflow-hidden aspect-square relative">
+          <Image src={nft.catalog ? getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file) : "/token_placeholder.png"} alt="" fill sizes="10vw" priority={true} />
         </div>
         <div className="flex flex-col w-full">
           {
