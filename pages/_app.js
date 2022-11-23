@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
         <RecoilRoot>
           <Head>
             <title>flowview | Flow Account Viewer</title>
-            <meta property="og:title" content="Link | NFT catalog link tool" key="title" />
+            <meta property="og:title" content="flowview | Flow Account Viewer" key="title" />
             <link rel="icon" href="/favicon.ico" />
           </Head>
           <NavigationBar />
