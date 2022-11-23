@@ -46,6 +46,9 @@ if (!drizzleURL) throw "Missing NEXT_PUBLIC_DRIZZLE_URL"
 const incrementURL = process.env.NEXT_PUBLIC_INCREMENT_URL
 if (!incrementURL) throw "Missing NEXT_PUBLIC_INCREMENT_URL"
 
+const linkURL = process.env.NEXT_PUBLIC_LINK_URL
+if (!linkURL) throw "Missing NEXT_PUBLIC_LINK_URL"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -61,7 +64,9 @@ const publicConfig = {
   flownsURL,
   findURL,
   bayouURL,
-  drizzleURL
+  drizzleURL,
+  incrementURL,
+  linkURL
 }
 
 export default publicConfig

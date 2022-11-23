@@ -8,9 +8,10 @@ export default function NFTView(props) {
   const { nft } = props
 
   const [showNFTs, setShowNFTs] = useState(false)
+  const [needRelink, setNeedRelink] = useState(false)
 
   return (
-    <div className="flex flex-col max-w-[1076px] gap-y-3 p-4 shadow-md rounded-2xl bg-white">
+    <div className="flex flex-col w-[1076px] gap-y-3 p-4 shadow-md rounded-2xl bg-white">
 
       <div className="flex gap-x-3 justify-between">
         <div className="flex items-center gap-x-3">
@@ -51,27 +52,34 @@ export default function NFTView(props) {
           >
             Show NFTs
           </button>
-          <label className={`cursor-pointer text-white bg-catalog hover:bg-catalog-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-            <a href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View on NFTCatalog
-            </a>
-          </label>
-          <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-            <a href={`${publicConfig.drizzleURL}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Create raffle
-            </a>
-          </label>
+          {
+            nft.collectionIdentifier ?
+              <label className={`cursor-pointer text-white bg-catalog hover:bg-catalog-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                <a href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  View on NFTCatalog
+                </a>
+              </label> : null
+          }
         </div>
       </div>
       {
+        nft.collectionIdentifier && needRelink ?
+          <label>This collection need to&nbsp;
+            <a href={`${publicConfig.linkURL}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline font-bold decoration-drizzle decoration-2"
+            >
+              {`RELINK`}
+            </a>
+            &nbsp;to see the metadata</label> : null
+      }
+      {
         showNFTs ?
-          <NFTDisplayView nft={nft} /> : null
+          <NFTDisplayView nft={nft} setNeedRelink={setNeedRelink} /> : null
       }
     </div>
   )

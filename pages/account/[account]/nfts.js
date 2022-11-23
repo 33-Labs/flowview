@@ -91,9 +91,19 @@ export default function NFTs(props) {
       return (
         <div className="flex flex-col gap-y-4">
           <div className="sm:flex-auto">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {`Collections (${nfts.length})`}
-            </h1>
+            <div className="flex gap-x-1 pr-8 justify-between">
+              <h1 className="text-2xl font-bold text-gray-900">
+                {`Collections (${nfts.length})`}
+              </h1>
+              <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                <a href={`${publicConfig.drizzleURL}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Create raffle
+                </a>
+              </label>
+            </div>
           </div>
           {
             nfts.length > 0 ?

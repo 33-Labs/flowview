@@ -9,7 +9,7 @@ import Spinner from "./Spinner"
 export default function NFTDisplayView(props) {
   const router = useRouter()
   const { account } = router.query
-  const { nft } = props
+  const { nft, setNeedRelink } = props
 
   const [displayData, setDisplayData] = useState(null)
   const [displays, setDisplays] = useState(null)
@@ -31,6 +31,14 @@ export default function NFTDisplayView(props) {
     loadDisplays()
   }, [])
 
+  const checkNeedRelink = (nft, display) => {
+    if (!nft.catalog) { return false }
+    if (!nft.collectionIdentifier) { return false }
+    const nftImageSrc = getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file)
+    const displayImage = display.imageSrc
+    return display.imageSrc == nftImageSrc
+  }
+
   const getImageSrc = (file) => {
     const src = getImageSrcFromMetadataViewsFile(file)
     if (src == "/token_placeholder.png") {
@@ -38,6 +46,13 @@ export default function NFTDisplayView(props) {
     }
     return src
   }
+
+  useEffect(() => {
+    if (displays && displays.length > 0) {
+
+      setNeedRelink(checkNeedRelink(nft, displays[0]))
+    }
+  }, [displays])
 
   useEffect(() => {
     if (displayData) {
@@ -63,7 +78,7 @@ export default function NFTDisplayView(props) {
   const showDisplays = () => {
     if (!displays) {
       return (
-        <div className="flex mt-10 h-[200px] justify-center">
+        <div className="flex mt-10 h-[168px] justify-center">
           <Spinner />
         </div>
       )

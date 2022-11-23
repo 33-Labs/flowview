@@ -18,7 +18,7 @@ export default function TokenList(props) {
               {`Tokens (${tokens.length})`}
             </h1>
             <div className="flex gap-x-1 items-center">
-              <label className={`text-center cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-flow text-black`}>
+              <label className={`cursor-pointer text-black bg-flow hover:bg-green-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
                 <a href={`${publicConfig.bayouURL}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -26,7 +26,7 @@ export default function TokenList(props) {
                   Bulk transfer
                 </a>
               </label>
-              <label className={`text-center cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-drizzle text-black`}>
+              <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
                 <a href={`${publicConfig.drizzleURL}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -34,8 +34,8 @@ export default function TokenList(props) {
                   Create airdrop
                 </a>
               </label>
-              <label className={`text-center cursor-pointer font-semibold text-xs px-2 py-1 leading-5 rounded-xl bg-increment text-white`}>
-                <a href={`${publicConfig.drizzleURL}`}
+              <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                <a href={`${publicConfig.incrementURL}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
