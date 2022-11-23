@@ -67,7 +67,7 @@ export default function NFTView(props) {
       </div>
       {
         nft.collectionIdentifier && needRelink ?
-          <label>This collection need to&nbsp;
+          <label className="text-rose-500">This collection need to&nbsp;
             <a href={`${publicConfig.linkURL}`}
               target="_blank"
               rel="noopener noreferrer"

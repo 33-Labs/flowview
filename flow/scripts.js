@@ -18,11 +18,17 @@ const outdatedPathsMainnet = {
   storage: `
   let outdatedPaths: {StoragePath: Bool} = {
     /storage/FantastecNFTCollection: true,
+    /storage/FantastecNFTMinter: true
     /storage/jambbLaunchCollectiblesCollection: true,
+    /storage/jambbLaunchCollectiblesMinter: true,
     /storage/RacingTimeCollection: true,
+    /storage/RacingTimeMinter: true,
     /storage/MusicBlockCollection: true,
+    /storage/MusicBlockMinter: true,
     /storage/SupportUkraineCollectionV10: true,
-    /storage/DropzTokenCollection: true
+    /storage/SupportUkraineMinterV10: true,
+    /storage/DropzTokenCollection: true,
+    /storage/DropzTokenAdmin: true
   }
   `,
   public: `
@@ -37,12 +43,7 @@ const outdatedPathsMainnet = {
   `,
   private: `
   let outdatedPaths: {PrivatePath: Bool} = {
-    /private/FantastecNFTCollection: true,
-    /private/jambbLaunchCollectiblesCollection: true,
-    /private/RacingTimeCollection: true,
-    /private/MusicBlockCollection: true,
-    /private/SupportUkraineCollectionV10: true,
-    /private/DropzTokenCollection: true
+    /private/MusicBlockCollectionProviderForNFTStorefront: true
   }
   `
 }
@@ -624,6 +625,8 @@ export const getLinkedItems = async (path, address) => {
     return items
   }
   `
+
+  console.log(code)
 
   const items = await fcl.query({
     cadence: code,
