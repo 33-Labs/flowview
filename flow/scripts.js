@@ -28,7 +28,11 @@ const outdatedPathsMainnet = {
     /storage/SupportUkraineCollectionV10: true,
     /storage/SupportUkraineMinterV10: true,
     /storage/DropzTokenCollection: true,
-    /storage/DropzTokenAdmin: true
+    /storage/DropzTokenAdmin: true,
+    /storage/TokenLendingUserCertificate001: true,
+    /storage/TokenLendingPlaceMinterProxy001: true,
+    /storage/TokenLendingPlaceAdmin: true,
+    /storage/TokenLendingPlace001: true
   }
   `,
   public: `
@@ -38,12 +42,15 @@ const outdatedPathsMainnet = {
     /public/RacingTimeCollection: true,
     /public/MusicBlockCollection: true,
     /public/SupportUkraineCollectionV10: true,
-    /public/DropzTokenCollection: true
+    /public/DropzTokenCollection: true,
+    /public/TokenLendingPlaceMinterProxy001: true,
+    /public/TokenLendingPlace001: true
   }
   `,
   private: `
   let outdatedPaths: {PrivatePath: Bool} = {
-    /private/MusicBlockCollectionProviderForNFTStorefront: true
+    /private/MusicBlockCollectionProviderForNFTStorefront: true,
+    /private/TokenLendingUserCertificate001: true
   }
   `
 }
