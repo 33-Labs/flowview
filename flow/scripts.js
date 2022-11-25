@@ -32,7 +32,11 @@ const outdatedPathsMainnet = {
     /storage/TokenLendingUserCertificate001: true,
     /storage/TokenLendingPlaceMinterProxy001: true,
     /storage/TokenLendingPlaceAdmin: true,
-    /storage/TokenLendingPlace001: true
+    /storage/TokenLendingPlace001: true,
+    /storage/BnGNFTCollection: true,
+    /storage/FuseCollectiveCollection: true,
+    /storage/NFTLXKickCollection: true,
+    /storage/NFTLXKickMinter: true
   }
   `,
   public: `
@@ -44,13 +48,18 @@ const outdatedPathsMainnet = {
     /public/SupportUkraineCollectionV10: true,
     /public/DropzTokenCollection: true,
     /public/TokenLendingPlaceMinterProxy001: true,
-    /public/TokenLendingPlace001: true
+    /public/TokenLendingPlace001: true,
+    /public/BnGNFTCollection: true,
+    /public/FuseCollectiveCollection: true,
+    /public/NFTLXKickCollection: true
   }
   `,
   private: `
   let outdatedPaths: {PrivatePath: Bool} = {
     /private/MusicBlockCollectionProviderForNFTStorefront: true,
-    /private/TokenLendingUserCertificate001: true
+    /private/TokenLendingUserCertificate001: true,
+    /private/BnGNFTMinter: true,
+    /private/NFTLXKicksSneakerSets: true
   }
   `
 }
