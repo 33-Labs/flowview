@@ -1,12 +1,25 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Image from 'next/image'
-import { getItemsInPage } from '../lib/utils'
+import { classNames, getItemsInPage } from '../lib/utils'
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid"
 import publicConfig from "../publicConfig"
+import Decimal from "decimal.js"
+import { Switch } from "@headlessui/react"
 
 export default function TokenList(props) {
   const { tokens } = props
   const [currentPage, setCurrentPage] = useState(1)
+  const [hideZeroBalance, setHideZeroBalance] = useState(false)
+  const [filteredTokens, setFilteredTokens] = useState([])
+
+  useEffect(() => {
+    if (hideZeroBalance) {
+      setFilteredTokens(tokens.filter((t) => !(new Decimal(t.balance).isZero())))
+    } else {
+      setFilteredTokens(tokens)
+    }
+  }, [tokens, hideZeroBalance])
+
   const pageSize = 10
 
   return (
@@ -14,8 +27,32 @@ export default function TokenList(props) {
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <div className="flex gap-x-1 justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {`Tokens (${tokens.length})`}
+            <h1 className="flex gap-x-2 text-2xl font-bold text-gray-900">
+              {`Tokens (${filteredTokens.length})`}
+              <div className="px-3 flex gap-x-2 items-center">
+                <label className="block text-gray-600 text-base font-normal font-flow">
+                  Hide 0 balance
+                </label>
+                <Switch
+                  // disabled={transactionInProgress}
+                  checked={hideZeroBalance}
+                  onChange={() => {
+                    setHideZeroBalance(!hideZeroBalance)
+                  }}
+                  className={classNames(
+                    hideZeroBalance ? 'bg-drizzle' : 'bg-gray-200',
+                    'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle'
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={classNames(
+                      hideZeroBalance ? 'translate-x-5' : 'translate-x-0',
+                      'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200'
+                    )}
+                  />
+                </Switch>
+              </div>
             </h1>
             <div className="flex gap-x-1 items-center">
               <label className={`cursor-pointer text-black bg-flow hover:bg-green-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
@@ -48,7 +85,7 @@ export default function TokenList(props) {
         </div>
       </div>
 
-      {tokens.length > 0 ?
+      {filteredTokens.length > 0 ?
         <div className="mt-3 flex flex-col w-full">
           <div className="px-1 overflow-x-auto">
             <div className="inline-block min-w-full py-2 align-middle">
@@ -68,7 +105,7 @@ export default function TokenList(props) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {getItemsInPage(tokens, currentPage, pageSize).map((token, index) => (
+                    {getItemsInPage(filteredTokens, currentPage, pageSize).map((token, index) => (
                       <tr key={`tokens-${index}`}>
                         <td className="py-4 px-3 text-sm">
                           <div className="flex items-center">
@@ -101,7 +138,7 @@ export default function TokenList(props) {
               </div>
             </div>
           </div>
-          {tokens.length > pageSize ?
+          {filteredTokens.length > pageSize ?
             <div className="mt-2 flex justify-between">
               <button
                 className="bg-gray-50 p-2 rounded-full overflow-hidden shadow ring-1 ring-black ring-opacity-5"
@@ -121,15 +158,15 @@ export default function TokenList(props) {
               >{currentPage}</button>
               <button
                 className="bg-gray-50 p-2 rounded-full overflow-hidden shadow ring-1 ring-black ring-opacity-5"
-                disabled={currentPage * pageSize >= tokens.length}
+                disabled={currentPage * pageSize >= filteredTokens.length}
                 onClick={() => {
-                  if (currentPage * pageSize >= tokens.length) {
+                  if (currentPage * pageSize >= filteredTokens.length) {
                     return
                   }
                   setCurrentPage(currentPage + 1)
                 }}
               >
-                <ArrowRightIcon className={`h-5 w-5 ${currentPage * pageSize >= tokens.length ? "text-gray-400" : "text-black"}`} />
+                <ArrowRightIcon className={`h-5 w-5 ${currentPage * pageSize >= filteredTokens.length ? "text-gray-400" : "text-black"}`} />
               </button>
             </div> : null
           }

@@ -50,16 +50,21 @@ export default function PublicItems(props) {
 
     return (
       <div className="flex flex-col gap-y-4">
-        {currentPublicItems.length > 0 ?
-          currentPublicItems.map((item, index) => {
-            return (
-              <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
-            )
-          }) :
-          <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
-            Nothing found
-          </div>
-        }
+        <h1 className="flex gap-x-2 text-2xl font-bold text-gray-900">
+          {`Public Paths (${currentPublicItems.length})`}
+        </h1>
+        <div className="flex flex-col gap-y-4">
+          {currentPublicItems.length > 0 ?
+            currentPublicItems.map((item, index) => {
+              return (
+                <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
+              )
+            }) :
+            <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+              Nothing found
+            </div>
+          }
+        </div>
       </div>
     )
   }
