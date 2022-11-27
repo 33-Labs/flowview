@@ -5,7 +5,7 @@ import useSWR from "swr"
 import ItemsView from "../../../components/common/ItemsView"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
-import { bulkGetPrivateItems, getLinkedItems, getPrivateItems } from "../../../flow/scripts"
+import { bulkGetPrivateItems } from "../../../flow/scripts"
 import { isValidFlowAddress } from "../../../lib/utils"
 import Custom404 from "./404"
 

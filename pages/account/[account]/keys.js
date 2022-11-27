@@ -6,7 +6,7 @@ import Key from "../../../components/common/Key"
 import KeyCreator from "../../../components/common/KeyCreator"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
-import { getKeys, getKeysWithSequenceNumber } from "../../../flow/scripts"
+import { getKeys } from "../../../flow/scripts"
 import { isValidFlowAddress } from "../../../lib/utils"
 
 const keysFetcher = async (funcName, address) => {

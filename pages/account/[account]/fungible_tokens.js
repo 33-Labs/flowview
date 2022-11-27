@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import TokenList from "../../../components/TokenList"
 import Layout from "../../../components/common/Layout"
-import { bulkGetNftCatalog, bulkGetPublicItems, getCatalogTypeData } from "../../../flow/scripts"
+import { bulkGetPublicItems } from "../../../flow/scripts"
 import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
 import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"

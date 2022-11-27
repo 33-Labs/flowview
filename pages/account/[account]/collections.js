@@ -87,7 +87,7 @@ export default function Collections(props) {
 
   useEffect(() => {
     if (collectionData && nftCatalog) {
-      const newCollection = 
+      const newCollection =
         collectionsWithExtraData(collectionsWithCatalogInfo(collectionData, nftCatalog))
       setCollections(newCollection)
     }
@@ -128,7 +128,7 @@ export default function Collections(props) {
           </div>
           {
             collections.length > 0 ?
-            collections.map((collection, index) => {
+              collections.map((collection, index) => {
                 return (
                   <CollectionView collection={collection} key={`${collection.path}_${index}`} />
                 )

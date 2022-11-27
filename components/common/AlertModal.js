@@ -37,7 +37,7 @@ export default function AlertModal() {
             >
               <Dialog.Panel className="relative bg-white rounded-2xl px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full sm:p-6">
                 <div>
-                <label className="block w-full h-[80px] text-center text-[60px]">❗️</label>
+                  <label className="block w-full h-[80px] text-center text-[60px]">❗️</label>
                   <div className="mt-3 text-center sm:mt-5">
                     <Dialog.Title as="h3" className="text-lg leading-6 font-medium text-gray-900">
                       {alertModalContent.title || "Attention Needed"}

@@ -28,14 +28,14 @@ export default function CollectionView(props) {
             }
             <label>
               {
-                collection.collectionIdentifier ? 
-                <a
-                href={`${publicConfig.flowscanURL}/contract/A.${collection.contractAddress}.${collection.contractName}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline font-sm font-bold decoration-drizzle decoration-2">
-                {`A.${collection.contractAddress}.${collection.contractName}`}
-              </a> : collection.path
+                collection.collectionIdentifier ?
+                  <a
+                    href={`${publicConfig.flowscanURL}/contract/A.${collection.contractAddress}.${collection.contractName}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-sm font-bold decoration-drizzle decoration-2">
+                    {`A.${collection.contractAddress}.${collection.contractName}`}
+                  </a> : collection.path
               }
 
             </label>
