@@ -36,8 +36,9 @@ export default function TokenList(props) {
                 <Switch
                   // disabled={transactionInProgress}
                   checked={hideZeroBalance}
-                  onChange={() => {
+                  onChange={async () => {
                     setHideZeroBalance(!hideZeroBalance)
+                    setCurrentPage(1)
                   }}
                   className={classNames(
                     hideZeroBalance ? 'bg-drizzle' : 'bg-gray-200',
