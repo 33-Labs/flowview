@@ -81,10 +81,7 @@ const outdatedPathsTestnet = {
   }`
 }
 
-export const getKeys = async (address) => {
-  const accountInfo = await fcl.send([ fcl.getAccount(fcl.sansPrefix(address)) ])
-  return accountInfo.account.keys.sort((a, b) => a.keyIndex - b.keyIndex)
-}
+// --- Utils ---
 
 const splitList = (list, chunkSize) => {
   const groups = []
@@ -100,6 +97,110 @@ const splitList = (list, chunkSize) => {
   groups.push([...currentGroup])
   return groups
 }
+
+// --- Basic Info ---
+
+export const getAccountInfo = async (address) => {
+  const code = `
+  pub struct Result {
+    pub let address: Address
+    pub let balance: UFix64
+    pub let availableBalance: UFix64
+    pub let storageUsed: UInt64
+    pub let storageCapacity: UInt64
+
+    init(
+      address: Address,
+      balance: UFix64,
+      availableBalance: UFix64,
+      storageUsed: UInt64,
+      storageCapacity: UInt64
+    ) {
+      self.address = address
+      self.balance = balance
+      self.availableBalance = availableBalance
+      self.storageUsed = storageUsed
+      self.storageCapacity = storageCapacity
+    }
+  }
+
+  pub fun main(address: Address): Result {
+    let account = getAuthAccount(address)
+    return Result(
+      address: account.address,
+      balance: account.balance,
+      availableBalance: account.availableBalance,
+      storageUsed: account.storageUsed,
+      storageCapacity: account.storageCapacity
+    )
+  }
+  `
+
+  const result = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return result
+}
+
+// --- Keys ---
+
+export const getKeys = async (address) => {
+  const accountInfo = await fcl.send([ fcl.getAccount(fcl.sansPrefix(address)) ])
+  return accountInfo.account.keys.sort((a, b) => a.keyIndex - b.keyIndex)
+}
+
+// --- Domains ---
+
+export const getDefaultDomainsOfAddress = async (address) => {
+  const code = `
+  import DomainUtils from 0xFlowbox
+
+  pub fun main(address: Address): {String: String} {
+    return DomainUtils.getDefaultDomainsOfAddress(address)
+  }
+  `
+  .replace(FlowboxPath, publicConfig.flowboxAddress)
+
+  const domains = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return domains
+}
+
+export const getAddressOfDomain = async (domain) => {
+  const comps = domain.split(".")
+  const name = comps[0]
+  const root = comps[1]
+
+  const code = `
+  import DomainUtils from 0xFlowbox
+
+  pub fun main(name: String, root: String): Address? {
+    return DomainUtils.getAddressOfDomain(name: name, root: root)
+  }
+  `
+  .replace(FlowboxPath, publicConfig.flowboxAddress)
+
+  const address = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(name, t.String),
+      arg(root, t.String),
+    ]
+  }) 
+
+  return address
+}
+
+// --- Collections ---
 
 export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
@@ -154,13 +255,13 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
   return displays  
 }
 
-export const bulkGetNftDisplays = async (address, nft, limit, offset) => {
-  const totalTokenIDs = nft.nftIDs
+export const bulkGetNftDisplays = async (address, collection, limit, offset) => {
+  const totalTokenIDs = collection.tokenIDs
   const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
 
   const groups = splitList(tokenIDs, 20) 
   const promises = groups.map((group) => {
-    return getNftDisplays(address, nft.path.replace("/public/", ""), group)
+    return getNftDisplays(address, collection.path.replace("/public/", ""), group)
   }) 
   const displayGroups = await Promise.all(promises)
   const displays = displayGroups.reduce((acc, current) => {
@@ -168,318 +269,6 @@ export const bulkGetNftDisplays = async (address, nft, limit, offset) => {
   }, {}) 
 
   return displays
-}
-
-export const getNFTsWithCollectionID = (nfts, catalogTypeData) => {
-  return nfts.map((nft) => {
-    let typeInfo = catalogTypeData[nft.nftType]
-    let collectionIdentifier = null
-    if (typeInfo) {
-      for (const [collectionID, exist] of Object.entries(typeInfo)) {
-        if (exist) {
-          collectionIdentifier = collectionID
-          break
-        }
-      }
-    }
-    return {...nft, collectionIdentifier: collectionIdentifier}
-  })
-}
-
-export const getNftCatalog = async (nfts) => {
-  const collectionIDs = nfts.filter((n) => {
-    return n.collectionIdentifier != null
-  }).map((n) => n.collectionIdentifier)
-
-  const groups = splitList(collectionIDs, 30) 
-  const promises = groups.map((group) => {
-    return getCatalogOfCollections(group)
-  }) 
-  const catalogs = await Promise.all(promises)
-  const catalog = catalogs.reduce((acc, current) => {
-    return Object.assign(acc, current)
-  }, {}) 
-
-  return catalog
-}
-
-export const getNftsWithIDs = async (address, nfts) => {
-  const publicPaths = nfts.map((n) => n.path)
-  const groups = splitList(publicPaths, 30)
-  const promises = groups.map(async (group) => {
-    const nftIDs = await getNftIDs(address, group)
-    const result = {}
-    for (const [path, ids] of Object.entries(nftIDs)) {
-      const sortedIDs = ids.map((id) => parseInt(id)).sort((a, b) => a - b)
-      result[path] = sortedIDs
-    }
-    return result
-  })
-
-  const ids = await Promise.all(promises)
-  const idsMap = ids.reduce((acc, current) => {
-    return Object.assign(acc, current)
-  }, {})
-
-  return nfts.map((n) => {
-    return {...n, nftIDs: idsMap[n.path]}
-  })
-}
-
-export const getCatalogOfCollections = async (collectionIDs) => {
-  const code = `
-  import NFTCatalog from 0xNFTCatalog
-  import MetadataViews from 0xMetadataViews
-
-  pub struct Metadata {
-    pub let squareImage: MetadataViews.Media
-
-    init(squareImage: MetadataViews.Media) {
-        self.squareImage = squareImage
-    }
-  }
-
-  pub fun main(collectionIdentifiers: [String]): {String: Metadata} {
-    let res: {String: Metadata} = {}
-    for collectionID in collectionIdentifiers {
-        if let catalog = NFTCatalog.getCatalogEntry(collectionIdentifier: collectionID) {
-            res[collectionID] = Metadata(squareImage: catalog.collectionDisplay.squareImage)
-        }
-    }
-    return res
-  }
-  `
-  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
-  .replace(MetadataViewsPath, publicConfig.metadataViewsAddress)
-
-  const typeData = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(collectionIDs, t.Array(t.String))
-    ]
-  }) 
-
-  return typeData  
-}
-
-export const getNftIDs = async (address, publicPaths) => {
-  // NOTE: publicPathIDs without domain "/public/"
-  const publicPathIDs = publicPaths.map((p) => p.replace("/public/", ""))
-
-  const code = `
-  import NonFungibleToken from 0xNonFungibleToken
-
-  pub fun main(address: Address, publicPathIDs: [String]): {String: [UInt64]} {
-    let account = getAuthAccount(address)
-    let res: {String: [UInt64]} = {}
-    for identifier in publicPathIDs {
-        let path = PublicPath(identifier: identifier)!
-        let collectionRef = account.getCapability<&{NonFungibleToken.CollectionPublic}>(path).borrow()!
-        let ids = collectionRef.getIDs()
-        res[path.toString()] = ids    
-    }
-    return res
-  }
-  `
-  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
-
-  const amounts = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-      arg(publicPathIDs, t.Array(t.String))
-    ]
-  }) 
-
-  return amounts
-}
-
-export const getCatalogTypeData = async () => {
-  const code = `
-  import NFTCatalog from 0xNFTCatalog
-
-  pub fun main(): {String : {String : Bool}} {
-    let catalog = NFTCatalog.getCatalogTypeData()
-    return catalog
-  }
-  `
-  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
-
-  const typeData = await fcl.query({
-    cadence: code
-  }) 
-
-  return typeData 
-}
-
-export const getNfts = async (address) => {
-  const code = `
-  import NonFungibleToken from 0xNonFungibleToken
-
-  pub struct Item {
-      pub let address: Address
-      pub let path: String
-      pub let type: Type
-
-      init(
-          address: Address, 
-          path: String,
-          type: Type
-      ) {
-          self.address = address
-          self.path = path
-          self.type = type
-      }
-  }
-
-  pub fun main(address: Address): [Item] {
-      ${outdatedPaths(publicConfig.chainEnv).public}
-      let account = getAuthAccount(address)
-      let items: [Item] = []
-      let collectionType = Type<Capability<&AnyResource{NonFungibleToken.CollectionPublic}>>()
-      account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
-          if (outdatedPaths.containsKey(path)) {
-            return true
-          }
-
-          let isNFTCollection = type.isSubtype(of: collectionType)
-          if (isNFTCollection) {
-              let item = Item(
-                  address: address, 
-                  path: path.toString(),
-                  type: type
-              )
-              items.append(item)
-          }
-
-          return true
-      })
-      return items
-  }`
-  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
-
-  const result = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address)
-    ]
-  }) 
-
-  return result 
-}
-
-export const getAccountInfo = async (address) => {
-  const code = `
-  pub struct Result {
-    pub let address: Address
-    pub let balance: UFix64
-    pub let availableBalance: UFix64
-    pub let storageUsed: UInt64
-    pub let storageCapacity: UInt64
-
-    init(
-      address: Address,
-      balance: UFix64,
-      availableBalance: UFix64,
-      storageUsed: UInt64,
-      storageCapacity: UInt64
-    ) {
-      self.address = address
-      self.balance = balance
-      self.availableBalance = availableBalance
-      self.storageUsed = storageUsed
-      self.storageCapacity = storageCapacity
-    }
-  }
-
-  pub fun main(address: Address): Result {
-    let account = getAuthAccount(address)
-    return Result(
-      address: account.address,
-      balance: account.balance,
-      availableBalance: account.availableBalance,
-      storageUsed: account.storageUsed,
-      storageCapacity: account.storageCapacity
-    )
-  }
-  `
-
-  const result = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address)
-    ]
-  }) 
-
-  return result
-}
-
-export const getDefaultDomainsOfAddress = async (address) => {
-  const code = `
-  import DomainUtils from 0xFlowbox
-
-  pub fun main(address: Address): {String: String} {
-    return DomainUtils.getDefaultDomainsOfAddress(address)
-  }
-  `
-  .replace(FlowboxPath, publicConfig.flowboxAddress)
-
-  const domains = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address)
-    ]
-  }) 
-
-  return domains
-}
-
-export const getAddressOfDomain = async (domain) => {
-  const comps = domain.split(".")
-  const name = comps[0]
-  const root = comps[1]
-
-  const code = `
-  import DomainUtils from 0xFlowbox
-
-  pub fun main(name: String, root: String): Address? {
-    return DomainUtils.getAddressOfDomain(name: name, root: root)
-  }
-  `
-  .replace(FlowboxPath, publicConfig.flowboxAddress)
-
-  const address = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(name, t.String),
-      arg(root, t.String),
-    ]
-  }) 
-
-  return address
-}
-
-// called by onClick, no need to optimize
-export const getStoredResource = async (address, path) => {
-  const pathIdentifier = path.replace("/storage/", "")
-
-  const code = `
-  pub fun main(address: Address, pathStr: String): &AnyResource? {
-    let account = getAuthAccount(address)
-    let path = StoragePath(identifier: pathStr)!
-    return account.borrow<&AnyResource>(from: path)
-  }
-  `
-
-  const resource = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-      arg(pathIdentifier, t.String),
-    ]
-  }) 
-
-  return resource
 }
 
 export const getLinkedItems = async (path, address) => {
@@ -541,6 +330,81 @@ export const getLinkedItems = async (path, address) => {
   return items
 }
 
+// --- NFT Catalog ---
+
+export const bulkGetNftCatalog = async () => {
+  const collectionIdentifiers = await getCollectionIdentifiers()
+  const groups = splitList(collectionIdentifiers, 50)
+  const promises = groups.map((group) => {
+    return getNftCatalogByCollectionIDs(group)
+  })
+
+  const itemGroups = await Promise.all(promises)
+  const items = itemGroups.reduce((acc, current) => {
+    return Object.assign(acc, current)
+  }, {}) 
+  return items 
+}
+
+export const getNftCatalogByCollectionIDs = async (collectionIDs) => {
+  const code = `
+  import NFTCatalog from 0xNFTCatalog
+
+  pub fun main(collectionIdentifiers: [String]): {String: NFTCatalog.NFTCatalogMetadata} {
+    let res: {String: NFTCatalog.NFTCatalogMetadata} = {}
+    for collectionID in collectionIdentifiers {
+        if let catalog = NFTCatalog.getCatalogEntry(collectionIdentifier: collectionID) {
+          res[collectionID] = catalog
+        }
+    }
+    return res
+  }
+  `
+  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
+
+  const catalogs = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(collectionIDs, t.Array(t.String))
+    ]
+  }) 
+
+  return catalogs  
+}
+
+const getCollectionIdentifiers = async () => {
+  const typeData = await getCatalogTypeData()
+
+  const collectionData = Object.values(typeData)
+  const collectionIdentifiers = []
+  for (let i = 0; i < collectionData.length; i++) {
+    const data = collectionData[i]
+    let collectionIDs = Object.keys(Object.assign({}, data))
+    if (collectionIDs.length > 0) {
+      collectionIdentifiers.push(collectionIDs[0])
+    }
+  }
+  return collectionIdentifiers
+}
+
+const getCatalogTypeData = async () => {
+  const code = `
+  import NFTCatalog from 0xNFTCatalog
+
+  pub fun main(): {String : {String : Bool}} {
+    let catalog = NFTCatalog.getCatalogTypeData()
+    return catalog
+  }
+  `
+  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
+
+  const typeData = await fcl.query({
+    cadence: code
+  }) 
+
+  return typeData 
+}
+
 
 
 // --- Storage Items ---
@@ -548,13 +412,11 @@ export const getLinkedItems = async (path, address) => {
 export const bulkGetStoredItems = async (address) => {
   const paths = await getStoragePaths(address)
   const groups = splitList(paths.map((p) => p.identifier), 100)
-  console.log("bulkGetStoredItems:groups:", groups)
   const promises = groups.map((group) => {
     return getStoredItems(address, group)
   })
 
   const itemGroups = await Promise.all(promises)
-  console.log("itemGroups", itemGroups)
   const items = itemGroups.reduce((acc, curr) => {
     return acc.concat(curr)
   }, [])
@@ -654,6 +516,28 @@ const getStoragePaths = async (address) => {
   }) 
 
   return paths
+}
+
+export const getStoredResource = async (address, path) => {
+  const pathIdentifier = path.replace("/storage/", "")
+
+  const code = `
+  pub fun main(address: Address, pathStr: String): &AnyResource? {
+    let account = getAuthAccount(address)
+    let path = StoragePath(identifier: pathStr)!
+    return account.borrow<&AnyResource>(from: path)
+  }
+  `
+
+  const resource = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(pathIdentifier, t.String),
+    ]
+  }) 
+
+  return resource
 }
 
 
@@ -789,8 +673,6 @@ export const getPublicItems = async (address, paths) => {
       ]
   }) 
 
-  console.log("items", items)
-
   return items
 }
 
@@ -820,75 +702,3 @@ export const getPublicPaths = async (address) => {
 
   return paths
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// Deprecated
-
-// export const getStoredItems = async (address) => {
-//   const code = `
-//   import FungibleToken from 0xFungibleToken
-//   import NonFungibleToken from 0xNonFungibleToken
-   
-//   pub struct Item {
-//       pub let address: Address
-//       pub let path: String
-//       pub let type: Type
-//       pub let isResource: Bool
-//       pub let isNFTCollection: Bool
-//       pub let isVault: Bool
-  
-//       init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, isVault: Bool) {
-//           self.address = address
-//           self.path = path
-//           self.type = type
-//           self.isResource = isResource
-//           self.isNFTCollection = isNFTCollection
-//           self.isVault = isVault
-//       }
-//   }
-  
-//   pub fun main(address: Address): [Item] {
-//       ${outdatedPaths(publicConfig.chainEnv).storage} 
-//       let account = getAuthAccount(address)
-//       let items: [Item] = []
-//       let resourceType = Type<@AnyResource>()
-//       let vaultType = Type<@FungibleToken.Vault>()
-//       let collectionType = Type<@NonFungibleToken.Collection>()
-//       account.forEachStored(fun (path: StoragePath, type: Type): Bool {
-//           if (outdatedPaths.containsKey(path)) {
-//             return true
-//           }
-
-//           let isResource = type.isSubtype(of: resourceType)
-//           let isNFTCollection = type.isSubtype(of: collectionType)
-//           let isVault = type.isSubtype(of: vaultType) 
-//           let item = Item(address: address, path: path.toString(), type: type, isResource: isResource, isNFTCollection: isNFTCollection, isVault: isVault)
-//           items.append(item)
-//           return true
-//       })
-//       return items
-//   }
-//   `
-//   .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
-//   .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
-
-//   const items = await fcl.query({
-//     cadence: code,
-//     args: (arg, t) => [
-//       arg(address, t.Address)
-//     ]
-//   }) 
-
-//   return items
-// }
-

@@ -1,23 +1,22 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import useSWR from "swr"
 import { bulkGetNftDisplays } from "../../flow/scripts"
 import { getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../lib/utils"
 import NFTDisplay from "./NFTDisplay"
 import Spinner from "./Spinner"
 
-export default function NFTDisplayView(props) {
+export default function CollectionDisplayView(props) {
   const router = useRouter()
   const { account } = router.query
-  const { nft, setNeedRelink } = props
+  const { collection, setNeedRelink } = props
 
   const [displayData, setDisplayData] = useState(null)
   const [displays, setDisplays] = useState(null)
   const limit = 20
 
   const loadDisplays = () => {
-    if (nft && account && isValidFlowAddress(account)) {
-      bulkGetNftDisplays(account, nft, limit, (displays || []).length)
+    if (collection && account && isValidFlowAddress(account)) {
+      bulkGetNftDisplays(account, collection, limit, (displays || []).length)
         .then((data) => {
           setDisplayData(data)
         })
@@ -31,26 +30,24 @@ export default function NFTDisplayView(props) {
     loadDisplays()
   }, [])
 
-  const checkNeedRelink = (nft, display) => {
-    if (!nft.catalog) { return false }
-    if (!nft.collectionIdentifier) { return false }
-    const nftImageSrc = getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file)
-    const displayImage = display.imageSrc
+  const checkNeedRelink = (collection, display) => {
+    if (!collection.squareImage) { return false }
+    if (!collection.collectionIdentifier) { return false }
+    const nftImageSrc = getImageSrcFromMetadataViewsFile(collection.squareImage.file)
     return display.imageSrc == nftImageSrc
   }
 
   const getImageSrc = (file) => {
     const src = getImageSrcFromMetadataViewsFile(file)
     if (src == "/token_placeholder.png") {
-      return nft.catalog ? getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file) : "/token_placeholder.png"
+      return collection.squareImage ? getImageSrcFromMetadataViewsFile(collection.squareImage.file) : "/token_placeholder.png"
     }
     return src
   }
 
   useEffect(() => {
     if (displays && displays.length > 0) {
-
-      setNeedRelink(checkNeedRelink(nft, displays[0]))
+      setNeedRelink(checkNeedRelink(collection, displays[0]))
     }
   }, [displays])
 
@@ -96,7 +93,7 @@ export default function NFTDisplayView(props) {
               })
             }
             {
-              displays.length < nft.nftIDs.length ?
+              displays.length < collection.tokenIDs.length ?
                 <div className="w-32 rounded-2xl shadow-md bg-drizzle-light hover:bg-drizzle font-bold">
                   <button
                     className="w-full h-full"

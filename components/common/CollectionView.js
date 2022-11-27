@@ -1,11 +1,11 @@
 import Image from "next/image"
-import NFTDisplayView from "./NFTDisplayView"
+import CollectionDisplayView from "./CollectionDisplayView"
 import publicConfig from "../../publicConfig"
 import { getImageSrcFromMetadataViewsFile } from "../../lib/utils"
 import { useState } from "react"
 
-export default function NFTView(props) {
-  const { nft } = props
+export default function CollectionView(props) {
+  const { collection } = props
 
   const [showNFTs, setShowNFTs] = useState(false)
   const [needRelink, setNeedRelink] = useState(false)
@@ -16,27 +16,26 @@ export default function NFTView(props) {
       <div className="flex gap-x-3 justify-between">
         <div className="flex items-center gap-x-3">
           <div className="w-11 rounded-full overflow-hidden aspect-square relative">
-            <Image src={nft.catalog ? getImageSrcFromMetadataViewsFile(nft.catalog.squareImage.file) : "/token_placeholder.png"} alt="" fill sizes="10vw" priority={true} />
+            <Image src={collection.squareImage ? getImageSrcFromMetadataViewsFile(collection.squareImage.file) : "/token_placeholder.png"} alt="" fill sizes="10vw" priority={true} />
           </div>
           <div className="flex flex-col w-full">
             {
-              nft.collectionIdentifier ?
+              collection.collectionIdentifier ?
                 <label className="text-lg font-bold">
-                  {`${nft.collectionIdentifier} (${nft.nftIDs.length})`}
+                  {`${collection.collectionIdentifier} (${collection.tokenIDs.length})`}
                 </label>
-                : <label className="font-bold text-lg">{`${nft.contractName} (${nft.nftIDs.length})`}</label>
+                : <label className="font-bold text-lg">{`${collection.contractName} (${collection.tokenIDs.length})`}</label>
             }
             <label>
               {
-                nft.contract.startsWith("A.") ?
-                  <a
-                    href={`${publicConfig.flowscanURL}/contract/${nft.contract}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline font-sm font-bold decoration-drizzle decoration-2">
-                    {nft.contract}
-                  </a> :
-                  <span>{nft.contract}</span>
+                collection.collectionIdentifier ? 
+                <a
+                href={`${publicConfig.flowscanURL}/contract/A.${collection.contractAddress}.${collection.contractName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline font-sm font-bold decoration-drizzle decoration-2">
+                {`A.${collection.contractAddress}.${collection.contractName}`}
+              </a> : collection.path
               }
 
             </label>
@@ -53,9 +52,9 @@ export default function NFTView(props) {
             Show NFTs
           </button>
           {
-            nft.collectionIdentifier ?
+            collection.collectionIdentifier ?
               <label className={`cursor-pointer text-white bg-catalog hover:bg-catalog-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-                <a href={`${publicConfig.nftCatalogURL}/${nft.collectionIdentifier}`}
+                <a href={`${publicConfig.nftCatalogURL}/${collection.collectionIdentifier}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -66,7 +65,7 @@ export default function NFTView(props) {
         </div>
       </div>
       {
-        nft.collectionIdentifier && needRelink ?
+        collection.collectionIdentifier && needRelink ?
           <label className="text-rose-500">This collection need&nbsp;
             <a href={`${publicConfig.linkURL}`}
               target="_blank"
@@ -79,7 +78,7 @@ export default function NFTView(props) {
       }
       {
         showNFTs ?
-          <NFTDisplayView nft={nft} setNeedRelink={setNeedRelink} /> : null
+          <CollectionDisplayView collection={collection} setNeedRelink={setNeedRelink} /> : null
       }
     </div>
   )

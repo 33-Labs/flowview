@@ -3,7 +3,6 @@ import { useRouter } from "next/router"
 import { useMemo } from "react"
 import { classNames } from "../../lib/utils"
 
-
 export default function Sidebar(props) {
   const router = useRouter()
   const { account } = router.query
@@ -11,8 +10,8 @@ export default function Sidebar(props) {
   const menuItems = [
     { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },
     { id: "1", label: `Key`, link: { pathname: "/account/[account]/keys", query: { account: account } } },
-    { id: "2", label: `FT`, link: { pathname: "/account/[account]/fungible_tokens", query: { account: account } } },
-    { id: "3", label: `NFT`, link: { pathname: "/account/[account]/nfts", query: { account: account } } },
+    { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_tokens", query: { account: account } } },
+    { id: "3", label: `Collection`, link: { pathname: "/account/[account]/collections", query: { account: account } } },
     {
       id: "4", label: "Storage", subItems: [
         { id: "4-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_items", query: { account: account } } },
