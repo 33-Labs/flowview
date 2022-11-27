@@ -46,7 +46,7 @@ export default function Layout({ children }) {
             address: account,
             domains: domains
           })
-        })
+        }).catch((e) => console.error(e))
       }
     }
   }, [currentDefaultDomains, account])
@@ -87,27 +87,7 @@ export default function Layout({ children }) {
               })}
             </div>
           </div>
-          : <div className="mt-4 px-5 flex flex-col gap-y-1">
-            <label className="text-base sm:text-lg text-gray-500">Default Domains</label>
-            <div className="mt-1 flex gap-x-2">
-              <label className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
-                <a href={publicConfig.findURL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {`Get domain at .find`}
-                </a>
-              </label>
-              <label className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
-                <a href={publicConfig.flownsURL.replace("/domain", "")}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {`Get domain at Flowns`}
-                </a>
-              </label>
-            </div>
-          </div>
+          : null
         }
         <div className="mt-10 flex flex-row gap-x-2 sm:gap-x-4 justify-start">
           <Sidebar />
