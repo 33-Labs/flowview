@@ -5,12 +5,13 @@ import useSWR from "swr"
 import ItemsView from "../../../components/common/ItemsView"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
-import { getStoredItems } from "../../../flow/scripts"
+import { bulkGetStoredItems, getStoredItems } from "../../../flow/scripts"
 import { isValidFlowAddress } from "../../../lib/utils"
 import Custom404 from "./404"
 
 const storedItemsFetcher = async (funcName, address) => {
-  return await getStoredItems(address)
+  const items = await bulkGetStoredItems(address)
+  return items.sort((a, b) => a.path.localeCompare(b.path))
 }
 
 export default function StoredItems(props) {

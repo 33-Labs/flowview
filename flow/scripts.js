@@ -513,6 +513,7 @@ export const getAddressOfDomain = async (domain) => {
   return address
 }
 
+// called by onClick, no need to optimize
 export const getStoredResource = async (address, path) => {
   const pathIdentifier = path.replace("/storage/", "")
 
@@ -533,64 +534,6 @@ export const getStoredResource = async (address, path) => {
   }) 
 
   return resource
-}
-
-export const getStoredItems = async (address) => {
-  const code = `
-  import FungibleToken from 0xFungibleToken
-  import NonFungibleToken from 0xNonFungibleToken
-   
-  pub struct Item {
-      pub let address: Address
-      pub let path: String
-      pub let type: Type
-      pub let isResource: Bool
-      pub let isNFTCollection: Bool
-      pub let isVault: Bool
-  
-      init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, isVault: Bool) {
-          self.address = address
-          self.path = path
-          self.type = type
-          self.isResource = isResource
-          self.isNFTCollection = isNFTCollection
-          self.isVault = isVault
-      }
-  }
-  
-  pub fun main(address: Address): [Item] {
-      ${outdatedPaths(publicConfig.chainEnv).storage} 
-      let account = getAuthAccount(address)
-      let items: [Item] = []
-      let resourceType = Type<@AnyResource>()
-      let vaultType = Type<@FungibleToken.Vault>()
-      let collectionType = Type<@NonFungibleToken.Collection>()
-      account.forEachStored(fun (path: StoragePath, type: Type): Bool {
-          if (outdatedPaths.containsKey(path)) {
-            return true
-          }
-
-          let isResource = type.isSubtype(of: resourceType)
-          let isNFTCollection = type.isSubtype(of: collectionType)
-          let isVault = type.isSubtype(of: vaultType) 
-          let item = Item(address: address, path: path.toString(), type: type, isResource: isResource, isNFTCollection: isNFTCollection, isVault: isVault)
-          items.append(item)
-          return true
-      })
-      return items
-  }
-  `
-  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
-  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
-
-  const items = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address)
-    ]
-  }) 
-
-  return items
 }
 
 export const getLinkedItems = async (path, address) => {
@@ -651,4 +594,359 @@ export const getLinkedItems = async (path, address) => {
 
   return items
 }
+
+
+
+// --- Storage Items ---
+
+export const bulkGetStoredItems = async (address) => {
+  const paths = await getStoragePaths(address)
+  const groups = splitList(paths.map((p) => p.identifier), 100)
+  console.log("bulkGetStoredItems:groups:", groups)
+  const promises = groups.map((group) => {
+    return getStoredItems(address, group)
+  })
+
+  const itemGroups = await Promise.all(promises)
+  console.log("itemGroups", itemGroups)
+  const items = itemGroups.reduce((acc, curr) => {
+    return acc.concat(curr)
+  }, [])
+  return items
+}
+
+export const getStoredItems = async (address, paths) => {
+  const code = `
+  import FungibleToken from 0xFungibleToken
+  import NonFungibleToken from 0xNonFungibleToken
+   
+  pub struct Item {
+      pub let address: Address
+      pub let path: String
+      pub let type: Type
+      pub let isResource: Bool
+      pub let isNFTCollection: Bool
+      pub let isVault: Bool
+  
+      init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, isVault: Bool) {
+          self.address = address
+          self.path = path
+          self.type = type
+          self.isResource = isResource
+          self.isNFTCollection = isNFTCollection
+          self.isVault = isVault
+      }
+  }
+
+  pub fun main(address: Address, pathIdentifiers: [String]): [Item] {
+    let account = getAuthAccount(address)
+    let resourceType = Type<@AnyResource>()
+    let vaultType = Type<@FungibleToken.Vault>()
+    let collectionType = Type<@NonFungibleToken.Collection>()
+    let items: [Item] = []
+
+    for identifier in pathIdentifiers {
+      let path = StoragePath(identifier: identifier)!
+
+      if let type = account.type(at: path) {
+        let isResource = type.isSubtype(of: resourceType)
+        let isNFTCollection = type.isSubtype(of: collectionType)
+        let isVault = type.isSubtype(of: vaultType) 
+
+        let item = Item(
+          address: address,
+          path: path.toString(),
+          type: type,
+          isResource: isResource,
+          isNFTCollection: isNFTCollection,
+          isVault: isVault
+        )
+
+        items.append(item)
+      }
+    }
+
+    return items
+  }
+  `
+  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
+  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
+
+  const items = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(paths, t.Array(t.String))
+    ]
+  }) 
+
+  return items
+}
+
+const getStoragePaths = async (address) => {
+  const code = `
+  pub fun main(address: Address): [StoragePath] {
+    ${outdatedPaths(publicConfig.chainEnv).storage} 
+    let account = getAuthAccount(address)
+    let cleandPaths: [StoragePath] = []
+    for path in account.storagePaths {
+      if (outdatedPaths.containsKey(path)) {
+        continue
+      }
+
+      cleandPaths.append(path)
+    }
+    return cleandPaths
+  }
+  `
+
+  const paths = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return paths
+}
+
+
+// --- Public Items ---
+
+export const bulkGetPublicItems = async (address) => {
+  const paths = await getPublicPaths(address)
+  const groups = splitList(paths, 100)
+  const promises = groups.map((group) => {
+    return getPublicItems(address, group)
+  })
+
+  const itemGroups = await Promise.all(promises)
+  const items = itemGroups.reduce((acc, curr) => {
+    return acc.concat(curr)
+  }, [])
+  return items
+}
+
+export const getPublicItems = async (address, paths) => {
+  const pathMap = paths.reduce((acc, path) => {
+    const p = {key: `/${path.domain}/${path.identifier}`, value: true}
+    acc.push(p)
+    return acc
+  }, [])
+
+  const code = `
+  import FungibleToken from 0xFungibleToken
+  import NonFungibleToken from 0xNonFungibleToken
+   
+  pub struct Item {
+      pub let address: Address
+      pub let path: String
+      pub let type: Type
+
+      pub let targetPath: String?
+
+      pub let isCollectionCap: Bool
+      pub let tokenIDs: [UInt64]
+
+      pub let isBalanceCap: Bool
+      pub let balance: UFix64?
+  
+      init(
+        address: Address, 
+        path: String, 
+        type: Type, 
+        targetPath: String?, 
+        isCollectionCap: Bool, 
+        tokenIDs: [UInt64],
+        isBalanceCap: Bool,
+        balance: UFix64?
+      ) {
+          self.address = address
+          self.path = path
+          self.type = type
+          self.targetPath = targetPath
+          self.isCollectionCap = isCollectionCap
+          self.tokenIDs = tokenIDs
+          self.isBalanceCap = isBalanceCap
+          self.balance = balance
+      }
+  }
+
+  pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
+    let account = getAuthAccount(address)
+
+    let items: [Item] = []
+    let balanceCapType = Type<Capability<&AnyResource{FungibleToken.Balance}>>()
+    let collectionType = Type<Capability<&AnyResource{NonFungibleToken.CollectionPublic}>>()
+
+    account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+      if !pathMap.containsKey(path.toString()) {
+        return true
+      }
+
+      var targetPath: String? = nil
+      var isCollectionCap = false
+      var isBalanceCap = false
+      var tokenIDs: [UInt64] = []
+      var balance: UFix64? = nil
+
+      if let target = account.getLinkTarget(path) {
+        targetPath = target.toString()
+      }
+
+      if (type.isSubtype(of: balanceCapType)) {
+        isBalanceCap = true
+        let vaultRef = account
+            .getCapability(path)
+            .borrow<&{FungibleToken.Balance}>()
+
+        if let vault = vaultRef {
+            balance = vault.balance
+        }
+      } else if (type.isSubtype(of: collectionType)) {
+        isCollectionCap = true
+        let collectionRef = account
+          .getCapability(path)
+          .borrow<&{NonFungibleToken.CollectionPublic}>()
+
+        if let collection = collectionRef {
+          tokenIDs = collection.getIDs()
+        }
+      }
+
+      let item = Item(
+        address: address,
+        path: path.toString(),
+        type: type,
+        targetPath: targetPath,
+        isCollectionCap: isCollectionCap,
+        tokenIDs: tokenIDs,
+        isBalanceCap: isBalanceCap,
+        balance: balance
+      )
+
+      items.append(item)
+      return true
+    })
+
+    return items
+  }
+  `
+  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
+  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
+
+  const items = await fcl.query({
+    cadence: code,
+    args: (arg, t) => {
+      const args = [
+        arg(address, t.Address),
+        arg(pathMap, t.Dictionary({key: t.String, value: t.Bool}))
+      ]
+      console.log(args)
+      return args
+    }
+  }) 
+
+  console.log("items", items)
+
+  return items
+}
+
+export const getPublicPaths = async (address) => {
+  const code = `
+  pub fun main(address: Address): [PublicPath] {
+    ${outdatedPaths(publicConfig.chainEnv).public} 
+    let account = getAuthAccount(address)
+    let cleandPaths: [PublicPath] = []
+    for path in account.publicPaths {
+      if (outdatedPaths.containsKey(path)) {
+        continue
+      }
+
+      cleandPaths.append(path)
+    }
+    return cleandPaths
+  }
+  `
+
+  const paths = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return paths
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// Deprecated
+
+// export const getStoredItems = async (address) => {
+//   const code = `
+//   import FungibleToken from 0xFungibleToken
+//   import NonFungibleToken from 0xNonFungibleToken
+   
+//   pub struct Item {
+//       pub let address: Address
+//       pub let path: String
+//       pub let type: Type
+//       pub let isResource: Bool
+//       pub let isNFTCollection: Bool
+//       pub let isVault: Bool
+  
+//       init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, isVault: Bool) {
+//           self.address = address
+//           self.path = path
+//           self.type = type
+//           self.isResource = isResource
+//           self.isNFTCollection = isNFTCollection
+//           self.isVault = isVault
+//       }
+//   }
+  
+//   pub fun main(address: Address): [Item] {
+//       ${outdatedPaths(publicConfig.chainEnv).storage} 
+//       let account = getAuthAccount(address)
+//       let items: [Item] = []
+//       let resourceType = Type<@AnyResource>()
+//       let vaultType = Type<@FungibleToken.Vault>()
+//       let collectionType = Type<@NonFungibleToken.Collection>()
+//       account.forEachStored(fun (path: StoragePath, type: Type): Bool {
+//           if (outdatedPaths.containsKey(path)) {
+//             return true
+//           }
+
+//           let isResource = type.isSubtype(of: resourceType)
+//           let isNFTCollection = type.isSubtype(of: collectionType)
+//           let isVault = type.isSubtype(of: vaultType) 
+//           let item = Item(address: address, path: path.toString(), type: type, isResource: isResource, isNFTCollection: isNFTCollection, isVault: isVault)
+//           items.append(item)
+//           return true
+//       })
+//       return items
+//   }
+//   `
+//   .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
+//   .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
+
+//   const items = await fcl.query({
+//     cadence: code,
+//     args: (arg, t) => [
+//       arg(address, t.Address)
+//     ]
+//   }) 
+
+//   return items
+// }
 

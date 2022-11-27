@@ -5,12 +5,13 @@ import useSWR from "swr"
 import ItemsView from "../../../components/common/ItemsView"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
-import { getLinkedItems } from "../../../flow/scripts"
+import { bulkGetPublicItems, getLinkedItems, getPublicItems } from "../../../flow/scripts"
 import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
 import Custom404 from "./404"
 
 const publicItemsFetcher = async (funcName, address) => {
-  return await getLinkedItems("public", address)
+  const items = await bulkGetPublicItems(address)
+  return items.sort((a, b) => a.path.localeCompare(b.path))
 }
 
 export default function PublicItems(props) {

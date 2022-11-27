@@ -248,7 +248,7 @@ export default function ItemsView(props) {
           <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-purple-800 bg-purple-100`}>
             Target
           </label>
-          <label>{item.linkTarget ? formatPath(item.linkTarget, "text-base text-gray-600") : "Unknown"}</label>
+          <label>{item.targetPath ? formatPath(item.targetPath, "text-base text-gray-600") : "Unknown"}</label>
         </div> : null
     )
   }
