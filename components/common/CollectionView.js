@@ -46,10 +46,12 @@ export default function CollectionView(props) {
             type="button"
             className={"text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0"}
             onClick={async () => {
-              setShowNFTs(true)
+              setShowNFTs(!showNFTs)
             }}
           >
-            Show NFTs
+            {
+              showNFTs ? "Hide NFTs" : "Show NFTs"
+            }
           </button>
           {
             collection.collectionIdentifier ?
@@ -65,7 +67,7 @@ export default function CollectionView(props) {
         </div>
       </div>
       {
-        collection.collectionIdentifier && needRelink ?
+        showNFTs && collection.collectionIdentifier && needRelink ?
           <label className="text-rose-500">This collection need&nbsp;
             <a href={`${publicConfig.linkURL}`}
               target="_blank"
