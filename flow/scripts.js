@@ -368,60 +368,6 @@ export const getNfts = async (address) => {
   return result 
 }
 
-export const getFTBalances = async (address) => {
-  const code = `
-  import FungibleToken from 0xFungibleToken
-
-  pub struct Balance {
-  pub let path: String
-  pub let type: Type
-  pub let balance: UFix64
-
-  init(path: String, type: Type, balance: UFix64) {
-      self.path = path
-      self.type = type
-      self.balance = balance
-  }
-  }
-
-  pub fun main(address: Address): [Balance] {
-      ${outdatedPaths(publicConfig.chainEnv).public}
-      let account = getAccount(address)
-      let res: [Balance] = []
-      let balanceCapType = Type<Capability<&AnyResource{FungibleToken.Balance}>>()
-      account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
-          if (outdatedPaths.containsKey(path)) {
-            return true
-          }
-
-          if (type.isSubtype(of: balanceCapType)) {
-              let vaultRef = account
-                  .getCapability(path)
-                  .borrow<&{FungibleToken.Balance}>()
-
-              if let vault = vaultRef {
-                  let balance = Balance(path: path.toString(), type: type, balance: vault.balance)
-                  res.append(balance)
-              }
-          }
-          return true
-
-      })
-      return res
-  }
-  `
-  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
-
-  const result = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address)
-    ]
-  }) 
-
-  return result 
-}
-
 export const getAccountInfo = async (address) => {
   const code = `
   pub struct Result {
@@ -837,14 +783,10 @@ export const getPublicItems = async (address, paths) => {
 
   const items = await fcl.query({
     cadence: code,
-    args: (arg, t) => {
-      const args = [
+    args: (arg, t) => [
         arg(address, t.Address),
         arg(pathMap, t.Dictionary({key: t.String, value: t.Bool}))
       ]
-      console.log(args)
-      return args
-    }
   }) 
 
   console.log("items", items)

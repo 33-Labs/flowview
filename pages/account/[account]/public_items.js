@@ -8,31 +8,30 @@ import Spinner from "../../../components/common/Spinner"
 import { bulkGetPublicItems, getLinkedItems, getPublicItems } from "../../../flow/scripts"
 import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
 import Custom404 from "./404"
-
-const publicItemsFetcher = async (funcName, address) => {
-  const items = await bulkGetPublicItems(address)
-  return items.sort((a, b) => a.path.localeCompare(b.path))
-}
+import { useRecoilState } from "recoil"
+import { currentPublicItemsState } from "../../../lib/atoms"
 
 export default function PublicItems(props) {
   const router = useRouter()
   const { account } = router.query
 
-  const [publicItems, setPublicItems] = useState(null)
+  const [currentPublicItems, setCurrentPublicItems] = useRecoilState(currentPublicItemsState)
   const [user, setUser] = useState({ loggedIn: null })
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
-  const { data: itemsData, error: itemsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["publicItemsFetcher", account] : null, publicItemsFetcher
-  )
-
   useEffect(() => {
-    if (itemsData) {
-      const data = itemsData.sort((a, b) => a.path.localeCompare(b.path))
-      setPublicItems(data)
+    if (account && isValidFlowAddress(account)) {
+      if (!currentPublicItems || (currentPublicItems.length > 0 && currentPublicItems[0].address != account)) {
+        setCurrentPublicItems(null)
+        bulkGetPublicItems(account).then((items) => {
+          const orderedItems = items.sort((a, b) => a.path.localeCompare(b.path))
+          setCurrentPublicItems(orderedItems)
+        })
+      }
     }
-  }, [itemsData])
+
+  }, [currentPublicItems, account])
 
   if (!account) {
     return <></>
@@ -43,7 +42,7 @@ export default function PublicItems(props) {
   }
 
   const showItems = () => {
-    if (!publicItems) {
+    if (!currentPublicItems) {
       return (
         <div className="flex mt-10 h-[200px] justify-center">
           <Spinner />
@@ -53,8 +52,8 @@ export default function PublicItems(props) {
 
     return (
       <div className="flex flex-col gap-y-4">
-        {publicItems.length > 0 ?
-          publicItems.map((item, index) => {
+        {currentPublicItems.length > 0 ?
+          currentPublicItems.map((item, index) => {
             return (
               <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
             )

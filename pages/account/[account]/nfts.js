@@ -11,11 +11,13 @@ import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import NFTList from "../../../components/NFTList"
 import NFTView from "../../../components/common/NFTView"
+import { useRecoilState } from "recoil"
+import { publicItemsState } from "../../../lib/atoms"
 
-const getNftsWithNftType = (nfts) => {
-  return nfts.map((n) => {
-    let collection = getResourceType(n.type)
-    let contract = n.path.replace("/public/", "")
+const getCollectionsWithNftType = (collections) => {
+  return collections.map((c) => {
+    let collection = getResourceType(c.type)
+    let contract = c.path.replace("/public/", "")
     let contractName = contract
     let nftType = contract
     if (collection != "AnyResource") {
@@ -25,36 +27,56 @@ const getNftsWithNftType = (nfts) => {
       nftType = `${contract}.NFT`
     }
 
-    return { ...n, nftType: nftType, contract: contract, contractName: contractName }
-  }).filter((n) => n.nftType)
+    return { ...c, nftType: nftType, contract: contract, contractName: contractName }
+  }).filter((c) => c.nftType)
 }
 
 const catalogFetcher = async (funcName, nfts) => {
   return await getNftCatalog(nfts)
 }
 
-const nftsFetcher = async (funcName, address) => {
-  const nfts = await getNfts(address)
-  const nftsWithIDs = (await getNftsWithIDs(address, nfts)).filter((n) => n.nftIDs.length > 0)
-  const nftsWithNftType = getNftsWithNftType(nftsWithIDs)
-  const typeData = await getCatalogTypeData()
-  return getNFTsWithCollectionID(nftsWithNftType, typeData).sort((a, b) => a.path.localeCompare(b.path))
-}
+// const nftsFetcher = async (funcName, address) => {
+//   const nfts = await getNfts(address)
+//   const nftsWithIDs = (await getNftsWithIDs(address, nfts)).filter((n) => n.nftIDs.length > 0)
+//   const nftsWithNftType = getNftsWithNftType(nftsWithIDs)
+//   const typeData = await getCatalogTypeData()
+//   return getNFTsWithCollectionID(nftsWithNftType, typeData).sort((a, b) => a.path.localeCompare(b.path))
+// }
 
 export default function NFTs(props) {
   const router = useRouter()
   const { account } = router.query
 
   const [nfts, setNFTs] = useState(null)
+  const [collectionData, setCollectionData] = useState(null)
+  return (<></>)
 
-  const { data: nftsData, error: nftsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["nftsFetcher", account] : null, nftsFetcher
-  )
+  // const { data: nftsData, error: nftsError } = useSWR(
+  //   account && isValidFlowAddress(account) ? ["nftsFetcher", account] : null, nftsFetcher
+  // )
+
   useEffect(() => {
-    if (nftsData) {
+    if (account && isValidFlowAddress(account)) {
+      if (!publicItems) {
+        bulkGetPublicItems(account).then((items) => {
+          const orderedItems = items.sort((a, b) => a.path.localeCompare(b.path))
+          setPublicItems(orderedItems)
+        })
+      } else {
+        setCollectionData(publicItems.filter((item) => item.isCollectionCap))
+      }
+    }
+  }, [publicItems, account])
+
+
+  useEffect(() => {
+    if (collectionData) {
+      const collectionsWithNftType = getCollectionsWithNftType(collectionData)
+      const typeData = await getCatalogTypeData()
+      return getNFTsWithCollectionID(nftsWithNftType, typeData).sort((a, b) => a.path.localeCompare(b.path))
       setNFTs(nftsData)
     }
-  }, [nftsData])
+  }, [collectionData])
 
   const { data: catalogData, error: catalogError } = useSWR(
     account && isValidFlowAddress(account) && nfts ? ["catalogFetcher", nfts] : null, catalogFetcher)
