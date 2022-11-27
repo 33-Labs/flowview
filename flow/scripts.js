@@ -702,3 +702,113 @@ export const getPublicPaths = async (address) => {
 
   return paths
 }
+
+// --- Private Items ---
+
+export const bulkGetPrivateItems = async (address) => {
+  const paths = await getPrivatePaths(address)
+  const groups = splitList(paths, 100)
+  const promises = groups.map((group) => {
+    return getPrivateItems(address, group)
+  })
+
+  const itemGroups = await Promise.all(promises)
+  const items = itemGroups.reduce((acc, curr) => {
+    return acc.concat(curr)
+  }, [])
+  return items
+}
+
+export const getPrivateItems = async (address, paths) => {
+  const pathMap = paths.reduce((acc, path) => {
+    const p = {key: `/${path.domain}/${path.identifier}`, value: true}
+    acc.push(p)
+    return acc
+  }, [])
+
+  const code = `
+  pub struct Item {
+      pub let address: Address
+      pub let path: String
+      pub let type: Type
+      pub let targetPath: String?
+
+      init(
+        address: Address, 
+        path: String, 
+        type: Type, 
+        targetPath: String?
+      ) {
+        self.address = address
+        self.path = path
+        self.type = type
+        self.targetPath = targetPath
+      }
+  }
+
+  pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
+    let account = getAuthAccount(address)
+
+    let items: [Item] = []
+    account.forEachPrivate(fun (path: PrivatePath, type: Type): Bool {
+      if !pathMap.containsKey(path.toString()) {
+        return true
+      }
+
+      var targetPath: String? = nil
+      if let target = account.getLinkTarget(path) {
+        targetPath = target.toString()
+      }
+
+      let item = Item(
+        address: address,
+        path: path.toString(),
+        type: type,
+        targetPath: targetPath
+      )
+
+      items.append(item)
+      return true
+    })
+
+    return items
+  }
+  `
+
+  const items = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+        arg(address, t.Address),
+        arg(pathMap, t.Dictionary({key: t.String, value: t.Bool}))
+      ]
+  }) 
+
+  return items
+}
+
+export const getPrivatePaths = async (address) => {
+  const code = `
+  pub fun main(address: Address): [PrivatePath] {
+    ${outdatedPaths(publicConfig.chainEnv).private} 
+    let account = getAuthAccount(address)
+    let cleandPaths: [PrivatePath] = []
+    for path in account.privatePaths {
+      if (outdatedPaths.containsKey(path)) {
+        continue
+      }
+
+      cleandPaths.append(path)
+    }
+    return cleandPaths
+  }
+  `
+
+  const paths = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return paths
+}

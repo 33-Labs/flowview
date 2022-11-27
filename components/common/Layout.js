@@ -10,13 +10,10 @@ import Sidebar from "./Siderbar";
 import { useRecoilState } from "recoil"
 import {
   showBasicNotificationState,
-  basicNotificationContentState
+  basicNotificationContentState,
+  currentDefaultDomainsState
 } from "../../lib/atoms"
 import { DocumentDuplicateIcon } from "@heroicons/react/outline"
-
-const defaultDomainsFetcher = async (funcName, address) => {
-  return await getDefaultDomainsOfAddress(address)
-}
 
 export default function Layout({ children }) {
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
@@ -25,33 +22,34 @@ export default function Layout({ children }) {
   const router = useRouter()
   const { account } = router.query
 
-  const [defaultDomains, setDefaultDomains] = useState(null)
-
-  const { data: domainsData, error: domainsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["defaultDomainsFetcher", account] : null, defaultDomainsFetcher
-  )
+  const [currentDefaultDomains, setCurrentDefaultDomains] = useRecoilState(currentDefaultDomainsState)
 
   useEffect(() => {
-    if (domainsError) {
-      setDefaultDomains([])
-      return
-    }
-    if (domainsData) {
-      const domains = []
-      for (const [service, domain] of Object.entries(domainsData)) {
-        const comps = domain.split(".")
-        const name = comps[0]
-        const url = service == "flowns" ?
-          `${publicConfig.flownsURL}/${domain}` : `${publicConfig.findURL}/${name}`
-        domains.push({
-          service: service,
-          domain: domain,
-          url: url
+    if (account && isValidFlowAddress(account)) {
+      if (!currentDefaultDomains || (currentDefaultDomains.address != account)) {
+        setCurrentDefaultDomains(null)
+
+        getDefaultDomainsOfAddress(account).then((domainsMap) => {
+          const domains = []
+          for (const [service, domain] of Object.entries(domainsMap)) {
+            const comps = domain.split(".")
+            const name = comps[0]
+            const url = service == "flowns" ?
+              `${publicConfig.flownsURL}/${domain}` : `${publicConfig.findURL}/${name}`
+            domains.push({
+              service: service,
+              domain: domain,
+              url: url
+            })
+          }
+          setCurrentDefaultDomains({
+            address: account,
+            domains: domains
+          })
         })
       }
-      setDefaultDomains(domains)
     }
-  }, [domainsData, domainsError])
+  }, [currentDefaultDomains, account])
 
   return (
     <>
@@ -71,11 +69,11 @@ export default function Layout({ children }) {
               }} />
           </div>
         </div>
-        {defaultDomains && defaultDomains.length > 0 ?
+        {currentDefaultDomains && currentDefaultDomains.domains.length > 0 ?
           <div className="mt-4 px-5 flex flex-col gap-y-1">
             <label className="text-base sm:text-lg text-gray-500">Default Domains</label>
             <div className="mt-1 flex gap-x-2">{
-              defaultDomains.map((domain, index) => {
+              currentDefaultDomains.domains.map((domain, index) => {
                 return (
                   <label key={`${domain.domain}_${index}`} className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
                     <a href={domain.url}
