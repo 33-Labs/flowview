@@ -34,7 +34,6 @@ export default function TokenList(props) {
                   Hide 0 balance
                 </label>
                 <Switch
-                  // disabled={transactionInProgress}
                   checked={hideZeroBalance}
                   onChange={async () => {
                     setHideZeroBalance(!hideZeroBalance)
