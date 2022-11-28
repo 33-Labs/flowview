@@ -89,13 +89,9 @@ export default function Layout({ children }) {
           </div>
           : null
         }
-        <div className="mt-10 flex flex-row gap-x-2 sm:gap-x-4 justify-start">
+        <div className="mt-10 flex flex-row gap-x-2 sm:gap-x-4 items-start justify-start">
           <Sidebar />
-          <div className="px-2 py-2 overflow-x-auto w-full h-screen">
-            <div className="inline-block min-w-full">
-              {children}
-            </div>
-          </div>
+          {children}
         </div>
       </div>
       <AlertModal />

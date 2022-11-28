@@ -75,7 +75,7 @@ export default function KeyCreator(props) {
   }
 
   return (
-    <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
+    <div className="min-w-[1076px] flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
       <div className="flex justify-between items-center">
         <label className="font-bold text-xl">{`Create New Key`}</label>
         {user && user.loggedIn && user.addr == account ? getCreateButton() : null}

@@ -88,15 +88,15 @@ export default function NavigationBar() {
 
   return (
     <div className="px-6 m-auto max-w-7xl min-w-[380px] relative gap-x-5 flex items-center justify-between bg-transparent h-44">
-      <div className="flex items-center gap-x-2">
+      <div className="flex items-center gap-x-1 sm:gap-x-2">
         <Link href="/">
-          <div className="w-[40px] sm:w-[50px] aspect-square relative">
+          <div className="w-[36px] sm:w-[50px] aspect-square relative">
             <Image src="/logo.png" alt="" fill sizes="33vw" priority={true} />
           </div>
         </Link>
 
         <Link href="/">
-          <label className="font-flow font-bold text-3xl">
+          <label className="font-flow font-bold text-2xl sm:text-3xl">
             flowview
           </label>
         </Link>

@@ -42,7 +42,7 @@ export default function Account(props) {
 
   const dataField = (title, value) => {
     return (
-      <div className="flex flex-col gap-y-1">
+      <div className="p-1 flex flex-col gap-y-1 min-w-[380px]">
         <div className="px-2 text-base text-gray-500 whitespace-nowrap">{title}</div>
         <div className="px-2 text-xl font-bold whitespace-nowrap">{value}</div>
       </div>
@@ -52,18 +52,21 @@ export default function Account(props) {
   const showInfo = () => {
     if (!infoData || !basicInfo) {
       return (
-        <div className="flex mt-10 h-[200px] justify-center">
+        <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
         </div>
       )
     } else {
       return (
-        <div className="flex flex-col gap-y-4 p-5 shadow-md rounded-2xl bg-white">
+        <div className="p-2 w-full overflow-auto">
+        <div className="w-full min-w-[1076px] flex flex-col gap-y-4 p-5 shadow-md rounded-2xl bg-white">
           {dataField("Balance", `${basicInfo.balance} FLOW`)}
           {dataField("Available Balance", `${basicInfo.availableBalance} FLOW`)}
           {dataField("Storage Used", `${basicInfo.storageUsed} Bytes / ${percentage(basicInfo.storageUsed, basicInfo.storageCapacity)}`)}
           {dataField("Storage Capacity", `${basicInfo.storageCapacity} Bytes / ${new Decimal(basicInfo.storageCapacity).div(new Decimal("1024").mul(new Decimal("1024"))).toFixed(4)} MB`)}
         </div>
+        </div>
+
       )
     }
   }

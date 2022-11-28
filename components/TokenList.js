@@ -23,14 +23,16 @@ export default function TokenList(props) {
   const pageSize = 10
 
   return (
-    <div className="p-2">
+    <div className="p-2 w-full overflow-auto">
       <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <div className="flex gap-x-1 justify-between">
-            <h1 className="flex gap-x-2 text-2xl font-bold text-gray-900">
-              {`Tokens (${filteredTokens.length})`}
-              <div className="px-3 flex gap-x-2 items-center">
-                <label className="block text-gray-600 text-base font-normal font-flow">
+        <div className="sm:flex-auto items-stretch">
+          <div className="flex gap-x-3 justify-between flex-wrap gap-y-3">
+            <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center justify-center">
+              <h1 className="shrink-0 text-2xl font-bold text-gray-900">
+                {`Tokens (${filteredTokens.length})`}
+              </h1>
+              <div className="flex gap-x-2 items-center">
+                <label className="shrink-0 block text-gray-600 text-base font-normal font-flow">
                   Hide 0 balance
                 </label>
                 <Switch
@@ -53,8 +55,8 @@ export default function TokenList(props) {
                   />
                 </Switch>
               </div>
-            </h1>
-            <div className="flex gap-x-1 items-center">
+            </div>
+            <div className="hidden sm:flex sm:gap-x-1 sm:items-center">
               <label className={`cursor-pointer text-black bg-flow hover:bg-green-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
                 <a href={`${publicConfig.bayouURL}`}
                   target="_blank"
@@ -86,7 +88,7 @@ export default function TokenList(props) {
       </div>
 
       {filteredTokens.length > 0 ?
-        <div className="mt-3 flex flex-col w-full">
+        <div className="mt-3 flex flex-col w-full shrink-0">
           <div className="px-1 overflow-x-auto">
             <div className="inline-block min-w-full py-2 align-middle">
               <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-2xl">

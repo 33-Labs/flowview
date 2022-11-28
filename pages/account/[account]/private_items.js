@@ -44,37 +44,45 @@ export default function PrivateItems(props) {
   const showItems = () => {
     if (!privateItems) {
       return (
-        <div className="flex mt-10 h-[200px] justify-center">
+        <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
         </div>
       )
     }
 
     return (
-      <div className="flex flex-col gap-y-4">
-        <h1 className="flex gap-x-2 text-2xl font-bold text-gray-900">
-          {`Private Paths (${privateItems.length})`}
-        </h1>
-        <div className="flex flex-col gap-y-4">
-          {privateItems.length > 0 ?
-            privateItems.map((item, index) => {
-              return (
-                <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
-              )
-            }) :
-            <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
-              Nothing found
-            </div>
-          }
-        </div>
-      </div>
+      <>
+        {privateItems.length > 0 ?
+          privateItems.map((item, index) => {
+            return (
+              <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
+            )
+          }) :
+          <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
+            Nothing found
+          </div>
+        }
+      </>
     )
   }
 
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        {showItems()}
+        <div className="flex w-full flex-col gap-y-3 overflow-auto">
+          <div className="p-2 flex gap-x-2 justify-between">
+            <h1 className="text-2xl font-bold text-gray-900">
+              {`Private Paths ${privateItems ? `(${privateItems.length})` : ""}`}
+            </h1>
+          </div>
+          <div className="px-2 py-2 overflow-x-auto h-screen w-full">
+            <div className="inline-block min-w-full">
+              <div className="flex flex-col gap-y-4">
+                {showItems()}
+              </div>
+            </div>
+          </div>
+        </div>
       </Layout>
     </div>
   )

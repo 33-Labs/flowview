@@ -96,7 +96,7 @@ export default function FungibleTokens(props) {
   const showTokens = () => {
     if (!balanceData || !registryTokenList) {
       return (
-        <div className="flex mt-10 h-[200px] justify-center">
+        <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
         </div>
       )

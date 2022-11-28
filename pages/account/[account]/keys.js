@@ -48,17 +48,19 @@ export default function Keys(props) {
   const showKeys = () => {
     if (!keys) {
       return (
-        <div className="flex mt-10 h-[200px] justify-center">
+        <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
         </div>
       )
     }
-    
+
     return (
-      <div className="flex flex-col gap-y-4">
-        <h1 className="flex gap-x-2 text-2xl font-bold text-gray-900">
-          {`Keys (${filteredKeys.length})`}
-          <div className="px-3 flex gap-x-2 items-center">
+      <div className="flex flex-col mt-3 gap-y-4">
+        <div className="px-2 flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center">
+          <h1 className="flex gap-x-2 text-2xl font-bold text-gray-900">
+            {`Keys (${filteredKeys.length})`}
+          </h1>
+          <div className="flex gap-x-2 items-center">
             <label className="block text-gray-600 text-base font-normal font-flow">
               Hide revoked
             </label>
@@ -81,15 +83,15 @@ export default function Keys(props) {
               />
             </Switch>
           </div>
-        </h1>
-        <div className="flex flex-col gap-y-4">
+        </div>
+        <div className="flex flex-col gap-y-4 overflow-auto p-2">
           {filteredKeys.length > 0 ?
             filteredKeys.map((key, index) => {
               return (
                 <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} account={account} user={user} />
               )
             }) :
-            <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+            <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
               Nothing found
             </div>
           }
@@ -101,10 +103,12 @@ export default function Keys(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="flex flex-col gap-y-4">
+        <div className="w-full flex flex-col gap-y-3 overflow-auto">
           {
             user && user.loggedIn && user.addr == account ?
-              <KeyCreator account={account} user={user} />
+              <div className="p-2 overflow-auto">
+                <KeyCreator account={account} user={user} />
+              </div>
               : null
           }
           {showKeys()}

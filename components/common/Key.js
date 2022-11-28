@@ -82,7 +82,7 @@ export default function Key(props) {
   }
 
   return (
-    <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
+    <div className="min-w-[1076px] flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
       <div className="flex justify-between items-center">
         <div className="flex gap-x-1 items-center">
           <label className="font-bold text-xl">{`#${key.index}`}&nbsp;&nbsp;</label>

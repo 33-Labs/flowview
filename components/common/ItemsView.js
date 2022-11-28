@@ -254,7 +254,7 @@ export default function ItemsView(props) {
   }
 
   return (
-    <div className="flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
+    <div className="min-w-[1076px] flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
       <div className="flex gap-x-2 justify-between items-center">
         {
           tag ? <div className="flex gap-x-1 items-center shrink truncate">
