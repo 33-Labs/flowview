@@ -72,7 +72,7 @@ export default function StoredItems(props) {
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
               {`Storage Paths ${storedItems ? `(${storedItems.length})` : ""}`}
             </h1>
           </div>

@@ -57,7 +57,7 @@ export default function Keys(props) {
     return (
       <div className="flex flex-col mt-3 gap-y-4">
         <div className="px-2 flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center">
-          <h1 className="flex gap-x-2 text-2xl font-bold text-gray-900">
+          <h1 className="flex gap-x-2 text-xl sm:text-2xl font-bold text-gray-900">
             {`Keys (${filteredKeys.length})`}
           </h1>
           <div className="flex gap-x-2 items-center">
