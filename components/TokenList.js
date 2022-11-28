@@ -29,7 +29,7 @@ export default function TokenList(props) {
           <div className="flex gap-x-3 justify-between flex-wrap gap-y-3">
             <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center justify-center">
               <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
-                {`Tokens (${filteredTokens.length})`}
+                {`Tokens ${filteredTokens.length > 0 ? `(${filteredTokens.length})` : ""}`}
               </h1>
               <div className="flex gap-x-2 items-center">
                 <label className="shrink-0 block text-gray-600 text-base font-normal font-flow">

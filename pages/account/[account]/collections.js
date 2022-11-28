@@ -133,7 +133,7 @@ export default function Collections(props) {
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Collections (${collections ? collections.length : 0})`}
+              {`Collections ${collections ? `(${collections.length})` : ""}`}
             </h1>
             <label className={`hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
               <a href={`${publicConfig.drizzleURL}`}
