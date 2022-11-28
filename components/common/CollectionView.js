@@ -11,7 +11,7 @@ export default function CollectionView(props) {
   const [needRelink, setNeedRelink] = useState(false)
 
   return (
-    <div className="flex flex-col min-w-[1076px] gap-y-3 p-4 shadow-md rounded-2xl bg-white">
+    <div className="flex flex-col max-w-[1094px] min-w-[1076px] gap-y-3 p-4 shadow-md rounded-2xl bg-white">
 
       <div className="flex gap-x-3 justify-between">
         <div className="flex items-center gap-x-3">
