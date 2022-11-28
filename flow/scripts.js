@@ -405,8 +405,6 @@ const getCatalogTypeData = async () => {
   return typeData 
 }
 
-
-
 // --- Storage Items ---
 
 export const bulkGetStoredItems = async (address) => {

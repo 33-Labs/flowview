@@ -103,7 +103,7 @@ export default function Keys(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="w-full flex flex-col gap-y-3 overflow-auto">
+        <div className="w-full h-screen flex flex-col gap-y-3 overflow-auto">
           {
             user && user.loggedIn && user.addr == account ?
               <div className="p-2 overflow-auto">

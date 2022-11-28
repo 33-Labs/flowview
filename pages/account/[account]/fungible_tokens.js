@@ -9,7 +9,7 @@ import Custom404 from "./404"
 import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import { useRecoilState } from "recoil"
-import { currentPublicItemsState } from "../../../lib/atoms"
+import { currentPublicItemsState, tokenRegistryState } from "../../../lib/atoms"
 
 const formatBalancesData = (balances) => {
   return balances.map((data) => {
@@ -30,8 +30,8 @@ export default function FungibleTokens(props) {
   const { account } = router.query
 
   const [tokens, setTokens] = useState([])
-  const [registryTokenList, setRegistryTokenList] = useState(null)
   const [currentPublicItems, setCurrentPublicItems] = useRecoilState(currentPublicItemsState)
+  const [tokenRegistry, setTokenRegistry] = useRecoilState(tokenRegistryState)
   const [balanceData, setBalanceData] = useState(null)
 
   useEffect(() => {
@@ -49,6 +49,7 @@ export default function FungibleTokens(props) {
   }, [currentPublicItems, account])
 
   useEffect(() => {
+    if (tokenRegistry) return
     let env = ENV.Mainnet
     if (publicConfig.chainEnv == 'testnet') {
       env = ENV.Testnet
@@ -59,16 +60,16 @@ export default function FungibleTokens(props) {
         token.id = `${token.address.replace("0x", "A.")}.${token.contractName}`
         return token
       })
-      setRegistryTokenList(tokenList)
+      setTokenRegistry(tokenList)
     })
-  }, [setRegistryTokenList])
+  }, [setTokenRegistry, tokenRegistry])
 
   useEffect(() => {
-    if (balanceData && registryTokenList) {
+    if (balanceData && tokenRegistry) {
       const tokensInfo = formatBalancesData(balanceData)
       for (let i = 0; i < tokensInfo.length; i++) {
         const token = tokensInfo[i]
-        const registryInfo = registryTokenList.find((t) => t.id == token.contract)
+        const registryInfo = tokenRegistry.find((t) => t.id == token.contract)
         if (registryInfo) {
           token.symbol = registryInfo.symbol
           token.logoURL = registryInfo.logoURI
@@ -83,7 +84,7 @@ export default function FungibleTokens(props) {
       }).sort((a, b) => a.order.localeCompare(b.order))
       setTokens(info)
     }
-  }, [balanceData, registryTokenList])
+  }, [balanceData, tokenRegistry])
 
   if (!account) {
     return <></>
@@ -94,7 +95,7 @@ export default function FungibleTokens(props) {
   }
 
   const showTokens = () => {
-    if (!balanceData || !registryTokenList) {
+    if (!balanceData || !tokenRegistry) {
       return (
         <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />

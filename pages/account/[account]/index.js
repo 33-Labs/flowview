@@ -58,15 +58,14 @@ export default function Account(props) {
       )
     } else {
       return (
-        <div className="p-2 w-full overflow-auto">
-        <div className="w-full min-w-[1076px] flex flex-col gap-y-4 p-5 shadow-md rounded-2xl bg-white">
-          {dataField("Balance", `${basicInfo.balance} FLOW`)}
-          {dataField("Available Balance", `${basicInfo.availableBalance} FLOW`)}
-          {dataField("Storage Used", `${basicInfo.storageUsed} Bytes / ${percentage(basicInfo.storageUsed, basicInfo.storageCapacity)}`)}
-          {dataField("Storage Capacity", `${basicInfo.storageCapacity} Bytes / ${new Decimal(basicInfo.storageCapacity).div(new Decimal("1024").mul(new Decimal("1024"))).toFixed(4)} MB`)}
+        <div className="p-2 w-full h-screen overflow-auto">
+          <div className="w-full min-w-[1076px] flex flex-col gap-y-4 p-5 shadow-md rounded-2xl bg-white">
+            {dataField("Balance", `${basicInfo.balance} FLOW`)}
+            {dataField("Available Balance", `${basicInfo.availableBalance} FLOW`)}
+            {dataField("Storage Used", `${basicInfo.storageUsed} Bytes / ${percentage(basicInfo.storageUsed, basicInfo.storageCapacity)}`)}
+            {dataField("Storage Capacity", `${basicInfo.storageCapacity} Bytes / ${new Decimal(basicInfo.storageCapacity).div(new Decimal("1024").mul(new Decimal("1024"))).toFixed(4)} MB`)}
+          </div>
         </div>
-        </div>
-
       )
     }
   }
