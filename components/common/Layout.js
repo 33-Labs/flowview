@@ -91,7 +91,9 @@ export default function Layout({ children }) {
         }
         <div className="mt-10 flex flex-row gap-x-2 sm:gap-x-4 items-start justify-start">
           <Sidebar />
-          {children}
+          <div className="h-screen w-full">
+            {children}
+          </div>
         </div>
       </div>
       <AlertModal />
