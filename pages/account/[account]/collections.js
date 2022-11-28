@@ -144,7 +144,7 @@ export default function Collections(props) {
               </a>
             </label>
           </div>
-          <div className="px-2 py-2 overflow-x-auto h-screen w-full">
+          <div className="px-2 py-2 overflow-x-auto max-h-screen w-full">
             <div className="inline-block min-w-full">
               <div className="flex flex-col gap-y-4">
                 {showCollections()}
