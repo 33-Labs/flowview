@@ -84,7 +84,7 @@ export default function Keys(props) {
             </Switch>
           </div>
         </div>
-        <div className="flex flex-col gap-y-4 overflow-auto p-2">
+        <div className="flex flex-col overflow-auto gap-y-4 p-2">
           {filteredKeys.length > 0 ?
             filteredKeys.map((key, index) => {
               return (
@@ -103,11 +103,14 @@ export default function Keys(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="w-full h-screen flex flex-col gap-y-3 overflow-auto">
+        <div className="w-full h-screen flex flex-col gap-y-3 overflow-auto px-2">
           {
             user && user.loggedIn && user.addr == account ?
-              <div className="p-2 overflow-auto">
+              <div className="flex flex-col">
+                <div className="overflow-auto p-2">
+
                 <KeyCreator account={account} user={user} />
+                </div>
               </div>
               : null
           }
