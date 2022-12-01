@@ -1,15 +1,15 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import TokenList from "../../../components/TokenList"
-import Layout from "../../../components/common/Layout"
-import { bulkGetPublicItems } from "../../../flow/scripts"
-import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
+import TokenList from "../../../../components/TokenList"
+import Layout from "../../../../components/common/Layout"
+import { bulkGetPublicItems } from "../../../../flow/scripts"
+import { isValidFlowAddress, getResourceType } from "../../../../lib/utils"
 import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"
-import Spinner from "../../../components/common/Spinner"
+import Spinner from "../../../../components/common/Spinner"
 import { useRecoilState } from "recoil"
-import { currentPublicItemsState, tokenRegistryState } from "../../../lib/atoms"
-import { Network } from "../../../flow/config"
+import { currentPublicItemsState, tokenRegistryState } from "../../../../lib/atoms"
+import { Network } from "../../../../flow/config"
 
 const formatBalancesData = (balances) => {
   return balances.map((data) => {

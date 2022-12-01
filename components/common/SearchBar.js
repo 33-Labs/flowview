@@ -38,37 +38,43 @@ export default function SearchBar(props) {
           value={inputValue}
           onKeyUp={async (event) => {
             if (event.key == "Enter") {
+              const network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
               const input = event.target.value.trim().toLowerCase()
+
               if (isValidFlowAddress(input)) {
                 setIsValidInput(true)
-                router.push(`/account/${input}`, undefined, { shallow: true })
+                router.push(`/${network}/account/${input}`, undefined, { shallow: true })
+                setInputValue("")
                 return
               }
 
               if (isValidFlowAddress(`0x${input}`)) {
                 setIsValidInput(true)
-                router.push(`/account/0x${input}`, undefined, { shallow: true })
+                router.push(`/${network}/account/0x${input}`, undefined, { shallow: true })
+                setInputValue("")
                 return
               }
 
               if (isValidFlowAddress(`0x0${input}`)) {
                 setIsValidInput(true)
-                router.push(`/account/0x0${input}`, undefined, { shallow: true })
+                router.push(`/${network}/account/0x0${input}`, undefined, { shallow: true })
+                setInputValue("")
                 return
               }
 
               if (isValidFlowAddress(input.replace("0x", "0x0"))) {
                 setIsValidInput(true)
-                router.push(`/account/${input.replace("0x", "0x0")}`, undefined, { shallow: true })
+                router.push(`/${network}/account/${input.replace("0x", "0x0")}`, undefined, { shallow: true })
+                setInputValue("")
                 return
               }
 
-              const network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
               if (network !== Network.Emulator.name && maybeDomain(input)) {
                 const address = await getAddressOfDomain(input)
                 if (address) {
                   setIsValidInput(true)
-                  router.push(`/account/${address}`, undefined, { shallow: true })
+                  router.push(`/${network}/account/${address}`, undefined, { shallow: true })
+                  setInputValue("")
                   return
                 }
               }

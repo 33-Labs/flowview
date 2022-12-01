@@ -1,21 +1,24 @@
 import { useRouter } from "next/router"
 import { useMemo } from "react"
 import { classNames } from "../../lib/utils"
+import { useRecoilState } from "recoil"
+import { networkState } from "../../lib/atoms"
 
 export default function Sidebar(props) {
   const router = useRouter()
   const { account } = router.query
-
+  const [network, ] = useRecoilState(networkState)
+  
   const menuItems = [
-    { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },
-    { id: "1", label: `Key`, link: { pathname: "/account/[account]/keys", query: { account: account } } },
-    { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_tokens", query: { account: account } } },
-    { id: "3", label: `Collection`, link: { pathname: "/account/[account]/collections", query: { account: account } } },
+    { id: "0", label: `Basic`, link: { pathname: "/[network]/account/[account]", query: { account: account, network: network } } },
+    { id: "1", label: `Key`, link: { pathname: "/[network]/account/[account]/keys", query: { account: account, network: network } } },
+    { id: "2", label: `Token`, link: { pathname: "/[network]/account/[account]/fungible_tokens", query: { account: account, network: network } } },
+    { id: "3", label: `Collection`, link: { pathname: "/[network]/account/[account]/collections", query: { account: account, network: network } } },
     {
       id: "4", label: "Storage", subItems: [
-        { id: "4-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_items", query: { account: account } } },
-        { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_items", query: { account: account } } },
-        { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_items", query: { account: account } } },
+        { id: "4-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/[network]/account/[account]/public_items", query: { account: account, network: network } } },
+        { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/[network]/account/[account]/stored_items", query: { account: account, network: network } } },
+        { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/[network]/account/[account]/private_items", query: { account: account, network: network } } },
       ]
     }
     // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },

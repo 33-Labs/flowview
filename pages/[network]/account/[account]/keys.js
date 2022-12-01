@@ -3,12 +3,12 @@ import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
-import Key from "../../../components/common/Key"
-import KeyCreator from "../../../components/common/KeyCreator"
-import Layout from "../../../components/common/Layout"
-import Spinner from "../../../components/common/Spinner"
-import { getKeys } from "../../../flow/scripts"
-import { classNames, isValidFlowAddress } from "../../../lib/utils"
+import Key from "../../../../components/common/Key"
+import KeyCreator from "../../../../components/common/KeyCreator"
+import Layout from "../../../../components/common/Layout"
+import Spinner from "../../../../components/common/Spinner"
+import { getKeys } from "../../../../flow/scripts"
+import { classNames, isValidFlowAddress } from "../../../../lib/utils"
 
 const keysFetcher = async (funcName, address) => {
   return await getKeys(address)

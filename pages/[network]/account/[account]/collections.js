@@ -1,14 +1,14 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import Layout from "../../../components/common/Layout"
-import { bulkGetNftCatalog, bulkGetPublicItems } from "../../../flow/scripts"
-import { isValidFlowAddress, getResourceType, getContract } from "../../../lib/utils"
+import Layout from "../../../../components/common/Layout"
+import { bulkGetNftCatalog, bulkGetPublicItems } from "../../../../flow/scripts"
+import { isValidFlowAddress, getResourceType, getContract } from "../../../../lib/utils"
 import Custom404 from "./404"
-import Spinner from "../../../components/common/Spinner"
-import CollectionView from "../../../components/common/CollectionView"
+import Spinner from "../../../../components/common/Spinner"
+import CollectionView from "../../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
-import { currentPublicItemsState, nftCatalogState} from "../../../lib/atoms"
-import { getUrls, Network } from "../../../flow/config"
+import { currentPublicItemsState, networkState, nftCatalogState} from "../../../../lib/atoms"
+import { configureForNetwork, getUrls, Network, NetworkNames } from "../../../../flow/config"
 
 const collectionsWithExtraData = (collections) => {
   return collections.map((c) => {
@@ -57,13 +57,26 @@ const collectionsWithCatalogInfo = (collections, nftCatalog) => {
 
 export default function Collections(props) {
   const router = useRouter()
-  const { account } = router.query
+  const { network: routerNetwork, account } = router.query
 
   const [collections, setCollections] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
   const [currentPublicItems, setCurrentPublicItems] = useRecoilState(currentPublicItemsState)
+  const [network, setNetwork] = useRecoilState(networkState)
   const [nftCatalog, setNftCatalog] = useRecoilState(nftCatalogState)
+  const [publicItemsError, setPublicItemsError] = useState(null)
   const [urls, setUrls] = useState(null)
+
+  useEffect(() => {
+    let localNetwork = localStorage.getItem("flowNetwork") || Network.Mainnet.name
+    if (NetworkNames.includes(routerNetwork) && routerNetwork != network) {
+      localStorage.setItem("flowNetwork", routerNetwork)
+      setNetwork(routerNetwork)
+      configureForNetwork(routerNetwork)
+    }
+    console.log("routerNetwork", routerNetwork)
+
+  }, [routerNetwork])
 
   useEffect(() => {
     let network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
@@ -84,10 +97,14 @@ export default function Collections(props) {
   useEffect(() => {
     if (account && isValidFlowAddress(account)) {
       if (!currentPublicItems || (currentPublicItems.length > 0 && currentPublicItems[0].address != account)) {
+        setPublicItemsError(null)
         bulkGetPublicItems(account).then((items) => {
           const orderedItems = items.sort((a, b) => a.path.localeCompare(b.path))
           setCurrentPublicItems(orderedItems)
-        }).catch((e) => console.error(e))
+        }).catch((e) => {
+          setPublicItemsError(e)
+          console.error(e)
+        })
       } else {
         setCollectionData(currentPublicItems.filter((item) => item.isCollectionCap && item.tokenIDs.length > 0))
       }
@@ -106,7 +123,7 @@ export default function Collections(props) {
     return <></>
   }
 
-  if (!isValidFlowAddress(account)) {
+  if (!isValidFlowAddress(account) || publicItemsError) {
     return <Custom404 title={"Account may not exist"} />
   }
 

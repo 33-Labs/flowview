@@ -29,7 +29,7 @@ export default function NavigationBar() {
     const shouldDoConnectionJump = localStorage.getItem("shouldDoConnectionJump") || "YES"
     if ((user && user.loggedIn && shouldDoConnectionJump) == "YES") {
       localStorage.setItem("shouldDoConnectionJump", "NO")
-      router.push(`/account/${user.addr}`, undefined, { shallow: true })
+      router.push(`/${network}/account/${user.addr}`, undefined, { shallow: true })
     }
   }, [user])
 
@@ -55,7 +55,7 @@ export default function NavigationBar() {
           bg-drizzle rounded-full px-3 py-2 leading-5"
           onClick={() => {
             if (user && user.loggedIn) {
-              router.push(`/account/${user.addr}`, undefined, { shallow: true }) 
+              router.push(`/${network}/account/${user.addr}`, undefined, { shallow: true }) 
             }
           }}
         >
