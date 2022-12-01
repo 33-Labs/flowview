@@ -1,14 +1,21 @@
 import Image from "next/image"
 import CollectionDisplayView from "./CollectionDisplayView"
-import publicConfig from "../../publicConfig"
 import { getImageSrcFromMetadataViewsFile } from "../../lib/utils"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { getUrls } from "../../flow/config"
 
 export default function CollectionView(props) {
   const { collection } = props
 
+  const [urls, setUrls] = useState(null)
   const [showNFTs, setShowNFTs] = useState(false)
   const [needRelink, setNeedRelink] = useState(false)
+
+  useEffect(() => {
+    getUrls().then((value) => {
+      setUrls(value)
+    })
+  }, [])
 
   return (
     <div className="flex flex-col max-w-[1094px] min-w-[1076px] gap-y-3 p-4 shadow-md rounded-2xl bg-white">
@@ -30,7 +37,7 @@ export default function CollectionView(props) {
               {
                 collection.collectionIdentifier ?
                   <a
-                    href={`${publicConfig.flowscanURL}/contract/A.${collection.contractAddress}.${collection.contractName}`}
+                    href={`${urls && urls.flowscan}/contract/A.${collection.contractAddress}.${collection.contractName}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline font-sm font-bold decoration-drizzle decoration-2">
@@ -56,7 +63,7 @@ export default function CollectionView(props) {
           {
             collection.collectionIdentifier ?
               <label className={`cursor-pointer text-white bg-catalog hover:bg-catalog-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-                <a href={`${publicConfig.nftCatalogURL}/${collection.collectionIdentifier}`}
+                <a href={`${urls && urls.nftCatalog}/${collection.collectionIdentifier}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -69,7 +76,7 @@ export default function CollectionView(props) {
       {
         showNFTs && collection.collectionIdentifier && needRelink ?
           <label className="text-rose-500">This collection need&nbsp;
-            <a href={`${publicConfig.linkURL}`}
+            <a href={`${urls && urls.link}`}
               target="_blank"
               rel="noopener noreferrer"
               className="underline font-bold decoration-drizzle decoration-2"

@@ -2,15 +2,21 @@ import { useEffect, useState } from "react"
 import Image from 'next/image'
 import { classNames, getItemsInPage } from '../lib/utils'
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/solid"
-import publicConfig from "../publicConfig"
 import Decimal from "decimal.js"
 import { Switch } from "@headlessui/react"
+import * as fcl from "@onflow/fcl"
+import { getUrls } from "../flow/config"
 
 export default function TokenList(props) {
   const { tokens } = props
   const [currentPage, setCurrentPage] = useState(1)
   const [hideZeroBalance, setHideZeroBalance] = useState(false)
   const [filteredTokens, setFilteredTokens] = useState(tokens)
+  const [urls, setUrls] = useState(null)
+
+  useEffect(() => {
+    getUrls().then((value) => setUrls(value))
+  }, [])
 
   useEffect(() => {
     if (hideZeroBalance) {
@@ -56,7 +62,7 @@ export default function TokenList(props) {
         </div>
         <div className="hidden sm:flex sm:gap-x-1 sm:items-center">
           <label className={`cursor-pointer text-black bg-flow hover:bg-green-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-            <a href={`${publicConfig.bayouURL}`}
+            <a href={`${urls && urls.bayou}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -64,7 +70,7 @@ export default function TokenList(props) {
             </a>
           </label>
           <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-            <a href={`${publicConfig.drizzleURL}`}
+          <a href={`${urls && urls.drizzle}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -72,7 +78,7 @@ export default function TokenList(props) {
             </a>
           </label>
           <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-            <a href={`${publicConfig.incrementURL}`}
+          <a href={`${urls && urls.increment}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -117,7 +123,7 @@ export default function TokenList(props) {
                         <td className="px-3 py-4 text-sm text-black min-w-[140px]">
                           <label>
                             <a
-                              href={`${publicConfig.flowscanURL}/contract/${token.contract}`}
+                              href={`${urls && urls.flowscan}/contract/${token.contract}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="underline font-bold decoration-drizzle decoration-2">

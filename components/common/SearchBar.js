@@ -7,6 +7,7 @@ import {
   transactionInProgressState,
 } from "../../lib/atoms"
 import { getAddressOfDomain } from "../../flow/scripts";
+import { Network } from "../../flow/config";
 
 export default function SearchBar(props) {
   const router = useRouter()
@@ -44,7 +45,8 @@ export default function SearchBar(props) {
                 return
               }
 
-              if (maybeDomain(input)) {
+              const network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
+              if (network !== Network.Emulator.name && maybeDomain(input)) {
                 const address = await getAddressOfDomain(input)
                 if (address) {
                   setIsValidInput(true)

@@ -1,9 +1,59 @@
+import * as fcl from "@onflow/fcl"
 import Image from "next/image"
+import { configureForNetwork, getNetwork, getNetworkByName, Network, NetworkNames } from "../flow/config"
+import { use, useEffect, useState } from "react"
+import { useRouter } from "next/router"
+
+const FLOW_NETWORK = "flowNetwork"
 
 export default function Footer() {
+  const [network, setNetwork] = useState(null)
+  const router = useRouter()
+
+  useEffect(() => {
+    const _network = localStorage.getItem(FLOW_NETWORK) || Network.Mainnet.name
+    setNetwork(_network)
+    configureForNetwork(_network)
+  }, [])
+
+  const switchNetwork = (network) => {
+    if (network != null) {
+      fcl.unauthenticate()
+      configureForNetwork(network)
+      localStorage.setItem(FLOW_NETWORK, network);
+      localStorage.setItem("shouldDoConnectionJump", "YES")
+      router.push("/")
+    }
+  }
+
   return (
     <footer className="m-auto mt-60 max-w-[920px] flex flex-1 justify-center items-center py-8 border-t border-solid box-border">
       <div className="flex flex-col gap-y-2 items-center">
+      <div
+          className="flex gap-x-2 items-center font-flow text-sm mb-5 -mt-3"
+        >
+          <label>
+            Current Network
+          </label>
+          <button
+            type="button" 
+            className={`rounded-2xl px-2 py-1 bg-drizzle hover:bg-drizzle-dark font-semibold`}
+            onClick={() => {
+              if (!network || network === Network.Mainnet.name) {
+                setNetwork(Network.Testnet.name)
+                switchNetwork(Network.Testnet.name)
+              } else if (network === Network.Testnet.name) {
+                setNetwork(Network.Emulator.name)
+                switchNetwork(Network.Emulator.name)
+              } else if (network === Network.Emulator.name) {
+                setNetwork(Network.Mainnet.name)
+                switchNetwork(Network.Mainnet.name)
+              }
+            }}
+          >
+            {network}
+          </button>
+        </div>
         <div className="flex gap-x-2">
           <a href="https://github.com/33-Labs/flowview"
             target="_blank"

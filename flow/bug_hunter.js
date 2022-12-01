@@ -1,4 +1,3 @@
-import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
 
 export const getStoragePaths = async (address) => {

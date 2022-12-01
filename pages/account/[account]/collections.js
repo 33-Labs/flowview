@@ -4,11 +4,11 @@ import Layout from "../../../components/common/Layout"
 import { bulkGetNftCatalog, bulkGetPublicItems } from "../../../flow/scripts"
 import { isValidFlowAddress, getResourceType, getContract } from "../../../lib/utils"
 import Custom404 from "./404"
-import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import CollectionView from "../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
-import { currentPublicItemsState, nftCatalogState } from "../../../lib/atoms"
+import { currentPublicItemsState, nftCatalogState} from "../../../lib/atoms"
+import { getUrls, Network } from "../../../flow/config"
 
 const collectionsWithExtraData = (collections) => {
   return collections.map((c) => {
@@ -63,14 +63,23 @@ export default function Collections(props) {
   const [collectionData, setCollectionData] = useState(null)
   const [currentPublicItems, setCurrentPublicItems] = useRecoilState(currentPublicItemsState)
   const [nftCatalog, setNftCatalog] = useRecoilState(nftCatalogState)
+  const [urls, setUrls] = useState(null)
 
   useEffect(() => {
-    if (!nftCatalog) {
+    let network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
+    getUrls().then((value) => setUrls(value))
+
+    if (network == Network.Emulator.name) {
+      setNftCatalog({catalog: {}, network: network})
+      return
+    }
+
+    if (!nftCatalog || nftCatalog.network != network) {
       bulkGetNftCatalog().then((catalog) => {
-        setNftCatalog(catalog)
+        setNftCatalog({catalog: catalog, network: network})
       }).catch((e) => console.error(e))
     }
-  }, [])
+  }, [account])
 
   useEffect(() => {
     if (account && isValidFlowAddress(account)) {
@@ -88,7 +97,7 @@ export default function Collections(props) {
   useEffect(() => {
     if (collectionData && nftCatalog) {
       const newCollection =
-        collectionsWithExtraData(collectionsWithCatalogInfo(collectionData, nftCatalog))
+        collectionsWithExtraData(collectionsWithCatalogInfo(collectionData, nftCatalog.catalog))
       setCollections(newCollection)
     }
   }, [collectionData, nftCatalog])
@@ -136,7 +145,7 @@ export default function Collections(props) {
               {`Collections ${collections ? `(${collections.length})` : ""}`}
             </h1>
             <label className={`hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-              <a href={`${publicConfig.drizzleURL}`}
+              <a href={`${urls && urls.drizzle}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

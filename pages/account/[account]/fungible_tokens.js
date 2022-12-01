@@ -6,10 +6,10 @@ import { bulkGetPublicItems } from "../../../flow/scripts"
 import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
 import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"
-import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import { useRecoilState } from "recoil"
 import { currentPublicItemsState, tokenRegistryState } from "../../../lib/atoms"
+import { Network } from "../../../flow/config"
 
 const formatBalancesData = (balances) => {
   return balances.map((data) => {
@@ -49,9 +49,19 @@ export default function FungibleTokens(props) {
   }, [currentPublicItems, account])
 
   useEffect(() => {
-    if (tokenRegistry) return
+    const network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
+    
+    if (network == Network.Emulator.name) {
+      setTokenRegistry({tokenList: [], network: network})
+      return
+    }
+
+    if (tokenRegistry && tokenRegistry.network == network) {
+      return
+    }
+
     let env = ENV.Mainnet
-    if (publicConfig.chainEnv == 'testnet') {
+    if (network == Network.Testnet.name) {
       env = ENV.Testnet
     }
 
@@ -60,16 +70,16 @@ export default function FungibleTokens(props) {
         token.id = `${token.address.replace("0x", "A.")}.${token.contractName}`
         return token
       })
-      setTokenRegistry(tokenList)
+      setTokenRegistry({tokenList, network: network})
     })
-  }, [setTokenRegistry, tokenRegistry])
+  }, [account])
 
   useEffect(() => {
     if (balanceData && tokenRegistry) {
       const tokensInfo = formatBalancesData(balanceData)
       for (let i = 0; i < tokensInfo.length; i++) {
         const token = tokensInfo[i]
-        const registryInfo = tokenRegistry.find((t) => t.id == token.contract)
+        const registryInfo = tokenRegistry.tokenList.find((t) => t.id == token.contract)
         if (registryInfo) {
           token.symbol = registryInfo.symbol
           token.logoURL = registryInfo.logoURI

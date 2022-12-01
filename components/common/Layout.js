@@ -1,9 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 import { getDefaultDomainsOfAddress } from "../../flow/scripts";
 import { isValidFlowAddress } from "../../lib/utils";
-import publicConfig from "../../publicConfig";
 import AlertModal from "./AlertModal";
 import SearchBar from "./SearchBar";
 import Sidebar from "./Siderbar";
@@ -11,9 +9,10 @@ import { useRecoilState } from "recoil"
 import {
   showBasicNotificationState,
   basicNotificationContentState,
-  currentDefaultDomainsState
+  currentDefaultDomainsState,
 } from "../../lib/atoms"
 import { DocumentDuplicateIcon } from "@heroicons/react/outline"
+import { getUrls, Network } from "../../flow/config";
 
 export default function Layout({ children }) {
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
@@ -25,27 +24,32 @@ export default function Layout({ children }) {
   const [currentDefaultDomains, setCurrentDefaultDomains] = useRecoilState(currentDefaultDomainsState)
 
   useEffect(() => {
+    const network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
     if (account && isValidFlowAddress(account)) {
       if (!currentDefaultDomains || (currentDefaultDomains.address != account)) {
         setCurrentDefaultDomains(null)
+        if (network == Network.Emulator.name) return
 
         getDefaultDomainsOfAddress(account).then((domainsMap) => {
-          const domains = []
-          for (const [service, domain] of Object.entries(domainsMap)) {
-            const comps = domain.split(".")
-            const name = comps[0]
-            const url = service == "flowns" ?
-              `${publicConfig.flownsURL}/${domain}` : `${publicConfig.findURL}/${name}`
-            domains.push({
-              service: service,
-              domain: domain,
-              url: url
+          getUrls().then((urls) => {
+            const domains = []
+            for (const [service, domain] of Object.entries(domainsMap)) {
+              const comps = domain.split(".")
+              const name = comps[0]
+              const url = service == "flowns" ?
+                `${urls && urls.flowns}/${domain}` : `${urls && urls.find}/${name}`
+              domains.push({
+                service: service,
+                domain: domain,
+                url: url
+              })
+            }
+            setCurrentDefaultDomains({
+              address: account,
+              domains: domains
             })
-          }
-          setCurrentDefaultDomains({
-            address: account,
-            domains: domains
           })
+
         }).catch((e) => console.error(e))
       }
     }

@@ -1,4 +1,3 @@
-import publicConfig from "../../publicConfig"
 import { useRecoilState } from "recoil"
 import {
   transactionStatusState,
@@ -9,11 +8,12 @@ import {
 import { classNames, getContract } from "../../lib/utils"
 import { destroy, unlink } from "../../flow/transactions"
 import { useSWRConfig } from 'swr'
-import { useState } from "react"
-import { getStoredResource } from "../../flow/scripts"
+import { useEffect, useState } from "react"
+import { getStoredResource, getStoredStruct } from "../../flow/scripts"
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import Spinner from "../../components/common/Spinner"
 import { vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs'
+import { getUrls } from "../../flow/config"
 
 const getPathType = (path) => {
   if (path.includes("/public")) {
@@ -59,79 +59,6 @@ const getTypeColor = (typeKind) => {
   return colorMap[typeKind] || { bg: "bg-gray-100", text: "text-gray-800" }
 }
 
-const formatPath = (path, classes) => {
-  const comps = path.split("/")
-  const domain = comps[1]
-  const itemPath = comps[2]
-  return (
-    <label className={`${classes} max-w-[830px] truncate text-ellipsis overflow-hidden shrink`}>
-      {`/${domain}/`}<span className="font-bold">{`${itemPath}`}</span>
-    </label>
-  )
-}
-
-const formatTypeID = (typeID) => {
-  // e.g. A.631e88ae7f1d7c20.NonFungibleToken .CollectionPublic
-  const contract = getContract(typeID)
-  const url = `${publicConfig.flowscanURL}/contract/${contract}`
-  const rest = typeID.replace(contract, "")
-  return (
-    <label>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline font-bold decoration-drizzle decoration-2">
-        {contract}
-      </a>{`${rest}`}
-    </label>
-  )
-}
-
-const doGetTypeView = (type) => {
-  if (type.kind == "Restriction") {
-    return (
-      <div className="flex flex-col gap-y-1 items-start">
-        {type.restrictions.map((r, index) => {
-          const restrictionColor = getTypeColor(r.kind)
-          return (
-            <div key={`${r.typeID}-${index}`} className="flex flex-row gap-x-1 pl-4">
-              <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${restrictionColor.bg} ${restrictionColor.text}`}>
-                {r.kind}
-              </label>
-              <div className="text-sm flex flex-col leading-6">
-                {formatTypeID(r.typeID)}
-              </div>
-            </div>
-          )
-        })
-        }
-      </div>
-    )
-  }
-
-  return (
-    <label className="pl-4 text-sm leading-6">{formatTypeID(type.typeID)}</label>
-  )
-}
-
-const getTypeView = (type, deep) => {
-  const kindColor = getTypeColor(type.kind)
-  return (
-    <div className="flex flex-col gap-y-1 items-start">
-      <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${kindColor.bg} ${kindColor.text}`}>
-        {type.kind}
-      </label>
-      {type.typeID ? doGetTypeView(type) : null}
-      {type.type ?
-        <div className={`pl-4`}>
-          {getTypeView(type.type, deep + 4)}
-        </div> : null
-      }
-    </div>
-  )
-}
-
 export default function ItemsView(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
@@ -146,6 +73,12 @@ export default function ItemsView(props) {
   const { mutate } = useSWRConfig()
   const pathType = getPathType(item.path)
 
+  const [urls, setUrls] = useState(null)
+
+  useEffect(() => {
+    getUrls().then((value) => setUrls(value))
+  }, [])
+
   // Only show badge for storage items
   let tag = null
   if (pathType == "Storage") {
@@ -154,6 +87,79 @@ export default function ItemsView(props) {
     } else if (item.isVault) {
       tag = { title: "Vault", bg: "bg-blue-100", text: "text-blue-800" }
     }
+  }
+
+  const formatPath = (path, classes) => {
+    const comps = path.split("/")
+    const domain = comps[1]
+    const itemPath = comps[2]
+    return (
+      <label className={`${classes} max-w-[830px] truncate text-ellipsis overflow-hidden shrink`}>
+        {`/${domain}/`}<span className="font-bold">{`${itemPath}`}</span>
+      </label>
+    )
+  }
+
+  const formatTypeID = (typeID) => {
+    // e.g. A.631e88ae7f1d7c20.NonFungibleToken .CollectionPublic
+    const contract = getContract(typeID)
+    const url = `${urls && urls.flowscan}/contract/${contract}`
+    const rest = typeID.replace(contract, "")
+    return (
+      <label>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline font-bold decoration-drizzle decoration-2">
+          {contract}
+        </a>{`${rest}`}
+      </label>
+    )
+  }
+
+  const doGetTypeView = (type) => {
+    if (type.kind == "Restriction") {
+      return (
+        <div className="flex flex-col gap-y-1 items-start">
+          {type.restrictions.map((r, index) => {
+            const restrictionColor = getTypeColor(r.kind)
+            return (
+              <div key={`${r.typeID}-${index}`} className="flex flex-row gap-x-1 pl-4">
+                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${restrictionColor.bg} ${restrictionColor.text}`}>
+                  {r.kind}
+                </label>
+                <div className="text-sm flex flex-col leading-6">
+                  {formatTypeID(r.typeID)}
+                </div>
+              </div>
+            )
+          })
+          }
+        </div>
+      )
+    }
+
+    return (
+      <label className="pl-4 text-sm leading-6">{formatTypeID(type.typeID)}</label>
+    )
+  }
+
+  const getTypeView = (type, deep) => {
+    const kindColor = getTypeColor(type.kind)
+    return (
+      <div className="flex flex-col gap-y-1 items-start">
+        <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${kindColor.bg} ${kindColor.text}`}>
+          {type.kind}
+        </label>
+        {type.typeID ? doGetTypeView(type) : null}
+        {type.type ?
+          <div className={`pl-4`}>
+            {getTypeView(type.type, deep + 4)}
+          </div> : null
+        }
+      </div>
+    )
   }
 
   const getUnlinkButton = () => {
@@ -181,7 +187,7 @@ export default function ItemsView(props) {
     )
   }
 
-  const getLoadResourceButton = () => {
+  const getLoadResourceButton = (isResource) => {
     return (
       <button
         type="button"
@@ -196,13 +202,29 @@ export default function ItemsView(props) {
           if (!showResource || resourceError) {
             setShowResource(true)
             setResourceError(null)
-            getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
+
+            if (isResource) {
+              getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
               .then((resource) => {
-                setResource(resource)
+                  setResource(resource)
               })
               .catch((e) => {
                 setResourceError(e)
               })
+            } else {
+              getStoredStruct(account, item.path, setTransactionInProgress, setTransactionStatus)
+              .then((resource) => {
+                if (typeof resource == "boolean") {
+                  setResource(`${resource}`)
+                } else {
+                  setResource(resource)
+                }
+              })
+              .catch((e) => {
+                console.log(e)
+                setResourceError(e)
+              })
+            }
           }
         }}
       >
@@ -272,8 +294,8 @@ export default function ItemsView(props) {
         {
           user && user.loggedIn && user.addr == account ?
             (pathType == "Storage" ? <div className="flex gap-x-2 items-center">
-              {item.isResource ? getLoadResourceButton() : null}
-              {getDestroyButton()}
+              {getLoadResourceButton(item.isResource)}
+              {item.isResource ? getDestroyButton() : null}
             </div> : getUnlinkButton()) : (
               pathType == "Storage" && item.isResource ? getLoadResourceButton() : null
             )

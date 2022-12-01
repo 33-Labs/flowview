@@ -3,8 +3,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import * as fcl from "@onflow/fcl"
-import config from "../flow/config.js"
-import publicConfig from "../publicConfig.js"
 import { useEffect, useState } from "react"
 
 import { useRecoilState } from "recoil"
@@ -13,16 +11,21 @@ import {
   basicNotificationContentState,
 } from "../lib/atoms.js"
 import { LogoutIcon } from "@heroicons/react/outline"
+import { Network } from "../flow/config.js"
 
 export default function NavigationBar() {
+  const [network, setNetwork] = useState(null)
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
 
   const router = useRouter()
   const [user, setUser] = useState({ loggedIn: null })
-  useEffect(() => fcl.currentUser.subscribe(setUser), [])
+  useEffect(() => {
+    fcl.currentUser.subscribe(setUser)
+  }, [])
 
   useEffect(() => {
+    setNetwork(localStorage.getItem("flowNetwork") || Network.Mainnet.name)
     const shouldDoConnectionJump = localStorage.getItem("shouldDoConnectionJump") || "YES"
     if ((user && user.loggedIn && shouldDoConnectionJump) == "YES") {
       localStorage.setItem("shouldDoConnectionJump", "NO")
@@ -32,12 +35,12 @@ export default function NavigationBar() {
 
   useEffect(() => {
     window.addEventListener("message", async (d) => {
-      if ((d.data.type === "FCL:VIEW:RESPONSE" && d.data.status === "APPROVED" && (d.data.data.network && d.data.data.network !== publicConfig.chainEnv))
-        || (d.data.type === "LILICO:NETWORK" && typeof d.data.network === "string" && d.data.network != publicConfig.chainEnv)) {
+      const network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
+      if ((d.data.type === "FCL:VIEW:RESPONSE" && d.data.status === "APPROVED" && (d.data.data.network && d.data.data.network !== network))
+        || (d.data.type === "LILICO:NETWORK" && typeof d.data.network === "string" && d.data.network !== network)) {
+        fcl.unauthenticate()
         setShowBasicNotification(true)
         setBasicNotificationContent({ type: "exclamation", title: "WRONG NETWORK", detail: null })
-        await new Promise(r => setTimeout(r, 2))
-        fcl.unauthenticate()
         localStorage.setItem("shouldDoConnectionJump", "YES")
       }
     })
@@ -101,10 +104,10 @@ export default function NavigationBar() {
           </label>
         </Link>
         <label className="hidden sm:block px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
-          {`${publicConfig.chainEnv == "mainnet" ? "BETA" : "TESTNET"}`}
+          {`${network && network.toUpperCase()}`}
         </label>
         <label className="block sm:hidden px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
-          {`${publicConfig.chainEnv == "mainnet" ? "BETA" : "T"}`}
+          {`${network && network.toUpperCase().charAt(0)}`}
         </label>
       </div>
 
