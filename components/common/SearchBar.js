@@ -37,14 +37,15 @@ export default function SearchBar(props) {
           value={inputValue}
           onKeyUp={async (event) => {
             if (event.key == "Enter") {
-              if (isValidFlowAddress(event.target.value)) {
+              const input = event.target.value.trim().toLowerCase()
+              if (isValidFlowAddress(input)) {
                 setIsValidInput(true)
-                router.push(`/account/${event.target.value}`, undefined, { shallow: true })
+                router.push(`/account/${input}`, undefined, { shallow: true })
                 return
               }
 
-              if (maybeDomain(event.target.value)) {
-                const address = await getAddressOfDomain(event.target.value)
+              if (maybeDomain(input)) {
+                const address = await getAddressOfDomain(input)
                 if (address) {
                   setIsValidInput(true)
                   router.push(`/account/${address}`, undefined, { shallow: true })
