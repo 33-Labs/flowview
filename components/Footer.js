@@ -3,11 +3,13 @@ import Image from "next/image"
 import { configureForNetwork, getNetwork, getNetworkByName, Network, NetworkNames } from "../flow/config"
 import { use, useEffect, useState } from "react"
 import { useRouter } from "next/router"
+import { useRecoilState } from "recoil"
+import { networkState } from "../lib/atoms"
 
 const FLOW_NETWORK = "flowNetwork"
 
 export default function Footer() {
-  const [network, setNetwork] = useState(null)
+  const [network, setNetwork] = useRecoilState(networkState)
   const router = useRouter()
 
   useEffect(() => {

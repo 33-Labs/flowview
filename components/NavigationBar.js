@@ -9,12 +9,13 @@ import { useRecoilState } from "recoil"
 import {
   showBasicNotificationState,
   basicNotificationContentState,
+  networkState,
 } from "../lib/atoms.js"
 import { LogoutIcon } from "@heroicons/react/outline"
 import { Network } from "../flow/config.js"
 
 export default function NavigationBar() {
-  const [network, setNetwork] = useState(null)
+  const [network, ] = useRecoilState(networkState)
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
 
@@ -25,7 +26,6 @@ export default function NavigationBar() {
   }, [])
 
   useEffect(() => {
-    setNetwork(localStorage.getItem("flowNetwork") || Network.Mainnet.name)
     const shouldDoConnectionJump = localStorage.getItem("shouldDoConnectionJump") || "YES"
     if ((user && user.loggedIn && shouldDoConnectionJump) == "YES") {
       localStorage.setItem("shouldDoConnectionJump", "NO")

@@ -45,6 +45,24 @@ export default function SearchBar(props) {
                 return
               }
 
+              if (isValidFlowAddress(`0x${input}`)) {
+                setIsValidInput(true)
+                router.push(`/account/0x${input}`, undefined, { shallow: true })
+                return
+              }
+
+              if (isValidFlowAddress(`0x0${input}`)) {
+                setIsValidInput(true)
+                router.push(`/account/0x0${input}`, undefined, { shallow: true })
+                return
+              }
+
+              if (isValidFlowAddress(input.replace("0x", "0x0"))) {
+                setIsValidInput(true)
+                router.push(`/account/${input.replace("0x", "0x0")}`, undefined, { shallow: true })
+                return
+              }
+
               const network = localStorage.getItem("flowNetwork") || Network.Mainnet.name
               if (network !== Network.Emulator.name && maybeDomain(input)) {
                 const address = await getAddressOfDomain(input)
