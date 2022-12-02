@@ -6,6 +6,7 @@ config({
   "flow.network": publicConfig.chainEnv == "emulator" ? "local" : publicConfig.chainEnv,
   "accessNode.api": publicConfig.accessNodeAPI,
   "discovery.wallet": publicConfig.walletDiscovery,
+  "discovery.authn.endpoint": "http://localhost:3002/api/local/authn",
   "sdk.transport": httpSend,
   "app.detail.title": "flowview",
   "app.detail.icon": "https://i.imgur.com/YL8MLEd.png",
