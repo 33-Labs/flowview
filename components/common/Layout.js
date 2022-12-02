@@ -25,6 +25,11 @@ export default function Layout({ children }) {
   const [currentDefaultDomains, setCurrentDefaultDomains] = useRecoilState(currentDefaultDomainsState)
 
   useEffect(() => {
+    if (publicConfig.chainEnv === "emulator") {
+      setCurrentDefaultDomains(null)
+      return
+    }
+
     if (account && isValidFlowAddress(account)) {
       if (!currentDefaultDomains || (currentDefaultDomains.address != account)) {
         setCurrentDefaultDomains(null)

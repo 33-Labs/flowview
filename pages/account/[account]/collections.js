@@ -65,6 +65,11 @@ export default function Collections(props) {
   const [nftCatalog, setNftCatalog] = useRecoilState(nftCatalogState)
 
   useEffect(() => {
+    if (publicConfig.chainEnv === "emulator") {
+      setNftCatalog({})
+      return
+    }
+
     if (!nftCatalog) {
       bulkGetNftCatalog().then((catalog) => {
         setNftCatalog(catalog)

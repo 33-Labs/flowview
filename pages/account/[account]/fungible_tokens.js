@@ -50,8 +50,13 @@ export default function FungibleTokens(props) {
 
   useEffect(() => {
     if (tokenRegistry) return
+    if (publicConfig.chainEnv === "emulator") {
+      setTokenRegistry([])
+      return
+    }
+
     let env = ENV.Mainnet
-    if (publicConfig.chainEnv == 'testnet') {
+    if (publicConfig.chainEnv === 'testnet') {
       env = ENV.Testnet
     }
 
