@@ -12,8 +12,9 @@ export default function Home() {
           <div className='flex flex-col px-3 py-2 bg-drizzle-light rounded-xl text-base'>
             <label>Please make sure that:</label>
             <label>1. The emulator started with <code className="text-sm">--contracts</code></label>
-            <label>2. The port of emulator is 8888</label>
-            <label>3. The port of dev-wallet is 8701</label>
+            <label>2. The emulator started WITHOUT <code className="text-sm">--simple-addresses</code></label>
+            <label>3. The port of emulator is 8888</label>
+            <label>4. The port of dev-wallet is 8701</label>
           </div> : null
         }
         <div className="flex gap-x-2 sm:gap-x-4 items-center">
