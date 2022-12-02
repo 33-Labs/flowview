@@ -18,7 +18,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             className={`w-[72px] text-center font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-300 text-black`}
           >
-            {"testent"}
+            {"testnet"}
           </a>
 
           <a href="https://emulator.flowview.app"
