@@ -4,6 +4,31 @@ export default function Footer() {
   return (
     <footer className="m-auto mt-60 max-w-[920px] flex flex-1 justify-center items-center py-8 border-t border-solid box-border">
       <div className="flex flex-col gap-y-2 items-center">
+        <div className="flex gap-x-2 mb-8">
+          <a href="https://flowview.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`w-[72px] text-center font-bold text-xs px-2 py-1 leading-5 rounded-full bg-drizzle text-black`}
+          >
+            {"mainnet"}
+          </a>
+
+          <a href="https://testnet.flowview.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`w-[72px] text-center font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-300 text-black`}
+          >
+            {"testent"}
+          </a>
+
+          <a href="https://emulator.flowview.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`w-[72px] text-center font-bold text-xs px-2 py-1 leading-5 rounded-full bg-yellow-300 text-black`}
+          >
+            {"emulator"}
+          </a>
+        </div>
         <div className="flex gap-x-2">
           <a href="https://github.com/33-Labs/flowview"
             target="_blank"
