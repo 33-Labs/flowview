@@ -3,11 +3,10 @@ import publicConfig from "../publicConfig"
 import {send as httpSend} from "@onflow/transport-http"
 
 config({
-  "flow.network": publicConfig.chainEnv == "emulator" ? "local" : publicConfig.chainEnv,
-  "accessNode.api": publicConfig.accessNodeAPI,
-  "discovery.wallet": publicConfig.walletDiscovery,
+  "flow.network": "local",
+  "accessNode.api": "http://localhost:8888",
+  "discovery.wallet": "http://localhost:8701/fcl/authn",
   "discovery.authn.endpoint": "http://localhost:3002/api/local/authn",
-  "sdk.transport": httpSend,
   "app.detail.title": "flowview",
   "app.detail.icon": "https://i.imgur.com/YL8MLEd.png",
 
