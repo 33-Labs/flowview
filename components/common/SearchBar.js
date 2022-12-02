@@ -7,6 +7,7 @@ import {
   transactionInProgressState,
 } from "../../lib/atoms"
 import { getAddressOfDomain } from "../../flow/scripts";
+import publicConfig from "../../publicConfig";
 
 export default function SearchBar(props) {
   const router = useRouter()
@@ -38,13 +39,36 @@ export default function SearchBar(props) {
           onKeyUp={async (event) => {
             if (event.key == "Enter") {
               const input = event.target.value.trim().toLowerCase()
+
               if (isValidFlowAddress(input)) {
                 setIsValidInput(true)
                 router.push(`/account/${input}`, undefined, { shallow: true })
+                setInputValue("")
                 return
               }
 
-              if (maybeDomain(input)) {
+              if (isValidFlowAddress(`0x${input}`)) {
+                setIsValidInput(true)
+                router.push(`/account/0x${input}`, undefined, { shallow: true })
+                setInputValue("")
+                return
+              }
+
+              if (isValidFlowAddress(`0x0${input}`)) {
+                setIsValidInput(true)
+                router.push(`/account/0x0${input}`, undefined, { shallow: true })
+                setInputValue("")
+                return
+              }
+
+              if (isValidFlowAddress(input.replace("0x", "0x0"))) {
+                setIsValidInput(true)
+                router.push(`/account/${input.replace("0x", "0x0")}`, undefined, { shallow: true })
+                setInputValue("")
+                return
+              }
+
+              if (publicConfig.chainEnv != "emulator" && maybeDomain(input)) {
                 const address = await getAddressOfDomain(input)
                 if (address) {
                   setIsValidInput(true)

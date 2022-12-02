@@ -34,10 +34,10 @@ export default function NavigationBar() {
     window.addEventListener("message", async (d) => {
       if ((d.data.type === "FCL:VIEW:RESPONSE" && d.data.status === "APPROVED" && (d.data.data.network && d.data.data.network !== publicConfig.chainEnv))
         || (d.data.type === "LILICO:NETWORK" && typeof d.data.network === "string" && d.data.network != publicConfig.chainEnv)) {
+        fcl.unauthenticate()
         setShowBasicNotification(true)
         setBasicNotificationContent({ type: "exclamation", title: "WRONG NETWORK", detail: null })
         await new Promise(r => setTimeout(r, 2))
-        fcl.unauthenticate()
         localStorage.setItem("shouldDoConnectionJump", "YES")
       }
     })
@@ -101,10 +101,10 @@ export default function NavigationBar() {
           </label>
         </Link>
         <label className="hidden sm:block px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
-          {`${publicConfig.chainEnv == "mainnet" ? "BETA" : "TESTNET"}`}
+        {`${publicConfig.chainEnv.toUpperCase()}`}
         </label>
         <label className="block sm:hidden px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
-          {`${publicConfig.chainEnv == "mainnet" ? "BETA" : "T"}`}
+        {`${publicConfig.chainEnv.toUpperCase().charAt(0)}`}
         </label>
       </div>
 

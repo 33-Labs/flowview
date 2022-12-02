@@ -10,7 +10,7 @@ import { classNames, getContract } from "../../lib/utils"
 import { destroy, unlink } from "../../flow/transactions"
 import { useSWRConfig } from 'swr'
 import { useState } from "react"
-import { getStoredResource } from "../../flow/scripts"
+import { getStoredResource, getStoredStruct } from "../../flow/scripts"
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import Spinner from "../../components/common/Spinner"
 import { vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs'
@@ -181,7 +181,7 @@ export default function ItemsView(props) {
     )
   }
 
-  const getLoadResourceButton = () => {
+  const getLoadResourceButton = (isResource) => {
     return (
       <button
         type="button"
@@ -196,13 +196,29 @@ export default function ItemsView(props) {
           if (!showResource || resourceError) {
             setShowResource(true)
             setResourceError(null)
-            getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
+
+            if (isResource) {
+              getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
               .then((resource) => {
-                setResource(resource)
+                  setResource(resource)
               })
               .catch((e) => {
                 setResourceError(e)
               })
+            } else {
+              getStoredStruct(account, item.path, setTransactionInProgress, setTransactionStatus)
+              .then((resource) => {
+                if (typeof resource == "boolean") {
+                  setResource(`${resource}`)
+                } else {
+                  setResource(resource)
+                }
+              })
+              .catch((e) => {
+                console.log(e)
+                setResourceError(e)
+              })
+            }
           }
         }}
       >
@@ -272,10 +288,10 @@ export default function ItemsView(props) {
         {
           user && user.loggedIn && user.addr == account ?
             (pathType == "Storage" ? <div className="flex gap-x-2 items-center">
-              {item.isResource ? getLoadResourceButton() : null}
-              {getDestroyButton()}
+              {getLoadResourceButton(item.isResource)}
+              {item.isResource ? getDestroyButton() : null}
             </div> : getUnlinkButton()) : (
-              pathType == "Storage" && item.isResource ? getLoadResourceButton() : null
+              pathType == "Storage" && item.isResource ? getLoadResourceButton(item.isResource) : null
             )
         }
       </div>

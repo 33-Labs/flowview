@@ -1,12 +1,6 @@
 import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
 
-const NFTCatalogPath = "0xNFTCatalog"
-const NonFungibleTokenPath = "0xNonFungibleToken"
-const FungibleTokenPath = "0xFungibleToken"
-const MetadataViewsPath = "0xMetadataViews"
-const FlowboxPath = "0xFlowbox"
-
 const outdatedPaths = (network) => {
   if (network == "mainnet") {
     return outdatedPathsMainnet
@@ -163,7 +157,6 @@ export const getDefaultDomainsOfAddress = async (address) => {
     return DomainUtils.getDefaultDomainsOfAddress(address)
   }
   `
-  .replace(FlowboxPath, publicConfig.flowboxAddress)
 
   const domains = await fcl.query({
     cadence: code,
@@ -187,7 +180,6 @@ export const getAddressOfDomain = async (domain) => {
     return DomainUtils.getAddressOfDomain(name: name, root: root)
   }
   `
-  .replace(FlowboxPath, publicConfig.flowboxAddress)
 
   const address = await fcl.query({
     cadence: code,
@@ -240,8 +232,6 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
     return res
   }
   `
-  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
-  .replace(MetadataViewsPath, publicConfig.metadataViewsAddress)
 
   const displays = await fcl.query({
     cadence: code,
@@ -360,7 +350,6 @@ export const getNftCatalogByCollectionIDs = async (collectionIDs) => {
     return res
   }
   `
-  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
 
   const catalogs = await fcl.query({
     cadence: code,
@@ -396,7 +385,6 @@ const getCatalogTypeData = async () => {
     return catalog
   }
   `
-  .replace(NFTCatalogPath, publicConfig.nftCatalogAddress)
 
   const typeData = await fcl.query({
     cadence: code
@@ -475,8 +463,6 @@ export const getStoredItems = async (address, paths) => {
     return items
   }
   `
-  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
-  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
 
   const items = await fcl.query({
     cadence: code,
@@ -515,6 +501,29 @@ const getStoragePaths = async (address) => {
 
   return paths
 }
+
+export const getStoredStruct = async (address, path) => {
+  const pathIdentifier = path.replace("/storage/", "")
+
+  const code = `
+  pub fun main(address: Address, pathStr: String): &AnyStruct? {
+    let account = getAuthAccount(address)
+    let path = StoragePath(identifier: pathStr)!
+    return account.borrow<&AnyStruct>(from: path)
+  }
+  `
+
+  const resource = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(pathIdentifier, t.String),
+    ]
+  }) 
+
+  return resource
+}
+
 
 export const getStoredResource = async (address, path) => {
   const pathIdentifier = path.replace("/storage/", "")
@@ -660,8 +669,6 @@ export const getPublicItems = async (address, paths) => {
     return items
   }
   `
-  .replace(FungibleTokenPath, publicConfig.fungibleTokenAddress)
-  .replace(NonFungibleTokenPath, publicConfig.nonFungibleTokenAddress)
 
   const items = await fcl.query({
     cadence: code,
