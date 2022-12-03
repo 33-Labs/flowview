@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import Layout from "../../../components/common/Layout"
-import { huntStorage, huntPrivate } from "../../../flow/bug_hunter"
+import { huntStorage, huntPrivate, huntPublic } from "../../../flow/bug_hunter"
 
 export default function Analyzer() {
   const router = useRouter()
@@ -15,6 +15,12 @@ export default function Analyzer() {
               await huntStorage(account)
             }}>
             Analyze Storage
+          </button>
+          <button
+            onClick={async () => {
+              await huntPublic(account)
+            }}>
+            Analyze Public
           </button>
           <button
             onClick={async () => {

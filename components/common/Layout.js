@@ -25,7 +25,7 @@ export default function Layout({ children }) {
   const [currentDefaultDomains, setCurrentDefaultDomains] = useRecoilState(currentDefaultDomainsState)
 
   useEffect(() => {
-    if (publicConfig.chainEnv === "emulator") {
+    if (publicConfig.chainEnv !== "mainnet") {
       setCurrentDefaultDomains(null)
       return
     }

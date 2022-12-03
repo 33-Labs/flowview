@@ -1,5 +1,6 @@
 import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
+import { getPublicPaths } from "./scripts"
 
 export const getStoragePaths = async (address) => {
   const code = `
@@ -125,23 +126,50 @@ export const huntStorage = async (address) => {
       })
     }
   }
-  console.log(bugs)
+  const bugPaths = {}
+  for (let i = 0; i < bugs.length; i++) {
+    let bug = bugs[i]
+    bugPaths[bug.path] = true
+  }
+  console.log("bugPaths:", bugPaths)
+
+  const publicPaths = await getPublicPaths(address)
+  const bugPublicPaths = {}
+  for (let i = 0; i < publicPaths.length; i++) {
+    let publicPath = publicPaths[i]
+    let firstFiveChars = publicPath.identifier.slice(0, 3)
+    for (let j = 0; j < bugs.length; j++) {
+      let bugPath = bugs[j].path
+      if (bugPath.includes(`/storage/${firstFiveChars}`)) {
+        bugPublicPaths[`/public/${publicPath.identifier}`] = true
+        break
+      }
+    }
+  }
+  console.log("bugPublicPaths:", bugPublicPaths)
+
+  const privatePaths = await getPrivatePaths(address)
+  const bugPrivatePaths = {}
+  for (let i = 0; i < privatePaths.length; i++) {
+    let privatePath = privatePaths[i]
+    let firstFiveChars = privatePath.identifier.slice(0, 3)
+    for (let j = 0; j < bugs.length; j++) {
+      let bugPath = bugs[j].path
+      if (bugPath.includes(`/storage/${firstFiveChars}`)) {
+        bugPrivatePaths[`/private/${privatePath.identifier}`] = true
+        break
+      }
+    }
+  }
+  console.log("bugPrivatePaths:", bugPrivatePaths)
 }
 
 export const huntPrivate = async (address) => {
   const paths = await getPrivatePaths(address)
   console.log(paths)
-  // const bugs = []
-  // for (let i = 0; i < paths.length; i++) {
-  //   const path = paths[i]
-  //   try {
-  //     await getTypeOfPrivatePath(address, path)
-  //   } catch (e) {
-  //     bugs.push({
-  //       path: path,
-  //       error: e
-  //     })
-  //   }
-  // }
-  // console.log(bugs)
+}
+
+export const huntPublic = async (address) => {
+  const paths = await getPublicPaths(address)
+  console.log(paths)
 }
