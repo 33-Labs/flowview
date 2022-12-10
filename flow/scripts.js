@@ -355,15 +355,19 @@ export const getStoredItems = async (address, paths) => {
       pub let type: Type
       pub let isResource: Bool
       pub let isNFTCollection: Bool
+      pub let tokenIDs: [UInt64]
       pub let isVault: Bool
+      pub let balance: UFix64?
   
-      init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, isVault: Bool) {
+      init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, tokenIDs: [UInt64], isVault: Bool, balance: UFix64?) {
           self.address = address
           self.path = path
           self.type = type
           self.isResource = isResource
           self.isNFTCollection = isNFTCollection
+          self.tokenIDs = tokenIDs
           self.isVault = isVault
+          self.balance = balance
       }
   }
 
@@ -379,8 +383,22 @@ export const getStoredItems = async (address, paths) => {
 
       if let type = account.type(at: path) {
         let isResource = type.isSubtype(of: resourceType)
+
         let isNFTCollection = type.isSubtype(of: collectionType)
+        var tokenIDs: [UInt64] = []
+        if isNFTCollection {
+          if let collectionRef = account.borrow<&NonFungibleToken.Collection>(from: path) {
+            tokenIDs = collectionRef.getIDs()
+          }
+        }
+
         let isVault = type.isSubtype(of: vaultType) 
+        var balance: UFix64? = nil
+        if isVault {
+          if let vaultRef = account.borrow<&FungibleToken.Vault>(from: path) {
+            balance = vaultRef.balance
+          }
+        }
 
         let item = Item(
           address: address,
@@ -388,7 +406,9 @@ export const getStoredItems = async (address, paths) => {
           type: type,
           isResource: isResource,
           isNFTCollection: isNFTCollection,
-          isVault: isVault
+          tokenIDs: tokenIDs,
+          isVault: isVault,
+          balance: balance
         )
 
         items.append(item)

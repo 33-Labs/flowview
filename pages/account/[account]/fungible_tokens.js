@@ -2,14 +2,14 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import TokenList from "../../../components/TokenList"
 import Layout from "../../../components/common/Layout"
-import { bulkGetPublicItems } from "../../../flow/scripts"
+import { bulkGetStoredItems } from "../../../flow/scripts"
 import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
 import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"
 import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import { useRecoilState } from "recoil"
-import { currentPublicItemsState, tokenRegistryState } from "../../../lib/atoms"
+import { currentStoredItemsState, tokenRegistryState } from "../../../lib/atoms"
 
 const formatBalancesData = (balances) => {
   return balances.map((data) => {
@@ -30,23 +30,23 @@ export default function FungibleTokens(props) {
   const { account } = router.query
 
   const [tokens, setTokens] = useState([])
-  const [currentPublicItems, setCurrentPublicItems] = useRecoilState(currentPublicItemsState)
+  const [currentStoredItems, setCurrentStoredItems] = useRecoilState(currentStoredItemsState)
   const [tokenRegistry, setTokenRegistry] = useRecoilState(tokenRegistryState)
   const [balanceData, setBalanceData] = useState(null)
 
   useEffect(() => {
     if (account && isValidFlowAddress(account)) {
-      if (!currentPublicItems || (currentPublicItems.length > 0 && currentPublicItems[0].address != account)) {
-        setCurrentPublicItems(null)
-        bulkGetPublicItems(account).then((items) => {
+      if (!currentStoredItems || (currentStoredItems.length > 0 && currentStoredItems[0].address != account)) {
+        setCurrentStoredItems(null)
+        bulkGetStoredItems(account).then((items) => {
           const orderedItems = items.sort((a, b) => a.path.localeCompare(b.path))
-          setCurrentPublicItems(orderedItems)
+          setCurrentStoredItems(orderedItems)
         })
       } else {
-        setBalanceData(currentPublicItems.filter((item) => item.isBalanceCap))
+        setBalanceData(currentStoredItems.filter((item) => item.isVault))
       }
     }
-  }, [currentPublicItems, account])
+  }, [currentStoredItems, account])
 
   useEffect(() => {
     if (tokenRegistry) return
