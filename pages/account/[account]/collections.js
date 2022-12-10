@@ -152,7 +152,7 @@ export default function Collections(props) {
           <div className="min-w-[540px] p-2 flex gap-x-2 justify-between">
             <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center justify-center">
               <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
-                {`Collections ${collections ? `(${collections.length})` : ""}`}
+                {`Collections ${filteredCollections ? `(${filteredCollections.length})` : ""}`}
               </h1>
               <div className="flex gap-x-2 items-center">
                 <label className="shrink-0 block text-gray-600 text-base font-normal font-flow">
