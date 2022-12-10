@@ -50,6 +50,7 @@ const collectionsWithCatalogInfo = (collections, nftCatalog) => {
       collection.squareImage = catalogInfo.catalog.collectionDisplay.squareImage
       collection.contractName = catalogInfo.catalog.contractName
       collection.contractAddress = catalogInfo.catalog.contractAddress
+      collection.uuid = `A.${collection.contractAddress.replace("0x", "")}.${collection.contractName}`
     }
     newCollections.push(collection)
   }

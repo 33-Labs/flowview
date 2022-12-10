@@ -30,11 +30,11 @@ export default function CollectionView(props) {
               {
                 collection.collectionIdentifier ?
                   <a
-                    href={`${publicConfig.flowscanURL}/contract/A.${collection.contractAddress}.${collection.contractName}`}
+                    href={`${publicConfig.flowscanURL}/contract/${collection.uuid}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline font-sm font-bold decoration-drizzle decoration-2">
-                    {`A.${collection.contractAddress}.${collection.contractName}`}
+                    {collection.uuid}
                   </a> : collection.path
               }
 
