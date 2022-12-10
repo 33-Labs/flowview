@@ -2,13 +2,14 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import Layout from "../../../components/common/Layout"
 import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../flow/scripts"
-import { isValidFlowAddress, getResourceType, getContract } from "../../../lib/utils"
+import { isValidFlowAddress, getResourceType, getContract, classNames } from "../../../lib/utils"
 import Custom404 from "./404"
 import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import CollectionView from "../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
 import { currentStoredItemsState, nftCatalogState } from "../../../lib/atoms"
+import { Switch } from "@headlessui/react"
 
 const collectionsWithExtraData = (collections) => {
   return collections.map((c) => {
@@ -59,6 +60,8 @@ export default function Collections(props) {
   const router = useRouter()
   const { account } = router.query
 
+  const [hideEmptyCollections, setHideEmptyCollections] = useState(false)
+  const [filteredCollections, setFilteredCollections] = useState(null)
   const [collections, setCollections] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
   const [currentStoredItems, setCurrentStoredItems] = useRecoilState(currentStoredItemsState)
@@ -98,6 +101,16 @@ export default function Collections(props) {
     }
   }, [collectionData, nftCatalog])
 
+  useEffect(() => {
+    if (collections) {
+      if (hideEmptyCollections) {
+        setFilteredCollections(collections.filter((c) => c.tokenIDs.length > 0))
+      } else {
+        setFilteredCollections(collections)
+      }
+    }
+  }, [collections, hideEmptyCollections])
+
   if (!account) {
     return <></>
   }
@@ -107,7 +120,7 @@ export default function Collections(props) {
   }
 
   const showCollections = () => {
-    if (!collections) {
+    if (!collections || !filteredCollections) {
       return (
         <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
@@ -117,8 +130,8 @@ export default function Collections(props) {
       return (
         <>
           {
-            collections.length > 0 ?
-              collections.map((collection, index) => {
+            filteredCollections.length > 0 ?
+              filteredCollections.map((collection, index) => {
                 return (
                   <CollectionView collection={collection} key={`${collection.path}_${index}`} />
                 )
@@ -136,11 +149,36 @@ export default function Collections(props) {
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="p-2 flex gap-x-2 justify-between">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Collections ${collections ? `(${collections.length})` : ""}`}
-            </h1>
-            <label className={`hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+          <div className="min-w-[540px] p-2 flex gap-x-2 justify-between">
+            <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center justify-center">
+              <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
+                {`Collections ${collections ? `(${collections.length})` : ""}`}
+              </h1>
+              <div className="flex gap-x-2 items-center">
+                <label className="shrink-0 block text-gray-600 text-base font-normal font-flow">
+                  Hide empty collections
+                </label>
+                <Switch
+                  checked={hideEmptyCollections}
+                  onChange={async () => {
+                    setHideEmptyCollections(!hideEmptyCollections)
+                  }}
+                  className={classNames(
+                    hideEmptyCollections ? 'bg-drizzle' : 'bg-gray-200',
+                    'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle'
+                  )}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={classNames(
+                      hideEmptyCollections ? 'translate-x-5' : 'translate-x-0',
+                      'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200'
+                    )}
+                  />
+                </Switch>
+              </div>
+            </div>
+            <label className={`item-start hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
               <a href={`${publicConfig.drizzleURL}`}
                 target="_blank"
                 rel="noopener noreferrer"
