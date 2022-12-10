@@ -129,22 +129,22 @@ export const getAddressOfDomain = async (domain) => {
 
 // --- Collections ---
 
-export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
+export const getNftDisplays = async (address, storagePathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
   const code = `
   import NonFungibleToken from 0xNonFungibleToken
   import MetadataViews from 0xMetadataViews
 
-  pub fun main(address: Address, publicPathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
+  pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
     let account = getAuthAccount(address)
     let res: {UInt64: MetadataViews.Display?} = {}
 
-    let path = PublicPath(identifier: publicPathID)!
-    let collectionRef = account.getCapability<&{MetadataViews.ResolverCollection}>(path).borrow()
+    let path = StoragePath(identifier: storagePathID)!
+    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
     if (collectionRef == nil) {
       for tokenID in tokenIDs {
         res[tokenID] = MetadataViews.Display(
-          name: publicPathID,
+          name: storagePathID,
           description: "",
           thumbnail: MetadataViews.HTTPFile(url: "")
         )
@@ -158,7 +158,7 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
         res[tokenID] = display
       } else {
         res[tokenID] = MetadataViews.Display(
-          name: publicPathID,
+          name: storagePathID,
           description: "",
           thumbnail: MetadataViews.HTTPFile(url: "")
         )
@@ -172,7 +172,7 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
     cadence: code,
     args: (arg, t) => [
       arg(address, t.Address),
-      arg(publicPathID, t.String),
+      arg(storagePathID, t.String),
       arg(ids, t.Array(t.UInt64))
     ]
   }) 

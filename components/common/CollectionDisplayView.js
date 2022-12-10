@@ -1,3 +1,4 @@
+import { PlusCircleIcon } from "@heroicons/react/outline"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { bulkGetNftDisplays } from "../../flow/scripts"
@@ -16,11 +17,24 @@ export default function CollectionDisplayView(props) {
 
   const loadDisplays = () => {
     if (collection && account && isValidFlowAddress(account)) {
-      bulkGetNftDisplays(account, collection, limit, (displays || []).length)
+      const offset = (displays || []).length
+      bulkGetNftDisplays(account, collection, limit, offset)
         .then((data) => {
           setDisplayData(data)
         })
         .catch((e) => {
+          const totalTokenIDs = collection.tokenIDs
+          const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
+          const placeholders = {}
+          for (let i = 0; i < tokenIDs.length; i++) {
+            const tokenID = tokenIDs[i]
+            placeholders[tokenID] = {
+              name: collection.contractName,
+              description: "",
+              thumbnail: {url: ""}
+            }
+          }
+          setDisplayData(placeholders)
           console.error(e)
         })
     }
@@ -30,11 +44,11 @@ export default function CollectionDisplayView(props) {
     loadDisplays()
   }, [])
 
+  // TODO: Enhance
   const checkNeedRelink = (collection, display) => {
     if (!collection.squareImage) { return false }
     if (!collection.collectionIdentifier) { return false }
-    const nftImageSrc = getImageSrcFromMetadataViewsFile(collection.squareImage.file)
-    return display.imageSrc == nftImageSrc
+    return display.thumbnail && display.thumbnail.url && display.thumbnail.url == ""
   }
 
   const getImageSrc = (file) => {
