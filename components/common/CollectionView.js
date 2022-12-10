@@ -42,17 +42,21 @@ export default function CollectionView(props) {
           </div>
         </div>
         <div className="flex gap-x-1 items-center">
-          <button
-            type="button"
-            className={"text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0"}
-            onClick={async () => {
-              setShowNFTs(!showNFTs)
-            }}
-          >
-            {
-              showNFTs ? "Hide NFTs" : "Show NFTs"
-            }
-          </button>
+          {
+            collection.tokenIDs.length > 0 ?
+              <button
+                type="button"
+                className={"text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0"}
+                onClick={async () => {
+                  setShowNFTs(!showNFTs)
+                }}
+              >
+                {
+                  showNFTs ? "Hide NFTs" : "Show NFTs"
+                }
+              </button> : null
+          }
+
           {
             collection.collectionIdentifier ?
               <label className={`cursor-pointer text-white bg-catalog hover:bg-catalog-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>

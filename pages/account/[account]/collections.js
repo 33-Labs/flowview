@@ -1,14 +1,14 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import Layout from "../../../components/common/Layout"
-import { bulkGetNftCatalog, bulkGetPublicItems } from "../../../flow/scripts"
+import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../flow/scripts"
 import { isValidFlowAddress, getResourceType, getContract } from "../../../lib/utils"
 import Custom404 from "./404"
 import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import CollectionView from "../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
-import { currentPublicItemsState, nftCatalogState } from "../../../lib/atoms"
+import { currentStoredItemsState, nftCatalogState } from "../../../lib/atoms"
 
 const collectionsWithExtraData = (collections) => {
   return collections.map((c) => {
@@ -17,7 +17,7 @@ const collectionsWithExtraData = (collections) => {
     }
 
     let resourceType = getResourceType(c.type)
-    let contract = c.path.replace("/public/", "")
+    let contract = c.path.replace("/storage/", "")
     let contractName = contract
     if (resourceType != "AnyResource") {
       contract = getContract(resourceType)
@@ -32,8 +32,8 @@ const collectionsWithExtraData = (collections) => {
 const collectionsWithCatalogInfo = (collections, nftCatalog) => {
   const catalogPathMap = {}
   for (const [collectionID, catalog] of Object.entries(nftCatalog)) {
-    const publicPath = catalog.collectionData.publicPath
-    catalogPathMap[`/${publicPath.domain}/${publicPath.identifier}`] = {
+    const path = catalog.collectionData.storagePath
+    catalogPathMap[`/${path.domain}/${path.identifier}`] = {
       collectionIdentifier: collectionID,
       catalog: catalog
     }
@@ -61,7 +61,7 @@ export default function Collections(props) {
 
   const [collections, setCollections] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
-  const [currentPublicItems, setCurrentPublicItems] = useRecoilState(currentPublicItemsState)
+  const [currentStoredItems, setCurrentStoredItems] = useRecoilState(currentStoredItemsState)
   const [nftCatalog, setNftCatalog] = useRecoilState(nftCatalogState)
 
   useEffect(() => {
@@ -79,16 +79,16 @@ export default function Collections(props) {
 
   useEffect(() => {
     if (account && isValidFlowAddress(account)) {
-      if (!currentPublicItems || (currentPublicItems.length > 0 && currentPublicItems[0].address != account)) {
-        bulkGetPublicItems(account).then((items) => {
+      if (!currentStoredItems || (currentStoredItems.length > 0 && currentStoredItems[0].address != account)) {
+        bulkGetStoredItems(account).then((items) => {
           const orderedItems = items.sort((a, b) => a.path.localeCompare(b.path))
-          setCurrentPublicItems(orderedItems)
+          setCurrentStoredItems(orderedItems)
         }).catch((e) => console.error(e))
       } else {
-        setCollectionData(currentPublicItems.filter((item) => item.isCollectionCap && item.tokenIDs.length > 0))
+        setCollectionData(currentStoredItems.filter((item) => item.isNFTCollection && item.tokenIDs.length >= 0))
       }
     }
-  }, [currentPublicItems, account])
+  }, [currentStoredItems, account])
 
   useEffect(() => {
     if (collectionData && nftCatalog) {

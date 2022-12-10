@@ -135,16 +135,16 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
   import NonFungibleToken from 0xNonFungibleToken
   import MetadataViews from 0xMetadataViews
 
-  pub fun main(address: Address, publicPathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
+  pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
     let account = getAuthAccount(address)
     let res: {UInt64: MetadataViews.Display?} = {}
 
-    let path = PublicPath(identifier: publicPathID)!
-    let collectionRef = account.getCapability<&{MetadataViews.ResolverCollection}>(path).borrow()
+    let path = StoragePath(identifier: storagePathID)!
+    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
     if (collectionRef == nil) {
       for tokenID in tokenIDs {
         res[tokenID] = MetadataViews.Display(
-          name: publicPathID,
+          name: storagePathID,
           description: "",
           thumbnail: MetadataViews.HTTPFile(url: "")
         )
@@ -158,7 +158,7 @@ export const getNftDisplays = async (address, publicPathID, tokenIDs) => {
         res[tokenID] = display
       } else {
         res[tokenID] = MetadataViews.Display(
-          name: publicPathID,
+          name: storagePathID,
           description: "",
           thumbnail: MetadataViews.HTTPFile(url: "")
         )
@@ -186,7 +186,7 @@ export const bulkGetNftDisplays = async (address, collection, limit, offset) => 
 
   const groups = splitList(tokenIDs, 20) 
   const promises = groups.map((group) => {
-    return getNftDisplays(address, collection.path.replace("/public/", ""), group)
+    return getNftDisplays(address, collection.path.replace("/storage/", ""), group)
   }) 
   const displayGroups = await Promise.all(promises)
   const displays = displayGroups.reduce((acc, current) => {
