@@ -1,14 +1,14 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import Layout from "../../../components/common/Layout"
-import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../flow/scripts"
-import { isValidFlowAddress, getResourceType, getContract, classNames } from "../../../lib/utils"
-import Custom404 from "./404"
-import publicConfig from "../../../publicConfig"
-import Spinner from "../../../components/common/Spinner"
-import CollectionView from "../../../components/common/CollectionView"
+import Layout from "../../../../components/common/Layout"
+import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../../flow/scripts"
+import { isValidFlowAddress, getResourceType, getContract, classNames } from "../../../../lib/utils"
+import Custom404 from "../404"
+import publicConfig from "../../../../publicConfig"
+import Spinner from "../../../../components/common/Spinner"
+import CollectionView from "../../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
-import { currentStoredItemsState, nftCatalogState } from "../../../lib/atoms"
+import { currentStoredItemsState, nftCatalogState } from "../../../../lib/atoms"
 import { Switch } from "@headlessui/react"
 
 const collectionsWithExtraData = (collections) => {
@@ -57,7 +57,7 @@ const collectionsWithCatalogInfo = (collections, nftCatalog) => {
   return newCollections
 }
 
-export default function Collections(props) {
+export default function Collection(props) {
   const router = useRouter()
   const { account } = router.query
 

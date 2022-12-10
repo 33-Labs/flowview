@@ -5,31 +5,32 @@ import useSWR from "swr"
 import ItemsView from "../../../components/common/ItemsView"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
-import { bulkGetPrivateItems } from "../../../flow/scripts"
+import { bulkGetStoredItems } from "../../../flow/scripts"
 import { isValidFlowAddress } from "../../../lib/utils"
 import Custom404 from "./404"
 
-const privateItemsFetcher = async (funcName, address) => {
-  return bulkGetPrivateItems(address)
+const storedItemsFetcher = async (funcName, address) => {
+  const items = await bulkGetStoredItems(address)
+  return items.sort((a, b) => a.path.localeCompare(b.path))
 }
 
-export default function PrivateItems(props) {
+export default function StoredItem(props) {
   const router = useRouter()
   const { account } = router.query
 
-  const [privateItems, setPrivateItems] = useState(null)
+  const [storedItems, setStoredItems] = useState(null)
   const [user, setUser] = useState({ loggedIn: null })
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: itemsData, error: itemsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["privateItemsFetcher", account] : null, privateItemsFetcher
+    account && isValidFlowAddress(account) ? ["storedItemsFetcher", account] : null, storedItemsFetcher
   )
 
   useEffect(() => {
     if (itemsData) {
       const data = itemsData.sort((a, b) => a.path.localeCompare(b.path))
-      setPrivateItems(data)
+      setStoredItems(data)
     }
   }, [itemsData])
 
@@ -42,9 +43,9 @@ export default function PrivateItems(props) {
   }
 
   const showItems = () => {
-    if (!privateItems) {
+    if (!storedItems) {
       return (
-        <div className="flex w-full mt-10 h-[200px] justify-center">
+        <div className="flex mt-10 h-[200px] justify-center">
           <Spinner />
         </div>
       )
@@ -52,13 +53,13 @@ export default function PrivateItems(props) {
 
     return (
       <>
-        {privateItems.length > 0 ?
-          privateItems.map((item, index) => {
+        {storedItems.length > 0 ?
+          storedItems.map((item, index) => {
             return (
               <ItemsView key={`privateItems-${index}`} item={item} account={account} user={user} />
             )
           }) :
-          <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
+          <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
             Nothing found
           </div>
         }
@@ -71,8 +72,8 @@ export default function PrivateItems(props) {
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Private Paths ${privateItems ? `(${privateItems.length})` : ""}`}
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {`Storage Paths ${storedItems ? `(${storedItems.length})` : ""}`}
             </h1>
           </div>
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">

@@ -14,7 +14,7 @@ const keysFetcher = async (funcName, address) => {
   return await getKeys(address)
 }
 
-export default function Keys(props) {
+export default function Key(props) {
   const router = useRouter()
   const { account } = router.query
 

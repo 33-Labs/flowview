@@ -35,7 +35,7 @@ const analyzeItems = (items) => {
   return dangerousItems
 }
 
-export default function PublicItems(props) {
+export default function PublicItem(props) {
   const router = useRouter()
   const { account } = router.query
 

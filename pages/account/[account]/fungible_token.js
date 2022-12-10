@@ -25,7 +25,7 @@ const formatBalancesData = (balances) => {
   })
 }
 
-export default function FungibleTokens(props) {
+export default function FungibleToken(props) {
   const router = useRouter()
   const { account } = router.query
 
