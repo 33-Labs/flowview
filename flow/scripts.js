@@ -129,6 +129,78 @@ export const getAddressOfDomain = async (domain) => {
 
 // --- Collections ---
 
+// export const getNftMetadataViews = async (address, storagePathID, tokenIDs) => {
+//   const ids = tokenIDs.map((id) => `${id}`)
+//   const code = `
+//   import NonFungibleToken from 0xNonFungibleToken
+//   import MetadataViews from 0xMetadataViews
+
+//   pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
+//     let account = getAuthAccount(address)
+//     let res: {UInt64: MetadataViews.Display?} = {}
+
+//     let path = StoragePath(identifier: storagePathID)!
+//     let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
+//     if (collectionRef == nil) {
+//       for tokenID in tokenIDs {
+//         res[tokenID] = MetadataViews.Display(
+//           name: storagePathID,
+//           description: "",
+//           thumbnail: MetadataViews.HTTPFile(url: "")
+//         )
+//       }
+//       return res
+//     }
+
+//     for tokenID in tokenIDs {
+//       let resolver = collectionRef!.borrowViewResolver(id: tokenID)
+//       let views = resolver.getViews()
+//       for view in views {
+//         if view.isInstance(Type<MetadataViews.Display>) {
+
+//         } else if view.isInstance(Type<MetadataViews.Editions>) {
+
+//         } else if view.isInstance(Type<MetadataViews.Serial>) {
+
+//         } else if view.isInstance(Type<MetadataViews.Royalties>) {
+
+//         } else if view.isInstance(Type<MetadataViews.Medias>) {
+
+//         } else if view.isInstance(Type<MetadataViews.License>) {
+
+//         } else if view.isInstance(Type<MetadataViews.ExternalURL>) {
+
+//         } else if view.isInstance(Type<MetadataViews.Traits>) {
+
+//         }
+//       }
+
+//       if let display = MetadataViews.getDisplay(resolver) {
+//         res[tokenID] = display
+//       } else {
+//         res[tokenID] = MetadataViews.Display(
+//           name: storagePathID,
+//           description: "",
+//           thumbnail: MetadataViews.HTTPFile(url: "")
+//         )
+//       }
+//     }
+//     return res
+//   }
+//   `
+
+//   const displays = await fcl.query({
+//     cadence: code,
+//     args: (arg, t) => [
+//       arg(address, t.Address),
+//       arg(storagePathID, t.String),
+//       arg(ids, t.Array(t.UInt64))
+//     ]
+//   }) 
+
+//   return displays   
+// }
+
 export const getNftDisplays = async (address, storagePathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
   const code = `

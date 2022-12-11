@@ -1,17 +1,17 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import Layout from "../../../../components/common/Layout"
-import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../../flow/scripts"
-import { isValidFlowAddress, classNames, collectionsWithCatalogInfo, collectionsWithExtraData } from "../../../../lib/utils"
-import Custom404 from "../404"
-import publicConfig from "../../../../publicConfig"
-import Spinner from "../../../../components/common/Spinner"
-import CollectionView from "../../../../components/common/CollectionView"
+import Layout from "../../../components/common/Layout"
+import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../flow/scripts"
+import { isValidFlowAddress, classNames, collectionsWithExtraData, collectionsWithCatalogInfo } from "../../../lib/utils"
+import Custom404 from "./404"
+import publicConfig from "../../../publicConfig"
+import Spinner from "../../../components/common/Spinner"
+import CollectionView from "../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
-import { currentStoredItemsState, nftCatalogState } from "../../../../lib/atoms"
+import { currentStoredItemsState, nftCatalogState } from "../../../lib/atoms"
 import { Switch } from "@headlessui/react"
 
-export default function Collection(props) {
+export default function Collections(props) {
   const router = useRouter()
   const { account } = router.query
 
@@ -88,7 +88,7 @@ export default function Collection(props) {
             filteredCollections.length > 0 ?
               filteredCollections.map((collection, index) => {
                 return (
-                  <CollectionView account={account} collection={collection} key={`${collection.path}_${index}`} />
+                  <CollectionView collection={collection} key={`${collection.path}_${index}`} />
                 )
               }) :
               <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">

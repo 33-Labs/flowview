@@ -3,9 +3,12 @@ import CollectionDisplayView from "./CollectionDisplayView"
 import publicConfig from "../../publicConfig"
 import { getImageSrcFromMetadataViewsFile } from "../../lib/utils"
 import { useState } from "react"
+import { useRouter } from "next/router"
+import { account } from "@onflow/fcl"
 
 export default function CollectionView(props) {
-  const { collection } = props
+  const router = useRouter()
+  const { account, collection } = props
 
   const [showNFTs, setShowNFTs] = useState(false)
   const [needRelink, setNeedRelink] = useState(false)
@@ -48,7 +51,11 @@ export default function CollectionView(props) {
                 type="button"
                 className={"text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0"}
                 onClick={async () => {
-                  setShowNFTs(!showNFTs)
+                  // setShowNFTs(!showNFTs)
+                  router.push({ 
+                    pathname: `${router.pathname}/[collection]`, 
+                    query: { account: account, collection: collection.path.replace("/storage/", "")}
+                  })
                 }}
               >
                 {
