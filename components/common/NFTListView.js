@@ -10,7 +10,7 @@ import Spinner from "./Spinner"
 export default function NFTListView(props) {
   const router = useRouter()
   const { account } = router.query
-  const { collection, setNeedRelink } = props
+  const { collection, setNeedRelink, setCollectionDisplay } = props
 
   const [displayData, setDisplayData] = useState(null)
   const [displays, setDisplays] = useState(null)
@@ -70,10 +70,14 @@ export default function NFTListView(props) {
     if (displayData) {
       const displayArray = []
       for (const [tokenID, display] of Object.entries(displayData)) {
+        if (display.collectionDisplay) {
+          setCollectionDisplay(display.collectionDisplay)
+        }
         const copyDisplay = Object.assign({}, display)
         copyDisplay.imageSrc = getImageSrc(display.thumbnail)
         copyDisplay.tokenID = tokenID
         displayArray.push(copyDisplay)
+
       }
 
       setDisplays((oldState) => {

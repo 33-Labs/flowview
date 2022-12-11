@@ -51,11 +51,10 @@ export default function CollectionView(props) {
                 type="button"
                 className={"text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0"}
                 onClick={async () => {
-                  // setShowNFTs(!showNFTs)
                   router.push({ 
                     pathname: `${router.pathname}/[collection]`, 
                     query: { account: account, collection: collection.path.replace("/storage/", "")}
-                  })
+                  }, undefined, { shallow: true, scroll: false })
                 }}
               >
                 {

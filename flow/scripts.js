@@ -212,18 +212,21 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
     pub let description: String
     pub let thumbnail: AnyStruct{MetadataViews.File}
     pub let rarity: String?
+    pub let collectionDisplay: MetadataViews.NFTCollectionDisplay?
 
-    init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?) {
+    init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, collectionDisplay: MetadataViews.NFTCollectionDisplay?) {
       self.name = name
       self.description = description
       self.thumbnail = thumbnail
       self.rarity = rarity
+      self.collectionDisplay = collectionDisplay
     }
   }
 
   pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: ViewInfo}{
     let account = getAuthAccount(address)
     let res: {UInt64: ViewInfo} = {}
+    var collectionDisplayFetched = false
 
     let path = StoragePath(identifier: storagePathID)!
     let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
@@ -233,7 +236,8 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
           name: storagePathID,
           description: "",
           thumbnail: MetadataViews.HTTPFile(url: ""),
-          rarity: nil
+          rarity: nil,
+          collectionDisplay: nil
         )
       }
       return res
@@ -247,18 +251,28 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
           rarityDesc = rarityView.description
         }
 
+        var collectionDisplay: MetadataViews.NFTCollectionDisplay? = nil
+        if (!collectionDisplayFetched) {
+          if let cDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
+            collectionDisplay = cDisplay
+            collectionDisplayFetched = true
+          }
+        }
+
         res[tokenID] = ViewInfo(
           name: display.name,
           description: display.description,
           thumbnail: display.thumbnail,
-          rarity: rarityDesc
+          rarity: rarityDesc,
+          collectionDisplay: collectionDisplay
         )
       } else {
         res[tokenID] = ViewInfo(
           name: storagePathID,
           description: "",
           thumbnail: MetadataViews.HTTPFile(url: ""),
-          rarity: nil
+          rarity: nil,
+          collectionDisplay: nil
         )
       }
     }
