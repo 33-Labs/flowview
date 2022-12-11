@@ -8,8 +8,7 @@ import { Switch } from "@headlessui/react"
 
 export default function TokenList(props) {
   const { tokens } = props
-  const [currentPage, setCurrentPage] = useState(1)
-  const [hideZeroBalance, setHideZeroBalance] = useState(false)
+  const [hideZeroBalance, setHideZeroBalance] = useState(true)
   const [filteredTokens, setFilteredTokens] = useState(tokens)
 
   useEffect(() => {
@@ -19,8 +18,6 @@ export default function TokenList(props) {
       setFilteredTokens(tokens)
     }
   }, [tokens, hideZeroBalance])
-
-  const pageSize = 10
 
   return (
     <div className="p-2 w-full overflow-auto h-screen">
@@ -37,7 +34,6 @@ export default function TokenList(props) {
               checked={hideZeroBalance}
               onChange={async () => {
                 setHideZeroBalance(!hideZeroBalance)
-                setCurrentPage(1)
               }}
               className={classNames(
                 hideZeroBalance ? 'bg-drizzle' : 'bg-gray-200',
@@ -102,7 +98,7 @@ export default function TokenList(props) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {getItemsInPage(filteredTokens, currentPage, pageSize).map((token, index) => (
+                    {filteredTokens.map((token, index) => (
                       <tr key={`tokens-${index}`}>
                         <td className="py-4 px-3 text-sm">
                           <div className="flex items-center">
@@ -135,38 +131,6 @@ export default function TokenList(props) {
               </div>
             </div>
           </div>
-          {filteredTokens.length > pageSize ?
-            <div className="mt-2 flex justify-between">
-              <button
-                className="bg-gray-50 p-2 rounded-full overflow-hidden shadow ring-1 ring-black ring-opacity-5"
-                disabled={currentPage == 1}
-                onClick={() => {
-                  if (currentPage == 1) { return }
-                  setCurrentPage(currentPage - 1)
-                }}
-              >
-                <ArrowLeftIcon
-                  className={`h-5 w-5 ${currentPage == 1 ? "text-gray-400" : "text-black"}`}
-                />
-              </button>
-              <button
-                className="bg-gray-50 h-9 w-9 rounded-full overflow-hidden shadow ring-1 ring-black ring-opacity-5"
-                disabled={true}
-              >{currentPage}</button>
-              <button
-                className="bg-gray-50 p-2 rounded-full overflow-hidden shadow ring-1 ring-black ring-opacity-5"
-                disabled={currentPage * pageSize >= filteredTokens.length}
-                onClick={() => {
-                  if (currentPage * pageSize >= filteredTokens.length) {
-                    return
-                  }
-                  setCurrentPage(currentPage + 1)
-                }}
-              >
-                <ArrowRightIcon className={`h-5 w-5 ${currentPage * pageSize >= filteredTokens.length ? "text-gray-400" : "text-black"}`} />
-              </button>
-            </div> : null
-          }
         </div> :
         <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
           Nothing found

@@ -15,7 +15,7 @@ export default function Collection(props) {
   const router = useRouter()
   const { account } = router.query
 
-  const [hideEmptyCollections, setHideEmptyCollections] = useState(false)
+  const [hideEmptyCollections, setHideEmptyCollections] = useState(true)
   const [filteredCollections, setFilteredCollections] = useState(null)
   const [collections, setCollections] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
@@ -67,7 +67,7 @@ export default function Collection(props) {
   }, [collections, hideEmptyCollections])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account)) {

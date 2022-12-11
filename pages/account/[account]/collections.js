@@ -67,7 +67,7 @@ export default function Collections(props) {
   }, [collections, hideEmptyCollections])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account)) {

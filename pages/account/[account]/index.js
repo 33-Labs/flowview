@@ -33,7 +33,7 @@ export default function Account(props) {
   }, [infoData, infoError])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account) || infoError) {

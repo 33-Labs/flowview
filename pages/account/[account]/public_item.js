@@ -63,7 +63,7 @@ export default function PublicItem(props) {
   // }, [currentPublicItems])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account)) {

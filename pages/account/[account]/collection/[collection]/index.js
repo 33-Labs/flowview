@@ -92,15 +92,15 @@ export default function CollectionDetail(props) {
     } else {
       return (
         <>
-        {
-          collection.tokenIDs.length > 0 ?
-            <div className="p-2 w-full h-screen overflow-auto">
-              <NFTListView collection={collection} setNeedRelink={setNeedRelink} setCollectionDisplay={setCollectionDisplay} />
-            </div> : 
-            <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
-              Nothing found
-            </div>
-        }
+          {
+            collection.tokenIDs.length > 0 ?
+              <div className="p-2 w-full h-screen overflow-auto">
+                <NFTListView collection={collection} setNeedRelink={setNeedRelink} setCollectionDisplay={setCollectionDisplay} />
+              </div> :
+              <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
+                Nothing found
+              </div>
+          }
         </>
       )
     }
@@ -162,8 +162,8 @@ export default function CollectionDetail(props) {
                 onClick={() => {
                   router.push({
                     pathname: "/account/[account]/collection",
-                    query: {account: account}
-                  }, undefined, { shallow: true, scroll: false})
+                    query: { account: account }
+                  }, undefined, { shallow: true, scroll: false })
                 }}
               >
                 <div className=" flex gap-x-2 text-drizzle items-center">
@@ -171,20 +171,21 @@ export default function CollectionDetail(props) {
                   <label className="cursor-pointer">Collections</label>
                 </div>
               </button>
-              <div className="flex gap-x-2 items-center">
-              <div className="h-[52px] w-[52px] shrink-0 relative rounded-full">
-              <Image src={
-                collectionDisplay ?
-                getImageSrcFromMetadataViewsFile(collectionDisplay.squareImage.file)
-                : "/token_placeholder.png"
-              } alt="" fill sizes="10vw" className="object-contain rounded-full" />
-            </div>
-              <div className="flex flex-col gap-y-1">
-                <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
-                  {`${collectionDisplay ? collectionDisplay.name : collectionPath}`}
-                </h1>
-                {getSocials(collectionDisplay)}
-              </div>
+              <div className="flex gap-x-3 items-center">
+                <div className="h-[64px] w-[64px] shrink-0 relative rounded-full">
+                  <Image src={
+                    collectionDisplay ?
+                      getImageSrcFromMetadataViewsFile(collectionDisplay.squareImage.file)
+                      : "/token_placeholder.png"
+                  } alt="" fill sizes="10vw" className="object-contain rounded-full" />
+                </div>
+                <div className="flex flex-col gap-y-1">
+                  <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
+                    {`${collectionDisplay ? collectionDisplay.name : collectionPath}`}
+                  </h1>
+                  <label className="text-black text-xs mb-1">{`/storage/${collectionPath}`}</label>
+                  {getSocials(collectionDisplay)}
+                </div>
               </div>
 
 

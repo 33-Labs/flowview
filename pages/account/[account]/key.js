@@ -3,7 +3,7 @@ import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
-import Key from "../../../components/common/Key"
+import Key from "../../../components/common/key"
 import KeyCreator from "../../../components/common/KeyCreator"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
@@ -14,7 +14,7 @@ const keysFetcher = async (funcName, address) => {
   return await getKeys(address)
 }
 
-export default function Key(props) {
+export default function Keys(props) {
   const router = useRouter()
   const { account } = router.query
 

@@ -92,7 +92,7 @@ export default function FungibleToken(props) {
   }, [balanceData, tokenRegistry])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account)) {

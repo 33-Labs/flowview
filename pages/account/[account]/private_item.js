@@ -34,7 +34,7 @@ export default function PrivateItem(props) {
   }, [itemsData])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account)) {
