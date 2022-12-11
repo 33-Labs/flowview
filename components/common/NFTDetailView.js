@@ -9,11 +9,53 @@ export default function NFTDetailView(props) {
   // const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
   console.log("metadata", metadata)
 
+  const getMediasView = (metadata) => {
+    const medias = metadata.medias
+    if (!medias || medias.items.length == 0) { return null }
+    return (
+      <div className="flex flex-col gap-y-4">
+        <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
+          {`Medias (${medias.items.length})`}
+        </h1>
+        <div className="flex gap-x-2 flex-wrap">
+          {
+            medias.items.map((item) => {
+              const isImage = item.mediaType.includes("image/")
+              const isVideo = item.mediaType.includes("video/")
+              let imageSrc = ""
+              if (isImage) {
+                imageSrc = getImageSrcFromMetadataViewsFile(item.file)
+              }
+              return (
+                <div className="flex gap-x-2">
+                  {
+                    isImage ?
+                      <div className="w-64 shrink-0 shadow-md aspect-square rounded-2xl bg-white relative overflow-hidden ring-1 ring-black ring-opacity-5">
+                        <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="33vw" />
+                      </div> : (
+                        isVideo ?
+                          <div className="w-64 shrink-0 shadow-md aspect-square rounded-2xl bg-white overflow-hidden ring-1 ring-black ring-opacity-5">
+                            <video controls>
+                              <source src={item.file.url} />
+                            </video>
+                          </div>
+                          : null
+                      )
+                  }
+                </div>
+              )
+            })
+          }
+        </div>
+      </div>
+    )
+  }
+
   const getEditionsView = (metadata) => {
     const editions = metadata.editions
     if (!editions || editions.infoList.length == 0) { return null }
     return (
-      <div className="flex flex-col gap-y-4 p-4"> 
+      <div className="flex flex-col gap-y-4 py-4 px-2">
         <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
           {`Editions (${editions.infoList.length})`}
         </h1>
@@ -22,7 +64,7 @@ export default function NFTDetailView(props) {
             editions.infoList.map((edition) => {
               return (
                 <div className="flex gap-x-1">
-                 <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`${edition.name} `}<span className="text-blue-300">&nbsp;|&nbsp;</span>{` #${edition.number} / ${edition.max}`}</label> 
+                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`${edition.name} `}<span className="text-blue-300">&nbsp;|&nbsp;</span>{` #${edition.number} / ${edition.max}`}</label>
                 </div>
               )
             })
@@ -34,9 +76,9 @@ export default function NFTDetailView(props) {
 
   const getRoyaltiesView = (metadata) => {
     const royalties = metadata.royalties
-    if (!royalties || royalties.cutInfos.length == 0) { return null } 
+    if (!royalties || royalties.cutInfos.length == 0) { return null }
     return (
-      <div className="flex flex-col gap-y-4 p-4"> 
+      <div className="flex flex-col gap-y-4 py-4 px-2">
         <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
           {`Royalties (${royalties.cutInfos.length})`}
         </h1>
@@ -66,10 +108,10 @@ export default function NFTDetailView(props) {
                         </td>
                         <td className="px-3 py-4 text-sm text-black min-w-[140px]">
                           <button
-                          onClick={() => {
-                            router.push(`/account/${cut.receiver.address}`)
-                          }}>
-                            <label 
+                            onClick={() => {
+                              router.push(`/account/${cut.receiver.address}`)
+                            }}>
+                            <label
                               className="cursor-pointer underline font-bold decoration-drizzle decoration-2"
                             >
                               {cut.receiver.address}
@@ -95,20 +137,28 @@ export default function NFTDetailView(props) {
     const traits = metadata.traits && metadata.traits.traits
     if (!traits || traits.length == 0) return null
     return (
-      <div className="flex flex-col gap-y-4 p-4">
+      <div className="flex flex-col gap-y-4 py-4 px-2">
         <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
           {`Traits (${traits.length})`}
         </h1>
         <div className="flex flex-wrap gap-x-2 gap-y-2">
           {
             traits.sort((a, b) => { return a.value.length - b.value.length }).map((trait) => {
+              let rarityColor = null
+              if (trait.rarity && trait.rarity.description) {
+                rarityColor = getRarityColor(trait.rarity.description.toLowerCase())
+              }
               return (
                 <div className="flex flex-col gap-y-1 px-3 py-2 bg-white rounded-xl overflow-hidden ring-1 ring-black ring-opacity-5">
                   <label className="font-semibold text-gray-600 text-center text-sm">{trait.name}</label>
                   <label className="text-center text-sm">{trait.value}</label>
+                  
                   {
-                    trait.rarity ?
-                      <label className="text-gray-400 text-center text-sm">{trait.rarity}</label>
+                    // TODO: Score?
+                    trait.rarity && trait.rarity.description ?
+                    <div className="flex flex-col items-center mt-1">
+                      <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${rarityColor}`}>{trait.rarity.description.toUpperCase()}</label>
+                      </div>
                       : null
                   }
                 </div>
@@ -128,7 +178,7 @@ export default function NFTDetailView(props) {
     const externalURL = metadata.external_url
     const imageSrc = getImageSrcFromMetadataViewsFile(display.thumbnail)
     return (
-      <div className="p-4 flex gap-x-5">
+      <div className="pb-4 pt-2 px-2 flex gap-x-5">
         <div className="w-96 shrink-0 shadow-md aspect-square flex justify-center rounded-2xl bg-white relative overflow-hidden ring-1 ring-black ring-opacity-5">
           <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="33vw" />
         </div>
@@ -142,7 +192,7 @@ export default function NFTDetailView(props) {
             <label className="font-bold text-black text-3xl">{display.name}</label>
             {
               serial ?
-                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-gray-100 text-gray-800`}>{`Serial: #${serial.number}`}</label>
+                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-yellow-100 text-yellow-800`}>{`Serial: #${serial.number}`}</label>
                 : null
             }
             <label className="text-black text-base">{display.description}</label>
@@ -161,9 +211,7 @@ export default function NFTDetailView(props) {
               </div>
               : null
           }
-
         </div>
-
       </div>
     )
   }
@@ -182,21 +230,7 @@ export default function NFTDetailView(props) {
       {getTraitsView(metadata)}
       {getEditionsView(metadata)}
       {getRoyaltiesView(metadata)}
-      {/* <div className="flex justify-center w-full rounded-t-2xl aspect-square bg-drizzle-ultralight relative overflow-hidden">
-        <Image className={"object-contain"} src={display.imageSrc || "/token_placeholder.png"} fill alt="" priority sizes="10vw" />
-        {
-          display.rarity ?
-            <div className={`absolute top-2 px-2 ${rarityColor} rounded-full font-flow font-medium text-xs`}>
-              {`${display.rarity}`.toUpperCase()}
-            </div> : null
-        }
-      </div>
-      <label className="px-3 max-h-12 break-words overflow-hidden text-ellipsis font-flow font-semibold text-xs text-black">
-        {`${display.name}`}
-      </label>
-      <label className="px-3 font-flow font-medium text-xs text-gray-400">
-        {`#${display.tokenID}`}
-      </label> */}
+      {getMediasView(metadata)}
     </div>
   )
 }

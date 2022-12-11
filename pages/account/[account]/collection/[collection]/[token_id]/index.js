@@ -76,14 +76,14 @@ export default function NFT(props) {
                 className="mb-2"
                 onClick={() => {
                   router.push({
-                    pathname: "/account/[account]/collection",
-                    query: { account: account }
+                    pathname: "/account/[account]/collection/[collection]",
+                    query: { account: account, collection: collectionPath }
                   }, undefined, { shallow: true, scroll: false })
                 }}
               >
                 <div className=" flex gap-x-2 text-drizzle items-center">
                   <ArrowLeftIcon className="h-5 w-5" />
-                  <label className="cursor-pointer">Collections</label>
+                  <label className="cursor-pointer">Collection Detail</label>
                 </div>
               </button>
 
