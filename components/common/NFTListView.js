@@ -77,7 +77,6 @@ export default function NFTListView(props) {
         copyDisplay.imageSrc = getImageSrc(display.thumbnail)
         copyDisplay.tokenID = tokenID
         displayArray.push(copyDisplay)
-
       }
 
       setDisplays((oldState) => {
@@ -107,7 +106,22 @@ export default function NFTListView(props) {
             {
               displays.map((display, index) => {
                 return (
-                  <NFTView display={display} key={`${display.tokenID}_${index}`} />
+                  <button
+                  key={`${display.tokenID}_${index}`}
+                  onClick={() => {
+                    console.log("CLICK")
+                    router.push({
+                      pathname: `${router.pathname}/[token_id]`,
+                      query: {
+                        account: account,
+                        collection: collection.path.replace("/storage/", ""),
+                        token_id: display.tokenID 
+                      }
+                    }, undefined, { shallow: true, scroll: false})
+                  }}
+                  >
+                    <NFTView display={display} />
+                  </button>
                 )
               })
             }

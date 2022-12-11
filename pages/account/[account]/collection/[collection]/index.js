@@ -155,7 +155,7 @@ export default function CollectionDetail(props) {
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="p-2 flex gap-x-2 justify-between">
+          <div className="p-2 flex gap-x-2 justify-between w-full">
             <div className="flex flex-col gap-y-2 justify-center">
               <button
                 className="mb-2"
