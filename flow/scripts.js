@@ -201,6 +201,101 @@ export const getAddressOfDomain = async (domain) => {
 //   return displays   
 // }
 
+export const getNftViews = async (address, storagePathID, tokenIDs) => {
+  const ids = tokenIDs.map((id) => `${id}`)
+  const code = `
+  import NonFungibleToken from 0xNonFungibleToken
+  import MetadataViews from 0xMetadataViews
+
+  pub struct ViewInfo {
+    pub let name: String
+    pub let description: String
+    pub let thumbnail: AnyStruct{MetadataViews.File}
+    pub let rarity: String?
+
+    init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?) {
+      self.name = name
+      self.description = description
+      self.thumbnail = thumbnail
+      self.rarity = rarity
+    }
+  }
+
+  pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: ViewInfo}{
+    let account = getAuthAccount(address)
+    let res: {UInt64: ViewInfo} = {}
+
+    let path = StoragePath(identifier: storagePathID)!
+    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
+    if (collectionRef == nil) {
+      for tokenID in tokenIDs {
+        res[tokenID] = ViewInfo(
+          name: storagePathID,
+          description: "",
+          thumbnail: MetadataViews.HTTPFile(url: ""),
+          rarity: nil
+        )
+      }
+      return res
+    }
+
+    for tokenID in tokenIDs {
+      let resolver = collectionRef!.borrowViewResolver(id: tokenID)
+      if let display = MetadataViews.getDisplay(resolver) {
+        var rarityDesc: String? = nil
+        if let rarityView = MetadataViews.getRarity(resolver) {
+          rarityDesc = rarityView.description
+        }
+
+        res[tokenID] = ViewInfo(
+          name: display.name,
+          description: display.description,
+          thumbnail: display.thumbnail,
+          rarity: rarityDesc
+        )
+      } else {
+        res[tokenID] = ViewInfo(
+          name: storagePathID,
+          description: "",
+          thumbnail: MetadataViews.HTTPFile(url: ""),
+          rarity: nil
+        )
+      }
+    }
+    return res
+  }
+  `
+
+  const displays = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(storagePathID, t.String),
+      arg(ids, t.Array(t.UInt64))
+    ]
+  }) 
+
+  return displays  
+}
+
+export const bulkGetNftViews = async (address, collection, limit, offset) => {
+  const totalTokenIDs = collection.tokenIDs
+  const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
+
+  const groups = splitList(tokenIDs, 20) 
+  const promises = groups.map((group) => {
+    return getNftViews(address, collection.path.replace("/storage/", ""), group)
+  }) 
+  const displayGroups = await Promise.all(promises)
+  const displays = displayGroups.reduce((acc, current) => {
+    return Object.assign(acc, current)
+  }, {}) 
+
+  return displays
+}
+
+// --- old ---
+
 export const getNftDisplays = async (address, storagePathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
   const code = `

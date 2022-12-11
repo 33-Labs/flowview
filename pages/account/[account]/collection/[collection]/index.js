@@ -1,7 +1,11 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useRecoilState } from "recoil"
+import CollectionDisplayView from "../../../../../components/common/CollectionDisplayView"
 import Layout from "../../../../../components/common/Layout"
+import NFTListView from "../../../../../components/common/NFTListView"
+import NftListView from "../../../../../components/common/NFTListView"
+import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
 import { nftCatalogState } from "../../../../../lib/atoms"
 import { collectionsWithCatalogInfo, collectionsWithExtraData, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
@@ -19,6 +23,7 @@ export default function CollectionDetail(props) {
   const [collection, setCollection] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
   const [isInvalidType, setIsInvalidType] = useState(null)
+  const [needRelink, setNeedRelink] = useState(false)
 
   useEffect(() => {
     if (publicConfig.chainEnv === "emulator") {
@@ -72,12 +77,26 @@ export default function CollectionDetail(props) {
     return <Custom404 title={"Collection not found 2"} />
   }
 
+  const showCollection = () => {
+    if (!collection) {
+      return (
+        <div className="flex w-full mt-10 h-[200px] justify-center">
+          <Spinner />
+        </div>
+      )
+    } else {
+      return (
+        <div className="p-2 w-full h-screen overflow-auto">
+          <NFTListView collection={collection} setNeedRelink={setNeedRelink} />
+        </div>
+      )
+    }
+  }
+
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div>
-          Hello
-        </div>
+        {showCollection()}
       </Layout>
     </div>
   )
