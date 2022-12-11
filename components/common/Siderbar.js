@@ -30,7 +30,11 @@ export default function Sidebar(props) {
       const allItems = menuItems.map((menu) => { return { ...menu, subItems: null } }).concat(subItems)
 
       const item = allItems.find((menu) => {
-        if (menu.link && (menu.link.pathname === router.pathname)) return true
+        if (router.pathname == "/account/[account]") {
+          return menu.link.pathname == router.pathname
+        } else if (menu.label != "Basic" && menu.link && (router.pathname.includes(menu.link.pathname))) {
+          return true
+        }
         return false
       })
       return item
