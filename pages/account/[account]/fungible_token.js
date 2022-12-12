@@ -3,13 +3,15 @@ import { useEffect, useState } from "react"
 import TokenList from "../../../components/TokenList"
 import Layout from "../../../components/common/Layout"
 import { bulkGetStoredItems } from "../../../flow/scripts"
-import { isValidFlowAddress, getResourceType } from "../../../lib/utils"
+import { isValidFlowAddress, getResourceType, classNames } from "../../../lib/utils"
 import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"
 import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
 import { useRecoilState } from "recoil"
 import { currentStoredItemsState, tokenRegistryState } from "../../../lib/atoms"
+import Decimal from "decimal.js"
+import { Switch } from "@headlessui/react"
 
 const formatBalancesData = (balances) => {
   return balances.map((data) => {
@@ -30,9 +32,19 @@ export default function FungibleToken(props) {
   const { account } = router.query
 
   const [tokens, setTokens] = useState([])
+  const [hideZeroBalance, setHideZeroBalance] = useState(true)
+  const [filteredTokens, setFilteredTokens] = useState(tokens)
   const [currentStoredItems, setCurrentStoredItems] = useRecoilState(currentStoredItemsState)
   const [tokenRegistry, setTokenRegistry] = useRecoilState(tokenRegistryState)
   const [balanceData, setBalanceData] = useState(null)
+
+  useEffect(() => {
+    if (hideZeroBalance) {
+      setFilteredTokens(tokens.filter((t) => !(new Decimal(t.balance).isZero())))
+    } else {
+      setFilteredTokens(tokens)
+    }
+  }, [tokens, hideZeroBalance])
 
   useEffect(() => {
     if (account && isValidFlowAddress(account)) {
@@ -108,7 +120,7 @@ export default function FungibleToken(props) {
       )
     } else {
       return (
-        <TokenList tokens={tokens} />
+        <TokenList tokens={filteredTokens} />
       )
     }
   }
@@ -116,7 +128,65 @@ export default function FungibleToken(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        {showTokens()}
+        <div className="p-2 flex gap-x-3 justify-between flex-wrap gap-y-3">
+          <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center justify-center">
+            <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
+              {`Tokens ${filteredTokens.length > 0 ? `(${filteredTokens.length})` : ""}`}
+            </h1>
+            <div className="flex gap-x-2 items-center">
+              <label className="shrink-0 block text-gray-600 text-base font-normal font-flow">
+                Hide 0 balance
+              </label>
+              <Switch
+                checked={hideZeroBalance}
+                onChange={async () => {
+                  setHideZeroBalance(!hideZeroBalance)
+                }}
+                className={classNames(
+                  hideZeroBalance ? 'bg-drizzle' : 'bg-gray-200',
+                  'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle'
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className={classNames(
+                    hideZeroBalance ? 'translate-x-5' : 'translate-x-0',
+                    'pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200'
+                  )}
+                />
+              </Switch>
+            </div>
+          </div>
+          <div className="hidden sm:flex sm:gap-x-1 sm:items-center">
+            <label className={`cursor-pointer text-black bg-flow hover:bg-green-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+              <a href={`${publicConfig.bayouURL}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Bulk transfer
+              </a>
+            </label>
+            <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+              <a href={`${publicConfig.drizzleURL}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Create airdrop
+              </a>
+            </label>
+            <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+              <a href={`${publicConfig.incrementURL}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Trade at Increment
+              </a>
+            </label>
+          </div>
+          <div className="w-full overflow-auto h-screen">
+            {showTokens()}
+          </div>
+        </div>
       </Layout>
     </div>
   )
