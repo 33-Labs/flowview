@@ -8,6 +8,7 @@ import { getImageSrcFromMetadataViewsFile, getRarityColor } from "../../lib/util
 
 export default function NFTDetailView(props) {
   const router = useRouter()
+  const { collection: collectionPath, token_id: tokenID} = router.query
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
 
@@ -70,7 +71,7 @@ export default function NFTDetailView(props) {
             editions.infoList.map((edition, index) => {
               return (
                 <div className="flex gap-x-1" key={`edition-${index}`}>
-                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`${edition.name} `}<span className="text-blue-300">&nbsp;|&nbsp;</span>{ edition.max ? ` #${edition.number} / ${edition.max}` : `#${edition.number}`}</label>
+                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`${edition.name} `}<span className="text-blue-300">&nbsp;|&nbsp;</span>{edition.max ? ` #${edition.number} / ${edition.max}` : `#${edition.number}`}</label>
                 </div>
               )
             })
@@ -158,12 +159,12 @@ export default function NFTDetailView(props) {
                 <div key={`traits-${index}`} className="flex flex-col gap-y-1 px-3 py-2 bg-white rounded-xl overflow-hidden ring-1 ring-black ring-opacity-5">
                   <label className="font-semibold text-gray-600 text-center text-sm">{trait.name}</label>
                   <label className="text-center text-sm">{trait.value}</label>
-                  
+
                   {
                     // TODO: Score?
                     trait.rarity && trait.rarity.description ?
-                    <div className="flex flex-col items-center mt-1">
-                      <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${rarityColor}`}>{trait.rarity.description.toUpperCase()}</label>
+                      <div className="flex flex-col items-center mt-1">
+                        <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${rarityColor}`}>{trait.rarity.description.toUpperCase()}</label>
                       </div>
                       : null
                   }
@@ -203,23 +204,23 @@ export default function NFTDetailView(props) {
             <div className="w-full flex gap-x-3 justify-between items-center">
               <label className="font-bold text-black text-3xl">{display.name}</label>
               <ShareIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
-              onClick={async () => {
-                await navigator.clipboard.writeText(window.location.href)
-                setShowBasicNotification(true)
-                setBasicNotificationContent({ type: "information", title: "Link Copied!", detail: null })
-              }} />
+                onClick={async () => {
+                  await navigator.clipboard.writeText(window.location.href)
+                  setShowBasicNotification(true)
+                  setBasicNotificationContent({ type: "information", title: "Link Copied!", detail: null })
+                }} />
             </div>
             <div className="flex gap-x-1">
-            {
-              rarity && rarity.description ?
-                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${rarityColor}`}>{`${rarity.description.toUpperCase()}`}</label>
-                : null
-            }
-            {
-              serial ?
-                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-yellow-100 text-yellow-800`}>{`Serial: #${serial.number}`}</label>
-                : null
-            }
+              {
+                rarity && rarity.description ?
+                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${rarityColor}`}>{`${rarity.description.toUpperCase()}`}</label>
+                  : null
+              }
+              {
+                serial ?
+                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-yellow-100 text-yellow-800`}>{`Serial: #${serial.number}`}</label>
+                  : null
+              }
             </div>
 
             <label className="text-black text-base">{display.description}</label>
@@ -243,21 +244,22 @@ export default function NFTDetailView(props) {
     )
   }
 
-  if (!metadata) {
-    return (
-      <div>
-        LOADING
-      </div>
-    )
-  }
-
   return (
     <div className={`w-full flex flex-col gap-y-1 pb-2 justify-between shrink-0 overflow-hidden`}>
-      {getDisplayView(metadata)}
-      {getTraitsView(metadata)}
-      {getEditionsView(metadata)}
-      {getRoyaltiesView(metadata)}
-      {getMediasView(metadata)}
+      {
+        !metadata || Object.keys(metadata).length == 0 ?
+          <div className="w-full flex flex-col mt-10 h-[70px] text-gray-400 text-base justify-center items-center">
+            <label>{`${collectionPath} #${tokenID}`}</label>
+            <label>{`No metadata found`}</label>
+          </div> :
+          <>
+            {getDisplayView(metadata)}
+            {getTraitsView(metadata)}
+            {getEditionsView(metadata)}
+            {getRoyaltiesView(metadata)}
+            {getMediasView(metadata)}
+          </>
+      }
     </div>
   )
 }
