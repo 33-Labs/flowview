@@ -230,7 +230,7 @@ export default function CollectionDetail(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="flex flex-col gap-y-3">
+        <div className="flex flex-col gap-y-3 min-h-screen">
           <button
             className="mb-2 self-start"
             onClick={() => {
