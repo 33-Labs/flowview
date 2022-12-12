@@ -37,7 +37,7 @@ const dataField = (title, value) => {
   )
 }
 
-export default function Key(props) {
+export default function KeyView(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)

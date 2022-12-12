@@ -35,7 +35,7 @@ const analyzeItems = (items) => {
   return dangerousItems
 }
 
-export default function PublicItems(props) {
+export default function PublicItem(props) {
   const router = useRouter()
   const { account } = router.query
 
@@ -63,7 +63,7 @@ export default function PublicItems(props) {
   // }, [currentPublicItems])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account)) {

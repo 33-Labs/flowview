@@ -51,7 +51,7 @@ export default function Footer() {
             rel="noopener noreferrer"
           >
             <div className="w-[20px] h-[20px] relative">
-              <Image className="object-contain" src="/twitter.png" alt="" fill sizes="10vw" />
+              <Image className="object-contain" src="/twitter.png" alt="" fill sizes="5vw" />
             </div>
           </a>
           <a href="https://bayou33.app"
@@ -67,7 +67,7 @@ export default function Footer() {
             rel="noopener noreferrer"
           >
             <div className="min-w-[20px]">
-              <Image src="/drizzle.png" alt="" width={20} height={20} priority />
+              <Image src="/drizzle.png" alt="" width={20} height={20} />
             </div>
           </a>
         </div>

@@ -8,14 +8,14 @@ export default function Sidebar(props) {
 
   const menuItems = [
     { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },
-    { id: "1", label: `Key`, link: { pathname: "/account/[account]/keys", query: { account: account } } },
-    { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_tokens", query: { account: account } } },
-    { id: "3", label: `Collection`, link: { pathname: "/account/[account]/collections", query: { account: account } } },
+    { id: "1", label: `Key`, link: { pathname: "/account/[account]/key", query: { account: account } } },
+    { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
+    { id: "3", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
     {
       id: "4", label: "Storage", subItems: [
-        { id: "4-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_items", query: { account: account } } },
-        { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_items", query: { account: account } } },
-        { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_items", query: { account: account } } },
+        { id: "4-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_item", query: { account: account } } },
+        { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_item", query: { account: account } } },
+        { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_item", query: { account: account } } },
       ]
     }
     // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
@@ -30,7 +30,11 @@ export default function Sidebar(props) {
       const allItems = menuItems.map((menu) => { return { ...menu, subItems: null } }).concat(subItems)
 
       const item = allItems.find((menu) => {
-        if (menu.link && (menu.link.pathname === router.pathname)) return true
+        if (router.pathname == "/account/[account]") {
+          return menu.link.pathname == router.pathname
+        } else if (menu.label != "Basic" && menu.link && (router.pathname.includes(menu.link.pathname))) {
+          return true
+        }
         return false
       })
       return item

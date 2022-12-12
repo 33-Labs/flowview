@@ -129,6 +129,210 @@ export const getAddressOfDomain = async (domain) => {
 
 // --- Collections ---
 
+export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
+  console.log("address:", address)
+  console.log("storagePathID", storagePathID)
+  console.log("tokenID", tokenID)
+  const code = `
+  import NonFungibleToken from 0xNonFungibleToken
+  import MetadataViews from 0xMetadataViews
+
+  pub fun main(address: Address, storagePathID: String, tokenID: UInt64): {String: AnyStruct} {
+    let account = getAuthAccount(address)
+    let res: {String: AnyStruct} = {}
+
+    let path = StoragePath(identifier: storagePathID)!
+    let type = account.type(at: path)
+    if type == nil {
+      return res
+    }
+
+    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
+    let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
+
+    if (!conformedMetadataViews) {
+      return res
+    }
+
+    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
+    let resolver = collectionRef!.borrowViewResolver(id: tokenID)
+    if let rarity = MetadataViews.getRarity(resolver) {
+      res["rarity"] = rarity
+    }
+
+    if let display = MetadataViews.getDisplay(resolver) {
+      res["display"] = display
+    }
+
+    if let editions = MetadataViews.getEditions(resolver) {
+      res["editions"] = editions
+    }
+
+    if let serial = MetadataViews.getSerial(resolver) {
+      res["serial"] = serial
+    }
+
+    if let royalties = MetadataViews.getRoyalties(resolver) {
+      res["royalties"] = royalties
+    }
+
+    if let license = MetadataViews.getLicense(resolver) {
+      res["license"] = license
+    }
+
+    if let medias = MetadataViews.getMedias(resolver) {
+      res["medias"] = medias
+    }
+
+    if let externalURL = MetadataViews.getExternalURL(resolver) {
+      res["externalURL"] = externalURL
+    }
+
+    if let traits = MetadataViews.getTraits(resolver) {
+      res["traits"] = traits
+    }
+
+    if let collectionDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
+      res["collectionDisplay"] = collectionDisplay
+    }
+
+    return res
+  }
+  `
+
+  const metadata = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(storagePathID, t.String),
+      arg(tokenID, t.UInt64)
+    ]
+  }) 
+
+  return metadata
+}
+
+export const getNftViews = async (address, storagePathID, tokenIDs) => {
+  const ids = tokenIDs.map((id) => `${id}`)
+  const code = `
+  import NonFungibleToken from 0xNonFungibleToken
+  import MetadataViews from 0xMetadataViews
+
+  pub struct ViewInfo {
+    pub let name: String
+    pub let description: String
+    pub let thumbnail: AnyStruct{MetadataViews.File}
+    pub let rarity: String?
+    pub let collectionDisplay: MetadataViews.NFTCollectionDisplay?
+
+    init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, collectionDisplay: MetadataViews.NFTCollectionDisplay?) {
+      self.name = name
+      self.description = description
+      self.thumbnail = thumbnail
+      self.rarity = rarity
+      self.collectionDisplay = collectionDisplay
+    }
+  }
+
+  pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: ViewInfo}{
+    let account = getAuthAccount(address)
+    let res: {UInt64: ViewInfo} = {}
+    var collectionDisplayFetched = false
+
+    if tokenIDs.length == 0 {
+      return res
+    }
+
+    let path = StoragePath(identifier: storagePathID)!
+    let type = account.type(at: path)
+    if type == nil {
+      return res
+    }
+
+    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
+
+    let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
+    if !conformedMetadataViews {
+      for tokenID in tokenIDs {
+        res[tokenID] = ViewInfo(
+          name: storagePathID,
+          description: "",
+          thumbnail: MetadataViews.HTTPFile(url: ""),
+          rarity: nil,
+          collectionDisplay: nil
+        )
+      }
+      return res
+    }
+
+    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path)
+    for tokenID in tokenIDs {
+      let resolver = collectionRef!.borrowViewResolver(id: tokenID)
+      if let display = MetadataViews.getDisplay(resolver) {
+        var rarityDesc: String? = nil
+        if let rarityView = MetadataViews.getRarity(resolver) {
+          rarityDesc = rarityView.description
+        }
+
+        var collectionDisplay: MetadataViews.NFTCollectionDisplay? = nil
+        if (!collectionDisplayFetched) {
+          if let cDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
+            collectionDisplay = cDisplay
+            collectionDisplayFetched = true
+          }
+        }
+
+        res[tokenID] = ViewInfo(
+          name: display.name,
+          description: display.description,
+          thumbnail: display.thumbnail,
+          rarity: rarityDesc,
+          collectionDisplay: collectionDisplay
+        )
+      } else {
+        res[tokenID] = ViewInfo(
+          name: storagePathID,
+          description: "",
+          thumbnail: MetadataViews.HTTPFile(url: ""),
+          rarity: nil,
+          collectionDisplay: nil
+        )
+      }
+    }
+    return res
+  }
+  `
+
+  const displays = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address),
+      arg(storagePathID, t.String),
+      arg(ids, t.Array(t.UInt64))
+    ]
+  }) 
+
+  return displays  
+}
+
+export const bulkGetNftViews = async (address, collection, limit, offset) => {
+  const totalTokenIDs = collection.tokenIDs
+  const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
+
+  const groups = splitList(tokenIDs, 20) 
+  const promises = groups.map((group) => {
+    return getNftViews(address, collection.path.replace("/storage/", ""), group)
+  }) 
+  const displayGroups = await Promise.all(promises)
+  const displays = displayGroups.reduce((acc, current) => {
+    return Object.assign(acc, current)
+  }, {}) 
+
+  return displays
+}
+
+// --- deprecated ---
+
 export const getNftDisplays = async (address, storagePathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
   const code = `
@@ -348,23 +552,38 @@ export const getStoredItems = async (address, paths) => {
   const code = `
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-   
+  import MetadataViews from 0xMetadataViews
+
+  pub struct CollectionDisplay {
+    pub let name: String
+    pub let squareImage: MetadataViews.Media
+
+    init(name: String, squareImage: MetadataViews.Media) {
+      self.name = name
+      self.squareImage = squareImage
+    }
+  }
+
   pub struct Item {
       pub let address: Address
       pub let path: String
       pub let type: Type
       pub let isResource: Bool
       pub let isNFTCollection: Bool
+      pub let display: CollectionDisplay?
       pub let tokenIDs: [UInt64]
       pub let isVault: Bool
       pub let balance: UFix64?
   
-      init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, tokenIDs: [UInt64], isVault: Bool, balance: UFix64?) {
+      init(address: Address, path: String, type: Type, isResource: Bool, 
+        isNFTCollection: Bool, display: CollectionDisplay?,
+        tokenIDs: [UInt64], isVault: Bool, balance: UFix64?) {
           self.address = address
           self.path = path
           self.type = type
           self.isResource = isResource
           self.isNFTCollection = isNFTCollection
+          self.display = display
           self.tokenIDs = tokenIDs
           self.isVault = isVault
           self.balance = balance
@@ -376,6 +595,7 @@ export const getStoredItems = async (address, paths) => {
     let resourceType = Type<@AnyResource>()
     let vaultType = Type<@FungibleToken.Vault>()
     let collectionType = Type<@NonFungibleToken.Collection>()
+    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
     let items: [Item] = []
 
     for identifier in pathIdentifiers {
@@ -383,10 +603,25 @@ export const getStoredItems = async (address, paths) => {
 
       if let type = account.type(at: path) {
         let isResource = type.isSubtype(of: resourceType)
-
         let isNFTCollection = type.isSubtype(of: collectionType)
+        let conformedMetadataViews = type.isSubtype(of: metadataViewType)
+
         var tokenIDs: [UInt64] = []
-        if isNFTCollection {
+        var collectionDisplay: CollectionDisplay? = nil
+        if isNFTCollection && conformedMetadataViews {
+          if let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path) {
+            tokenIDs = collectionRef.getIDs()
+            if tokenIDs.length > 0 && path != /storage/RaribleNFTCollection {
+              let resolver = collectionRef.borrowViewResolver(id: tokenIDs[0]) 
+              if let display = MetadataViews.getNFTCollectionDisplay(resolver) {
+                collectionDisplay = CollectionDisplay(
+                  name: display.name,
+                  squareImage: display.squareImage
+                )
+              }
+            }
+          }
+        } else if isNFTCollection {
           if let collectionRef = account.borrow<&NonFungibleToken.Collection>(from: path) {
             tokenIDs = collectionRef.getIDs()
           }
@@ -406,6 +641,7 @@ export const getStoredItems = async (address, paths) => {
           type: type,
           isResource: isResource,
           isNFTCollection: isNFTCollection,
+          display: collectionDisplay,
           tokenIDs: tokenIDs,
           isVault: isVault,
           balance: balance

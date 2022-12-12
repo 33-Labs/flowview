@@ -19,7 +19,7 @@ export default function Home() {
         }
         <div className="flex gap-x-2 sm:gap-x-4 items-center">
           <div className="w-10 sm:w-16 aspect-square relative">
-            <Image src="/logo.png" alt="" fill sizes="33vw" priority={true} />
+            <Image src="/logo.png" alt="" fill sizes="16vw" priority={true} />
           </div>
           <label className="font-flow font-bold text-2xl sm:text-4xl">
             Explore Flow Accounts

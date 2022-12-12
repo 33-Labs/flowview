@@ -91,7 +91,7 @@ export default function NavigationBar() {
       <div className="flex items-center gap-x-1 sm:gap-x-2">
         <Link href="/">
           <div className="w-[36px] sm:w-[50px] aspect-square relative">
-            <Image src="/logo.png" alt="" fill sizes="33vw" priority={true} />
+            <Image src="/logo.png" alt="" fill sizes="16vw" priority={true} />
           </div>
         </Link>
 

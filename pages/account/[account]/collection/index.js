@@ -1,22 +1,21 @@
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import Layout from "../../../components/common/Layout"
-import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../flow/scripts"
-import { isValidFlowAddress, classNames, collectionsWithExtraData, collectionsWithCatalogInfo } from "../../../lib/utils"
-import Custom404 from "./404"
-import publicConfig from "../../../publicConfig"
-import Spinner from "../../../components/common/Spinner"
-import CollectionView from "../../../components/common/CollectionView"
+import Layout from "../../../../components/common/Layout"
+import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../../flow/scripts"
+import { isValidFlowAddress, classNames, collectionsWithCatalogInfo, collectionsWithExtraData, collectionsWithDisplayInfo } from "../../../../lib/utils"
+import Custom404 from "../404"
+import publicConfig from "../../../../publicConfig"
+import Spinner from "../../../../components/common/Spinner"
+import CollectionView from "../../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
-import { currentStoredItemsState, nftCatalogState } from "../../../lib/atoms"
+import { currentStoredItemsState, nftCatalogState } from "../../../../lib/atoms"
 import { Switch } from "@headlessui/react"
 
-// DEPRECATED
-export default function Collections(props) {
+export default function Collection(props) {
   const router = useRouter()
   const { account } = router.query
 
-  const [hideEmptyCollections, setHideEmptyCollections] = useState(false)
+  const [hideEmptyCollections, setHideEmptyCollections] = useState(true)
   const [filteredCollections, setFilteredCollections] = useState(null)
   const [collections, setCollections] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
@@ -50,12 +49,19 @@ export default function Collections(props) {
   }, [currentStoredItems, account])
 
   useEffect(() => {
-    if (collectionData && nftCatalog) {
+    if (collectionData) {
       const newCollection =
-        collectionsWithExtraData(collectionsWithCatalogInfo(collectionData, nftCatalog))
+        collectionsWithExtraData(collectionsWithDisplayInfo(collectionData))
       setCollections(newCollection)
     }
-  }, [collectionData, nftCatalog])
+  }, [collectionData])
+
+  useEffect(() => {
+    if (nftCatalog && collections && collections.length > 0 && !collections[0].addedCatalogInfo) {
+      const newCollections = collectionsWithCatalogInfo(collections, nftCatalog)
+      setCollections(newCollections) 
+    }
+  }, [nftCatalog, collections])
 
   useEffect(() => {
     if (collections) {
@@ -89,7 +95,7 @@ export default function Collections(props) {
             filteredCollections.length > 0 ?
               filteredCollections.map((collection, index) => {
                 return (
-                  <CollectionView collection={collection} key={`${collection.path}_${index}`} />
+                  <CollectionView account={account} collection={collection} key={`${collection.path}_${index}`} />
                 )
               }) :
               <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
@@ -134,14 +140,6 @@ export default function Collections(props) {
                 </Switch>
               </div>
             </div>
-            <label className={`item-start hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-              <a href={`${publicConfig.drizzleURL}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Create raffle
-              </a>
-            </label>
           </div>
           <div className="px-2 py-2 overflow-x-auto max-h-screen w-full">
             <div className="inline-block min-w-full">

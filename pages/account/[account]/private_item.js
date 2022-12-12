@@ -13,7 +13,7 @@ const privateItemsFetcher = async (funcName, address) => {
   return bulkGetPrivateItems(address)
 }
 
-export default function PrivateItems(props) {
+export default function PrivateItem(props) {
   const router = useRouter()
   const { account } = router.query
 
@@ -34,7 +34,7 @@ export default function PrivateItems(props) {
   }, [itemsData])
 
   if (!account) {
-    return <></>
+    return <div className="h-screen"></div>
   }
 
   if (!isValidFlowAddress(account)) {
@@ -70,7 +70,7 @@ export default function PrivateItems(props) {
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="p-2 flex gap-x-2 justify-between">
+          <div className="p-2 flex gap-x-2 justify-between w-full">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
               {`Private Paths ${privateItems ? `(${privateItems.length})` : ""}`}
             </h1>
