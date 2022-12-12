@@ -191,7 +191,7 @@ export default function NFTDetailView(props) {
           <div className="flex flex-col gap-y-2 items-start">
             {
               collectionDisplay ?
-                <label className="font-semibold text-drizzle">{collectionDisplay.name}</label>
+                <label className="font-semibold text-gray-500">{collectionDisplay.name}</label>
                 : null
             }
             <label className="font-bold text-black text-3xl">{display.name}</label>

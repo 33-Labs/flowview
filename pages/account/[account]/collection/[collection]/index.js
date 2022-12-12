@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, GlobeAltIcon } from "@heroicons/react/outline"
+import { ArrowLeftIcon, CodeIcon, GlobeAltIcon } from "@heroicons/react/outline"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -65,6 +65,7 @@ export default function CollectionDetail(props) {
   useEffect(() => {
     if (nftCatalog && collection && !collection.addedCatalogInfo) {
       const newCollections = collectionsWithCatalogInfo([collection], nftCatalog)
+      console.log("newColl", newCollections[0])
       setCollection(newCollections[0])
     }
   }, [nftCatalog, collection])
@@ -109,26 +110,50 @@ export default function CollectionDetail(props) {
     }
   }
 
-  const getSocials = (collectionDisplay) => {
-    if (!collectionDisplay) { return <div></div> }
-    const externalURL = collectionDisplay.externalURL
+  const getLinks = (linkSource) => {
+    if (!linkSource) { return <div></div> }
+    const externalURL = linkSource.externalURL
     let externalLink = null
     if (externalURL && externalURL.url.trim() != '') {
       externalLink = externalURL.url
     }
 
-    const socials = collectionDisplay.socials || {}
+    console.log(linkSource)
+    const socials = linkSource.socials || {}
     const twitter = socials.twitter && socials.twitter.url.trim() != '' ? socials.twitter.url : null
     const discord = socials.discord && socials.discord.url.trim() != '' ? socials.discord.url : null
     return (
-      <div className="flex gap-x-1">
+      <div className="flex gap-x-2">
+        {
+          linkSource.uuid ?
+            <a
+              href={`${publicConfig.flowscanURL}/contract/${linkSource.uuid}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1 rounded-full h-[24px] aspect-square bg-drizzle text-black"
+            >
+              <CodeIcon className="aspect-square text-black" />
+            </a> : null
+        }
+        {
+          linkSource.collectionIdentifier ?
+            <a
+              href={`${publicConfig.nftCatalogURL}/${collection.collectionIdentifier}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+            <div className="h-[24px] aspect-square shrink-0 relative">
+              <Image src={"/nft-catalog.png"} alt="" fill sizes="10vw" className="object-contain" />
+            </div>
+            </a> : null
+        }
         {externalLink ?
           <a
             href={externalLink}
             target="_blank"
             rel="noopener noreferrer"
           >
-            <GlobeAltIcon className="h-[16px] w-[16px] text-drizzle" />
+            <GlobeAltIcon className="h-[24px] aspect-square text-drizzle" />
           </a> : null}
         {twitter ?
           <a
@@ -136,7 +161,7 @@ export default function CollectionDetail(props) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <div className="h-[16px] w-[16px] shrink-0 relative">
+            <div className="h-[24px] aspect-square shrink-0 relative">
               <Image src={"/twitter.png"} alt="" fill sizes="10vw" className="object-contain" />
             </div>
           </a> : null}
@@ -146,7 +171,7 @@ export default function CollectionDetail(props) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <div className="h-[16px] w-[16px] shrink-0 relative">
+            <div className="h-[24px] aspect-square shrink-0 relative">
               <Image src={"/discord.png"} alt="" fill sizes="10vw" className="object-contain" />
             </div>
           </a> : null}
@@ -158,34 +183,35 @@ export default function CollectionDetail(props) {
     let imageSrc = "/token_placeholder.png"
     let name = collectionPath
     let description = null
-    let socialSource = null
-    if (collectionDisplay) {
-      imageSrc = getImageSrcFromMetadataViewsFile(collectionDisplay.squareImage.file)
+    let linkSource = null
+    if (collection && collection.addedCatalogInfo) {
+      imageSrc = getImageSrcFromMetadataViewsFile(collection.squareImage ? collection.squareImage.file : null)
+      name = collection.name ? collection.name : collection.contractName
+      description = collection.description
+      linkSource = collection
+    } else if (collectionDisplay) {
+      imageSrc = getImageSrcFromMetadataViewsFile(collectionDisplay.squareImage ? collectionDisplay.squareImage.file : null)
       name = collectionDisplay.name
       description = collectionDisplay.description
-      socialSource = collectionDisplay
-    } else if (collection && collection.name) {
-      imageSrc = getImageSrcFromMetadataViewsFile(collection.squareImage.file)
-      name = collection.name
-      description = collection.description
-      socialSource = collection
+      linkSource = collectionDisplay
     }
 
     return (
       <>
-        <div className="flex gap-x-3 items-center">
-          <div className="h-[64px] w-[64px] shrink-0 relative rounded-full ring-1 ring-drizzle">
-            <Image src={imageSrc} alt="" fill sizes="10vw" className="object-contain rounded-full" />
+        <div className="flex gap-x-3 justify-between items-center">
+          <div className="flex gap-x-3 items-center">
+            <div className="h-[64px] w-[64px] shrink-0 relative rounded-full ring-1 ring-drizzle">
+              <Image src={imageSrc} alt="" fill sizes="10vw" className="object-contain rounded-full" />
+            </div>
+            <div className="flex flex-col gap-y-1">
+              <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
+                {`${name}`}
+              </h1>
+              <label className="text-black text-xs mb-1">{`/storage/${collectionPath}`}</label>
+            </div>
           </div>
-          <div className="flex flex-col gap-y-1">
-            <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
-              {`${name}`}
-            </h1>
-            <label className="text-black text-xs mb-1">{`/storage/${collectionPath}`}</label>
-            {getSocials(socialSource)}
-          </div>
+          {getLinks(linkSource)}
         </div>
-
         <label>{description}</label>
       </>
     )
@@ -195,8 +221,8 @@ export default function CollectionDetail(props) {
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="p-2 flex gap-x-2 justify-between w-full">
-            <div className="flex flex-col gap-y-2 justify-center">
+          <div className="min-w-[1076px] p-2 flex gap-x-2 justify-between w-full">
+            <div className="w-full flex flex-col gap-y-2 justify-center">
               <button
                 className="mb-2"
                 onClick={() => {

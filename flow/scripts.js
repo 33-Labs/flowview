@@ -142,11 +142,19 @@ export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
     let res: {String: AnyStruct} = {}
 
     let path = StoragePath(identifier: storagePathID)!
-    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
-    if (collectionRef == nil) {
+    let type = account.type(at: path)
+    if type == nil {
       return res
     }
 
+    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
+    let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
+
+    if (!conformedMetadataViews) {
+      return res
+    }
+
+    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
     let resolver = collectionRef!.borrowViewResolver(id: tokenID)
     if let rarity = MetadataViews.getRarity(resolver) {
       res["rarity"] = rarity
@@ -231,9 +239,20 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
     let res: {UInt64: ViewInfo} = {}
     var collectionDisplayFetched = false
 
+    if tokenIDs.length == 0 {
+      return res
+    }
+
     let path = StoragePath(identifier: storagePathID)!
-    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
-    if (collectionRef == nil) {
+    let type = account.type(at: path)
+    if type == nil {
+      return res
+    }
+
+    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
+
+    let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
+    if !conformedMetadataViews {
       for tokenID in tokenIDs {
         res[tokenID] = ViewInfo(
           name: storagePathID,
@@ -246,6 +265,7 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
       return res
     }
 
+    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path)
     for tokenID in tokenIDs {
       let resolver = collectionRef!.borrowViewResolver(id: tokenID)
       if let display = MetadataViews.getDisplay(resolver) {

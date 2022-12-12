@@ -27,29 +27,21 @@ export default function CollectionView(props) {
             }
             <label>
               {collection.path}
-              {/* {
-                collection.collectionIdentifier ?
-                  <a
-                    href={`${publicConfig.flowscanURL}/contract/${collection.uuid}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline font-sm font-bold decoration-drizzle decoration-2">
-                    {collection.uuid}
-                  </a> : collection.path
-              } */}
-
             </label>
           </div>
         </div>
-        <div className="flex gap-x-1 items-center">
+        <div className="flex gap-x-2 items-center">
           {
             collection.collectionIdentifier ?
-              <label className={`cursor-pointer text-white bg-catalog hover:bg-catalog-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+              <label className={`cursor-pointer shrink-0`}>
                 <a href={`${publicConfig.nftCatalogURL}/${collection.collectionIdentifier}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  View on NFTCatalog
+
+                  <div className="h-[24px] aspect-square shrink-0 relative">
+                    <Image src={"/nft-catalog.png"} alt="" fill sizes="10vw" className="object-contain" />
+                  </div>
                 </a>
               </label> : null
           }
