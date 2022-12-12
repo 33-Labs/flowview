@@ -3,7 +3,7 @@ import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
-import Key from "../../../components/common/key"
+import KeyView from "../../../components/common/KeyView"
 import KeyCreator from "../../../components/common/KeyCreator"
 import Layout from "../../../components/common/Layout"
 import Spinner from "../../../components/common/Spinner"
@@ -88,7 +88,7 @@ export default function Keys(props) {
           {filteredKeys.length > 0 ?
             filteredKeys.map((key, index) => {
               return (
-                <Key key={`key_${key.keyIndex}_${index}`} keyItem={key} account={account} user={user} />
+                <KeyView key={`key_${key.keyIndex}_${index}`} keyItem={key} account={account} user={user} />
               )
             }) :
             <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
