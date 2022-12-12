@@ -38,7 +38,7 @@ export default function NFTDetailView(props) {
                   {
                     isImage ?
                       <div className="w-64 shrink-0 shadow-md aspect-square rounded-2xl bg-white relative overflow-hidden ring-1 ring-black ring-opacity-5">
-                        <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="16vw" />
+                        <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="33vw" />
                       </div> : (
                         isVideo ?
                           <div className="w-64 shrink-0 shadow-md aspect-square rounded-2xl bg-white overflow-hidden ring-1 ring-black ring-opacity-5">
