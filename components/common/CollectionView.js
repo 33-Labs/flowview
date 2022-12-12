@@ -23,7 +23,7 @@ export default function CollectionView(props) {
       <div className="flex gap-x-3 justify-between">
         <div className="flex items-center gap-x-3">
           <div className="w-11 rounded-full overflow-hidden aspect-square relative">
-            <Image src={collection.squareImage ? getImageSrcFromMetadataViewsFile(collection.squareImage.file) : "/token_placeholder.png"} alt="" fill sizes="10vw" />
+            <Image src={collection.squareImage ? getImageSrcFromMetadataViewsFile(collection.squareImage.file) : "/token_placeholder.png"} alt="" fill sizes="5vw" />
           </div>
           <div className="flex flex-col w-full">
             {
@@ -47,7 +47,7 @@ export default function CollectionView(props) {
                     window.open(`${publicConfig.nftCatalogURL}/${collection.collectionIdentifier}`)
                     event.stopPropagation()
                   }}>
-                  <Image src={"/nft-catalog.png"} alt="" fill sizes="10vw" className="object-contain" />
+                  <Image src={"/nft-catalog.png"} alt="" fill sizes="5vw" className="object-contain" />
                 </div>
               </label> : null
           }

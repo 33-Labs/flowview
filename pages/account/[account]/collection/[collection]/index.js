@@ -153,7 +153,7 @@ export default function CollectionDetail(props) {
               rel="noopener noreferrer"
             >
               <div className="h-[24px] aspect-square shrink-0 relative">
-                <Image src={"/nft-catalog.png"} alt="" fill sizes="10vw" className="object-contain" />
+                <Image src={"/nft-catalog.png"} alt="" fill sizes="5vw" className="object-contain" />
               </div>
             </a> : null
         }
@@ -172,7 +172,7 @@ export default function CollectionDetail(props) {
             rel="noopener noreferrer"
           >
             <div className="h-[24px] aspect-square shrink-0 relative">
-              <Image src={"/twitter.png"} alt="" fill sizes="10vw" className="object-contain" />
+              <Image src={"/twitter.png"} alt="" fill sizes="5vw" className="object-contain" />
             </div>
           </a> : null}
         {discord ?
@@ -182,7 +182,7 @@ export default function CollectionDetail(props) {
             rel="noopener noreferrer"
           >
             <div className="h-[24px] aspect-square shrink-0 relative">
-              <Image src={"/discord.png"} alt="" fill sizes="10vw" className="object-contain" />
+              <Image src={"/discord.png"} alt="" fill sizes="5vw" className="object-contain" />
             </div>
           </a> : null}
       </div>
@@ -211,7 +211,7 @@ export default function CollectionDetail(props) {
         <div className="w-[1070px] flex gap-x-10 justify-between items-center">
           <div className="flex gap-x-3 items-center">
             <div className="h-[64px] w-[64px] shrink-0 relative rounded-full ring-1 ring-drizzle">
-              <Image src={imageSrc} alt="" fill sizes="10vw" className="object-contain rounded-full" />
+              <Image src={imageSrc} alt="" fill sizes="5vw" className="object-contain rounded-full" />
             </div>
             <div className="flex flex-col gap-y-1">
               <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
