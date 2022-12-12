@@ -207,7 +207,7 @@ export default function CollectionDetail(props) {
     }
 
     return (
-      <div className="p-2 w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-scroll">
+      <div className="p-2 w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-auto">
         <div className="w-[1070px] flex gap-x-10 justify-between items-center">
           <div className="flex gap-x-3 items-center">
             <div className="h-[64px] w-[64px] shrink-0 relative rounded-full ring-1 ring-drizzle">
@@ -248,7 +248,7 @@ export default function CollectionDetail(props) {
 
           {getBasicInfoView()}
 
-          <div className="w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-scroll">
+          <div className="w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-auto">
             {showCollection()}
           </div>
         </div>

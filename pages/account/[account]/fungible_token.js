@@ -128,7 +128,7 @@ export default function FungibleToken(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="p-2 flex gap-x-3 justify-between flex-wrap gap-y-3">
+        <div className="p-2 w-full flex gap-x-3 justify-between flex-wrap gap-y-3">
           <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center justify-center">
             <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
               {`Tokens ${filteredTokens.length > 0 ? `(${filteredTokens.length})` : ""}`}
@@ -157,7 +157,7 @@ export default function FungibleToken(props) {
               </Switch>
             </div>
           </div>
-          <div className="hidden sm:flex sm:gap-x-1 sm:items-center">
+          <div className="hidden sm:flex sm:gap-x-1 sm:items-center px-2">
             <label className={`cursor-pointer text-black bg-flow hover:bg-green-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
               <a href={`${publicConfig.bayouURL}`}
                 target="_blank"
@@ -183,7 +183,7 @@ export default function FungibleToken(props) {
               </a>
             </label>
           </div>
-          <div className="w-full overflow-auto h-screen">
+          <div className="w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-auto h-screen">
             {showTokens()}
           </div>
         </div>

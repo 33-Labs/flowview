@@ -81,7 +81,7 @@ export default function NFT(props) {
             </div>
           </button>
 
-          <div className="w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-scroll">
+          <div className="w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-auto">
           {showToken()}
           </div>
         </div>
