@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, CodeIcon, GlobeAltIcon } from "@heroicons/react/outline"
+import { ArrowLeftIcon, CodeIcon, GlobeAltIcon, ShareIcon } from "@heroicons/react/outline"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -7,7 +7,7 @@ import Layout from "../../../../../components/common/Layout"
 import NFTListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
-import { nftCatalogState } from "../../../../../lib/atoms"
+import { basicNotificationContentState, nftCatalogState, showBasicNotificationState } from "../../../../../lib/atoms"
 import { collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
@@ -16,9 +16,8 @@ export default function CollectionDetail(props) {
   const router = useRouter()
   const { account: account, collection: collectionPath } = router.query
 
-  console.log("account", account)
-  console.log("collectionPath", collectionPath)
-
+  const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
+  const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
   const [nftCatalog, setNftCatalog] = useRecoilState(nftCatalogState)
   const [collection, setCollection] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
@@ -122,8 +121,19 @@ export default function CollectionDetail(props) {
     const socials = linkSource.socials || {}
     const twitter = socials.twitter && socials.twitter.url.trim() != '' ? socials.twitter.url : null
     const discord = socials.discord && socials.discord.url.trim() != '' ? socials.discord.url : null
+    
     return (
       <div className="flex gap-x-2">
+        {
+          <div>
+            <ShareIcon className="w-[24px] p-1 rounded-full aspect-square text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+              onClick={async () => {
+                await navigator.clipboard.writeText(window.location.href)
+                setShowBasicNotification(true)
+                setBasicNotificationContent({ type: "information", title: "Link Copied!", detail: null })
+              }} />
+          </div>
+        }
         {
           linkSource.uuid ?
             <a
@@ -184,7 +194,7 @@ export default function CollectionDetail(props) {
     let name = collectionPath
     let description = null
     let linkSource = null
-    if (collection && collection.addedCatalogInfo) {
+    if (collection && collection.addedCatalogInfo && collection.collectionIdentifier) {
       imageSrc = getImageSrcFromMetadataViewsFile(collection.squareImage ? collection.squareImage.file : null)
       name = collection.name ? collection.name : collection.contractName
       description = collection.description

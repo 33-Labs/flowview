@@ -116,7 +116,7 @@ export default function NFTListView(props) {
                         collection: collection.path.replace("/storage/", ""),
                         token_id: display.tokenID 
                       }
-                    }, undefined, { shallow: true, scroll: false})
+                    }, undefined, { shallow: true })
                   }}
                   >
                     <NFTView display={display} />

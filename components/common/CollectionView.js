@@ -54,7 +54,7 @@ export default function CollectionView(props) {
                 router.push({
                   pathname: `${router.pathname}/[collection]`,
                   query: { account: account, collection: collection.path.replace("/storage/", "") }
-                }, undefined, { shallow: true, scroll: false })
+                }, undefined, { shallow: true })
               }}
             >
               {`Show Detail`}
