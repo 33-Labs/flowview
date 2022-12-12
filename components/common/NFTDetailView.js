@@ -1,10 +1,16 @@
+import { ShareIcon } from "@heroicons/react/outline"
 import Decimal from "decimal.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
+import { useRecoilState } from "recoil"
+import { basicNotificationContentState, showBasicNotificationState } from "../../lib/atoms"
 import { getImageSrcFromMetadataViewsFile, getRarityColor } from "../../lib/utils"
 
 export default function NFTDetailView(props) {
   const router = useRouter()
+  const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
+  const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
+
   const { metadata } = props
   // const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
   console.log("metadata", metadata)
@@ -183,18 +189,26 @@ export default function NFTDetailView(props) {
     const externalURL = metadata.externalURL
     const imageSrc = getImageSrcFromMetadataViewsFile(display.thumbnail)
     return (
-      <div className="pb-4 pt-2 px-2 flex gap-x-5">
+      <div className="w-full pb-4 pt-2 px-2 flex gap-x-5">
         <div className="w-96 shrink-0 shadow-md aspect-square flex justify-center rounded-2xl bg-white relative overflow-hidden ring-1 ring-black ring-opacity-5">
           <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="33vw" />
         </div>
-        <div className="flex flex-col gap-y-2 justify-between">
+        <div className="w-full flex flex-col gap-y-2 justify-between">
           <div className="flex flex-col gap-y-2 items-start">
             {
               collectionDisplay ?
                 <label className="font-semibold text-gray-500">{collectionDisplay.name}</label>
                 : null
             }
-            <label className="font-bold text-black text-3xl">{display.name}</label>
+            <div className="w-full flex gap-x-3 justify-between items-center">
+              <label className="font-bold text-black text-3xl">{display.name}</label>
+              <ShareIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+              onClick={async () => {
+                await navigator.clipboard.writeText(window.location.href)
+                setShowBasicNotification(true)
+                setBasicNotificationContent({ type: "information", title: "Link Copied!", detail: null })
+              }} />
+            </div>
             <div className="flex gap-x-1">
             {
               rarity && rarity.description ?
