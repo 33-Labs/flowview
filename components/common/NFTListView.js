@@ -100,9 +100,9 @@ export default function NFTListView(props) {
     }
 
     return (
-      <div className="flex flex-col gap-y-4 w-full py-3">
+      <div className="y-3">
         {displays.length > 0 ?
-          <div className="flex flex-wrap gap-x-3 gap-y-3 w-full">
+          <div className="p-1 grid grid-cols-7 gap-x-2 gap-y-3 min-w-[1076px]">
             {
               displays.map((display, index) => {
                 return (

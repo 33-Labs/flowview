@@ -97,10 +97,10 @@ export default function CollectionDetail(props) {
         <>
           {
             collection.tokenIDs.length > 0 ?
-              <div className="p-2 w-full h-screen overflow-auto">
+              <div className="h-screen">
                 <NFTListView collection={collection} setNeedRelink={setNeedRelink} setCollectionDisplay={setCollectionDisplay} />
               </div> :
-              <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
+              <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
                 Nothing found
               </div>
           }
@@ -121,7 +121,7 @@ export default function CollectionDetail(props) {
     const socials = linkSource.socials || {}
     const twitter = socials.twitter && socials.twitter.url.trim() != '' ? socials.twitter.url : null
     const discord = socials.discord && socials.discord.url.trim() != '' ? socials.discord.url : null
-    
+
     return (
       <div className="flex gap-x-2">
         {
@@ -152,9 +152,9 @@ export default function CollectionDetail(props) {
               target="_blank"
               rel="noopener noreferrer"
             >
-            <div className="h-[24px] aspect-square shrink-0 relative">
-              <Image src={"/nft-catalog.png"} alt="" fill sizes="10vw" className="object-contain" />
-            </div>
+              <div className="h-[24px] aspect-square shrink-0 relative">
+                <Image src={"/nft-catalog.png"} alt="" fill sizes="10vw" className="object-contain" />
+              </div>
             </a> : null
         }
         {externalLink ?
@@ -207,8 +207,8 @@ export default function CollectionDetail(props) {
     }
 
     return (
-      <>
-        <div className="flex gap-x-3 justify-between items-center">
+      <div className="p-2 w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-scroll">
+        <div className="w-[1070px] flex gap-x-10 justify-between items-center">
           <div className="flex gap-x-3 items-center">
             <div className="h-[64px] w-[64px] shrink-0 relative rounded-full ring-1 ring-drizzle">
               <Image src={imageSrc} alt="" fill sizes="10vw" className="object-contain rounded-full" />
@@ -222,37 +222,35 @@ export default function CollectionDetail(props) {
           </div>
           {getLinks(linkSource)}
         </div>
-        <label>{description}</label>
-      </>
+        <div className="px-1 py-2 w-[1070px]">{description}</div>
+      </div>
     )
   }
 
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="min-w-[1076px] p-2 flex gap-x-2 justify-between w-full">
-            <div className="w-full flex flex-col gap-y-2 justify-center">
-              <button
-                className="mb-2"
-                onClick={() => {
-                  router.push({
-                    pathname: "/account/[account]/collection",
-                    query: { account: account }
-                  }, undefined, { shallow: true, scroll: false })
-                }}
-              >
-                <div className=" flex gap-x-2 text-drizzle items-center">
-                  <ArrowLeftIcon className="h-5 w-5" />
-                  <label className="cursor-pointer">Collections</label>
-                </div>
-              </button>
-              {getBasicInfoView()}
+        <div className="flex flex-col gap-y-3">
+          <button
+            className="mb-2"
+            onClick={() => {
+              router.push({
+                pathname: "/account/[account]/collection",
+                query: { account: account }
+              }, undefined, { shallow: true, scroll: false })
+            }}
+          >
+            <div className="flex gap-x-2 text-drizzle items-center">
+              <ArrowLeftIcon className="h-5 w-5" />
+              <label className="cursor-pointer">Collections</label>
             </div>
+          </button>
 
+          {getBasicInfoView()}
 
+          <div className="w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-scroll">
+            {showCollection()}
           </div>
-          {showCollection()}
         </div>
       </Layout>
     </div>

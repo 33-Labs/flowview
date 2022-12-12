@@ -55,7 +55,7 @@ export default function NFT(props) {
       )
     } else {
       return (
-        <div className="p-2 w-full h-screen overflow-auto">
+        <div className="p-1 w-[1076px] h-screen overflow-auto">
           <NFTDetailView metadata={metadata} />
         </div>
       )
@@ -65,26 +65,24 @@ export default function NFT(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="min-w-[1076px] p-2 flex gap-x-2 justify-between w-full">
-            <div className="flex flex-col gap-y-2 justify-center w-full">
-              <button
-                className="mb-2"
-                onClick={() => {
-                  router.push({
-                    pathname: "/account/[account]/collection/[collection]",
-                    query: { account: account, collection: collectionPath }
-                  }, undefined, { shallow: true, scroll: false })
-                }}
-              >
-                <div className=" flex gap-x-2 text-drizzle items-center">
-                  <ArrowLeftIcon className="h-5 w-5" />
-                  <label className="cursor-pointer">Collection Detail</label>
-                </div>
-              </button>
-
-              {showToken()}
+        <div className="flex w-full flex-col gap-y-3">
+          <button
+            className="mb-2"
+            onClick={() => {
+              router.push({
+                pathname: "/account/[account]/collection/[collection]",
+                query: { account: account, collection: collectionPath }
+              }, undefined, { shallow: true, scroll: false })
+            }}
+          >
+            <div className=" flex gap-x-2 text-drizzle items-center">
+              <ArrowLeftIcon className="h-5 w-5" />
+              <label className="cursor-pointer">Collection Detail</label>
             </div>
+          </button>
+
+          <div className="w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-scroll">
+          {showToken()}
           </div>
         </div>
       </Layout>
