@@ -127,7 +127,7 @@ export default function NFTListView(props) {
             }
             {
               displays.length < collection.tokenIDs.length ?
-                <div className="w-36 rounded-2xl shadow-md bg-drizzle-light hover:bg-drizzle font-bold">
+                <div className="w-36 h-60 rounded-2xl shadow-md bg-drizzle-light hover:bg-drizzle font-bold">
                   <button
                     className="w-full h-full"
                     onClick={() => {

@@ -148,46 +148,46 @@ export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
     }
 
     let resolver = collectionRef!.borrowViewResolver(id: tokenID)
-    let viewTypes = resolver.getViews()
-    for type in viewTypes {
-      if type == Type<MetadataViews.Display>() {
-        if let view = resolver.resolveView(type) {
-            res["display"] = view
-        }
-      } else if type == Type<MetadataViews.Editions>() {
-        if let view = resolver.resolveView(type) {
-            res["editions"] = view
-        }
-      } else if type == Type<MetadataViews.Serial>() {
-        if let view = resolver.resolveView(type) {
-            res["serial"] = view
-        }
-      } else if type == Type<MetadataViews.Royalties>() {
-        if let view = resolver.resolveView(type) {
-            res["royalties"] = view
-        }
-      } else if type == Type<MetadataViews.Medias>() {
-        if let view = resolver.resolveView(type) {
-            res["medias"] = view
-        }
-      } else if type == Type<MetadataViews.License>() {
-        if let view = resolver.resolveView(type) {
-            res["license"] = view
-        }
-      } else if type == Type<MetadataViews.ExternalURL>() {
-        if let view = resolver.resolveView(type) {
-            res["external_url"] = view
-        }
-      } else if type == Type<MetadataViews.Traits>() {
-        if let view = resolver.resolveView(type) {
-            res["traits"] = view
-        }
-      } else if type == Type<MetadataViews.NFTCollectionDisplay>() {
-        if let view = resolver.resolveView(type) {
-          res["collectionDisplay"] = view
-      } 
-      }
+    if let rarity = MetadataViews.getRarity(resolver) {
+      res["rarity"] = rarity
     }
+
+    if let display = MetadataViews.getDisplay(resolver) {
+      res["display"] = display
+    }
+
+    if let editions = MetadataViews.getEditions(resolver) {
+      res["editions"] = editions
+    }
+
+    if let serial = MetadataViews.getSerial(resolver) {
+      res["serial"] = serial
+    }
+
+    if let royalties = MetadataViews.getRoyalties(resolver) {
+      res["royalties"] = royalties
+    }
+
+    if let license = MetadataViews.getLicense(resolver) {
+      res["license"] = license
+    }
+
+    if let medias = MetadataViews.getMedias(resolver) {
+      res["medias"] = medias
+    }
+
+    if let externalURL = MetadataViews.getExternalURL(resolver) {
+      res["externalURL"] = externalURL
+    }
+
+    if let traits = MetadataViews.getTraits(resolver) {
+      res["traits"] = traits
+    }
+
+    if let collectionDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
+      res["collectionDisplay"] = collectionDisplay
+    }
+
     return res
   }
   `
@@ -311,7 +311,7 @@ export const bulkGetNftViews = async (address, collection, limit, offset) => {
   return displays
 }
 
-// --- old ---
+// --- deprecated ---
 
 export const getNftDisplays = async (address, storagePathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)

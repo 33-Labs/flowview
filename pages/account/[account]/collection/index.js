@@ -133,14 +133,6 @@ export default function Collection(props) {
                 </Switch>
               </div>
             </div>
-            <label className={`item-start hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-              <a href={`${publicConfig.drizzleURL}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Create raffle
-              </a>
-            </label>
           </div>
           <div className="px-2 py-2 overflow-x-auto max-h-screen w-full">
             <div className="inline-block min-w-full">

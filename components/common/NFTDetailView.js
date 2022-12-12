@@ -64,7 +64,7 @@ export default function NFTDetailView(props) {
             editions.infoList.map((edition) => {
               return (
                 <div className="flex gap-x-1">
-                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`${edition.name} `}<span className="text-blue-300">&nbsp;|&nbsp;</span>{` #${edition.number} / ${edition.max}`}</label>
+                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`${edition.name} `}<span className="text-blue-300">&nbsp;|&nbsp;</span>{ edition.max ? ` #${edition.number} / ${edition.max}` : `#${edition.number}`}</label>
                 </div>
               )
             })
@@ -175,7 +175,12 @@ export default function NFTDetailView(props) {
     if (!display) return null
     const collectionDisplay = metadata.collectionDisplay
     const serial = metadata.serial
-    const externalURL = metadata.external_url
+    const rarity = metadata.rarity
+    let rarityColor = null
+    if (rarity && rarity.description) {
+      rarityColor = getRarityColor(rarity.description.toLowerCase())
+    }
+    const externalURL = metadata.externalURL
     const imageSrc = getImageSrcFromMetadataViewsFile(display.thumbnail)
     return (
       <div className="pb-4 pt-2 px-2 flex gap-x-5">
@@ -190,11 +195,19 @@ export default function NFTDetailView(props) {
                 : null
             }
             <label className="font-bold text-black text-3xl">{display.name}</label>
+            <div className="flex gap-x-1">
+            {
+              rarity && rarity.description ?
+                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full ${rarityColor}`}>{`${rarity.description.toUpperCase()}`}</label>
+                : null
+            }
             {
               serial ?
                 <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-yellow-100 text-yellow-800`}>{`Serial: #${serial.number}`}</label>
                 : null
             }
+            </div>
+
             <label className="text-black text-base">{display.description}</label>
           </div>
           {
