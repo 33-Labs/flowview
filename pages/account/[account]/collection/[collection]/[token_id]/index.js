@@ -1,15 +1,11 @@
-import { ArrowLeftIcon, GlobeAltIcon } from "@heroicons/react/outline"
-import Image from "next/image"
+import { ArrowLeftIcon } from "@heroicons/react/outline"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import { useRecoilState } from "recoil"
 import Layout from "../../../../../../components/common/Layout"
 import NFTDetailView from "../../../../../../components/common/NFTDetailView"
 import Spinner from "../../../../../../components/common/Spinner"
-import { bulkGetNftCatalog, getNftMetadataViews, getStoredItems } from "../../../../../../flow/scripts"
-import { nftCatalogState } from "../../../../../../lib/atoms"
-import { collectionsWithCatalogInfo, collectionsWithExtraData, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../../lib/utils"
-import publicConfig from "../../../../../../publicConfig"
+import { getNftMetadataViews } from "../../../../../../flow/scripts"
+import { isValidFlowAddress } from "../../../../../../lib/utils"
 import Custom404 from "../../../404"
 
 export default function NFT(props) {

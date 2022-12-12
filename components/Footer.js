@@ -67,7 +67,7 @@ export default function Footer() {
             rel="noopener noreferrer"
           >
             <div className="min-w-[20px]">
-              <Image src="/drizzle.png" alt="" width={20} height={20} priority />
+              <Image src="/drizzle.png" alt="" width={20} height={20} />
             </div>
           </a>
         </div>

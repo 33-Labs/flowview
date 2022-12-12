@@ -19,7 +19,7 @@ export default function NFTDetailView(props) {
         </h1>
         <div className="flex gap-x-2 flex-wrap">
           {
-            medias.items.map((item) => {
+            medias.items.map((item, index) => {
               const isImage = item.mediaType.includes("image/")
               const isVideo = item.mediaType.includes("video/")
               let imageSrc = ""
@@ -27,7 +27,7 @@ export default function NFTDetailView(props) {
                 imageSrc = getImageSrcFromMetadataViewsFile(item.file)
               }
               return (
-                <div className="flex gap-x-2">
+                <div className="flex gap-x-2" key={`media-${index}`}>
                   {
                     isImage ?
                       <div className="w-64 shrink-0 shadow-md aspect-square rounded-2xl bg-white relative overflow-hidden ring-1 ring-black ring-opacity-5">
@@ -61,9 +61,9 @@ export default function NFTDetailView(props) {
         </h1>
         <div className="flex flex-col gap-y-2">
           {
-            editions.infoList.map((edition) => {
+            editions.infoList.map((edition, index) => {
               return (
-                <div className="flex gap-x-1">
+                <div className="flex gap-x-1" key={`edition-${index}`}>
                   <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`${edition.name} `}<span className="text-blue-300">&nbsp;|&nbsp;</span>{ edition.max ? ` #${edition.number} / ${edition.max}` : `#${edition.number}`}</label>
                 </div>
               )
@@ -143,13 +143,13 @@ export default function NFTDetailView(props) {
         </h1>
         <div className="flex flex-wrap gap-x-2 gap-y-2">
           {
-            traits.sort((a, b) => { return a.value.length - b.value.length }).map((trait) => {
+            traits.sort((a, b) => { return a.value.length - b.value.length }).map((trait, index) => {
               let rarityColor = null
               if (trait.rarity && trait.rarity.description) {
                 rarityColor = getRarityColor(trait.rarity.description.toLowerCase())
               }
               return (
-                <div className="flex flex-col gap-y-1 px-3 py-2 bg-white rounded-xl overflow-hidden ring-1 ring-black ring-opacity-5">
+                <div key={`traits-${index}`} className="flex flex-col gap-y-1 px-3 py-2 bg-white rounded-xl overflow-hidden ring-1 ring-black ring-opacity-5">
                   <label className="font-semibold text-gray-600 text-center text-sm">{trait.name}</label>
                   <label className="text-center text-sm">{trait.value}</label>
                   

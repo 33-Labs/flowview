@@ -109,7 +109,6 @@ export default function NFTListView(props) {
                   <button
                   key={`${display.tokenID}_${index}`}
                   onClick={() => {
-                    console.log("CLICK")
                     router.push({
                       pathname: `${router.pathname}/[token_id]`,
                       query: {

@@ -532,23 +532,38 @@ export const getStoredItems = async (address, paths) => {
   const code = `
   import FungibleToken from 0xFungibleToken
   import NonFungibleToken from 0xNonFungibleToken
-   
+  import MetadataViews from 0xMetadataViews
+
+  pub struct CollectionDisplay {
+    pub let name: String
+    pub let squareImage: MetadataViews.Media
+
+    init(name: String, squareImage: MetadataViews.Media) {
+      self.name = name
+      self.squareImage = squareImage
+    }
+  }
+
   pub struct Item {
       pub let address: Address
       pub let path: String
       pub let type: Type
       pub let isResource: Bool
       pub let isNFTCollection: Bool
+      pub let display: CollectionDisplay?
       pub let tokenIDs: [UInt64]
       pub let isVault: Bool
       pub let balance: UFix64?
   
-      init(address: Address, path: String, type: Type, isResource: Bool, isNFTCollection: Bool, tokenIDs: [UInt64], isVault: Bool, balance: UFix64?) {
+      init(address: Address, path: String, type: Type, isResource: Bool, 
+        isNFTCollection: Bool, display: CollectionDisplay?,
+        tokenIDs: [UInt64], isVault: Bool, balance: UFix64?) {
           self.address = address
           self.path = path
           self.type = type
           self.isResource = isResource
           self.isNFTCollection = isNFTCollection
+          self.display = display
           self.tokenIDs = tokenIDs
           self.isVault = isVault
           self.balance = balance
@@ -560,6 +575,7 @@ export const getStoredItems = async (address, paths) => {
     let resourceType = Type<@AnyResource>()
     let vaultType = Type<@FungibleToken.Vault>()
     let collectionType = Type<@NonFungibleToken.Collection>()
+    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
     let items: [Item] = []
 
     for identifier in pathIdentifiers {
@@ -567,10 +583,25 @@ export const getStoredItems = async (address, paths) => {
 
       if let type = account.type(at: path) {
         let isResource = type.isSubtype(of: resourceType)
-
         let isNFTCollection = type.isSubtype(of: collectionType)
+        let conformedMetadataViews = type.isSubtype(of: metadataViewType)
+
         var tokenIDs: [UInt64] = []
-        if isNFTCollection {
+        var collectionDisplay: CollectionDisplay? = nil
+        if isNFTCollection && conformedMetadataViews {
+          if let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path) {
+            tokenIDs = collectionRef.getIDs()
+            if tokenIDs.length > 0 && path != /storage/RaribleNFTCollection {
+              let resolver = collectionRef.borrowViewResolver(id: tokenIDs[0]) 
+              if let display = MetadataViews.getNFTCollectionDisplay(resolver) {
+                collectionDisplay = CollectionDisplay(
+                  name: display.name,
+                  squareImage: display.squareImage
+                )
+              }
+            }
+          }
+        } else if isNFTCollection {
           if let collectionRef = account.borrow<&NonFungibleToken.Collection>(from: path) {
             tokenIDs = collectionRef.getIDs()
           }
@@ -590,6 +621,7 @@ export const getStoredItems = async (address, paths) => {
           type: type,
           isResource: isResource,
           isNFTCollection: isNFTCollection,
+          display: collectionDisplay,
           tokenIDs: tokenIDs,
           isVault: isVault,
           balance: balance

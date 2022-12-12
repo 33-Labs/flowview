@@ -2,7 +2,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import Layout from "../../../../components/common/Layout"
 import { bulkGetNftCatalog, bulkGetStoredItems } from "../../../../flow/scripts"
-import { isValidFlowAddress, classNames, collectionsWithCatalogInfo, collectionsWithExtraData } from "../../../../lib/utils"
+import { isValidFlowAddress, classNames, collectionsWithCatalogInfo, collectionsWithExtraData, collectionsWithDisplayInfo } from "../../../../lib/utils"
 import Custom404 from "../404"
 import publicConfig from "../../../../publicConfig"
 import Spinner from "../../../../components/common/Spinner"
@@ -49,12 +49,19 @@ export default function Collection(props) {
   }, [currentStoredItems, account])
 
   useEffect(() => {
-    if (collectionData && nftCatalog) {
+    if (collectionData) {
       const newCollection =
-        collectionsWithExtraData(collectionsWithCatalogInfo(collectionData, nftCatalog))
+        collectionsWithExtraData(collectionsWithDisplayInfo(collectionData))
       setCollections(newCollection)
     }
-  }, [collectionData, nftCatalog])
+  }, [collectionData])
+
+  useEffect(() => {
+    if (nftCatalog && collections && collections.length > 0 && !collections[0].addedCatalogInfo) {
+      const newCollections = collectionsWithCatalogInfo(collections, nftCatalog)
+      setCollections(newCollections) 
+    }
+  }, [nftCatalog, collections])
 
   useEffect(() => {
     if (collections) {

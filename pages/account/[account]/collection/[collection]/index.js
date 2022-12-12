@@ -3,14 +3,12 @@ import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useRecoilState } from "recoil"
-import CollectionDisplayView from "../../../../../components/common/CollectionDisplayView"
 import Layout from "../../../../../components/common/Layout"
 import NFTListView from "../../../../../components/common/NFTListView"
-import NftListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
 import { nftCatalogState } from "../../../../../lib/atoms"
-import { collectionsWithCatalogInfo, collectionsWithExtraData, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
+import { collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
 
@@ -57,14 +55,19 @@ export default function CollectionDetail(props) {
   }, [account])
 
   useEffect(() => {
-    if (collectionData && collectionData.length > 0 && nftCatalog) {
+    if (collectionData && collectionData.length > 0) {
       const newCollections =
-        collectionsWithExtraData(collectionsWithCatalogInfo(collectionData, nftCatalog))
-
-      console.log(newCollections[0])
+        collectionsWithExtraData(collectionsWithDisplayInfo(collectionData))
       setCollection(newCollections[0])
     }
-  }, [collectionData, nftCatalog])
+  }, [collectionData])
+
+  useEffect(() => {
+    if (nftCatalog && collection && !collection.addedCatalogInfo) {
+      const newCollections = collectionsWithCatalogInfo([collection], nftCatalog)
+      setCollection(newCollections[0])
+    }
+  }, [nftCatalog, collection])
 
   if (!account) {
     return <div className="h-screen"></div>
@@ -114,7 +117,7 @@ export default function CollectionDetail(props) {
       externalLink = externalURL.url
     }
 
-    const socials = collectionDisplay.socials
+    const socials = collectionDisplay.socials || {}
     const twitter = socials.twitter && socials.twitter.url.trim() != '' ? socials.twitter.url : null
     const discord = socials.discord && socials.discord.url.trim() != '' ? socials.discord.url : null
     return (
@@ -151,6 +154,43 @@ export default function CollectionDetail(props) {
     )
   }
 
+  const getBasicInfoView = () => {
+    let imageSrc = "/token_placeholder.png"
+    let name = collectionPath
+    let description = null
+    let socialSource = null
+    if (collectionDisplay) {
+      imageSrc = getImageSrcFromMetadataViewsFile(collectionDisplay.squareImage.file)
+      name = collectionDisplay.name
+      description = collectionDisplay.description
+      socialSource = collectionDisplay
+    } else if (collection && collection.name) {
+      imageSrc = getImageSrcFromMetadataViewsFile(collection.squareImage.file)
+      name = collection.name
+      description = collection.description
+      socialSource = collection
+    }
+
+    return (
+      <>
+        <div className="flex gap-x-3 items-center">
+          <div className="h-[64px] w-[64px] shrink-0 relative rounded-full ring-1 ring-drizzle">
+            <Image src={imageSrc} alt="" fill sizes="10vw" className="object-contain rounded-full" />
+          </div>
+          <div className="flex flex-col gap-y-1">
+            <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
+              {`${name}`}
+            </h1>
+            <label className="text-black text-xs mb-1">{`/storage/${collectionPath}`}</label>
+            {getSocials(socialSource)}
+          </div>
+        </div>
+
+        <label>{description}</label>
+      </>
+    )
+  }
+
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
@@ -171,29 +211,9 @@ export default function CollectionDetail(props) {
                   <label className="cursor-pointer">Collections</label>
                 </div>
               </button>
-              <div className="flex gap-x-3 items-center">
-                <div className="h-[64px] w-[64px] shrink-0 relative rounded-full">
-                  <Image src={
-                    collectionDisplay ?
-                      getImageSrcFromMetadataViewsFile(collectionDisplay.squareImage.file)
-                      : "/token_placeholder.png"
-                  } alt="" fill sizes="10vw" className="object-contain rounded-full" />
-                </div>
-                <div className="flex flex-col gap-y-1">
-                  <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
-                    {`${collectionDisplay ? collectionDisplay.name : collectionPath}`}
-                  </h1>
-                  <label className="text-black text-xs mb-1">{`/storage/${collectionPath}`}</label>
-                  {getSocials(collectionDisplay)}
-                </div>
-              </div>
-
-
-              {
-                collectionDisplay ?
-                  <label>{collectionDisplay.description}</label> : null
-              }
+              {getBasicInfoView()}
             </div>
+
 
           </div>
           {showCollection()}

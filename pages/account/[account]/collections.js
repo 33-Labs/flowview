@@ -11,6 +11,7 @@ import { useRecoilState } from "recoil"
 import { currentStoredItemsState, nftCatalogState } from "../../../lib/atoms"
 import { Switch } from "@headlessui/react"
 
+// DEPRECATED
 export default function Collections(props) {
   const router = useRouter()
   const { account } = router.query
