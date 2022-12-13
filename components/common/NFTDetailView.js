@@ -22,7 +22,7 @@ export default function NFTDetailView(props) {
         <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
           {`Medias (${medias.items.length})`}
         </h1>
-        <div className="flex gap-x-2 flex-wrap">
+        <div className="flex gap-x-3 gap-y-3 flex-wrap">
           {
             medias.items.map((item, index) => {
               const isImage = item.mediaType.includes("image/")
@@ -32,7 +32,7 @@ export default function NFTDetailView(props) {
                 imageSrc = getImageSrcFromMetadataViewsFile(item.file)
               }
               return (
-                <div className="flex gap-x-2" key={`media-${index}`}>
+                <div key={`media-${index}`}>
                   {
                     isImage ?
                       <div className="w-64 shrink-0 shadow-md aspect-square rounded-2xl bg-white relative overflow-hidden ring-1 ring-black ring-opacity-5">
@@ -190,7 +190,7 @@ export default function NFTDetailView(props) {
     return (
       <div className="w-full pb-4 pt-2 px-2 flex gap-x-5">
         <div className="w-96 shrink-0 shadow-md aspect-square flex justify-center rounded-2xl bg-white relative overflow-hidden ring-1 ring-black ring-opacity-5">
-          <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="16vw" />
+          <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="33vw" />
         </div>
         <div className="w-full flex flex-col gap-y-2 justify-between">
           <div className="flex flex-col gap-y-2 items-start">
