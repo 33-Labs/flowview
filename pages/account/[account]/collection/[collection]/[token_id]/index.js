@@ -12,10 +12,6 @@ export default function NFT(props) {
   const router = useRouter()
   const { account: account, collection: collectionPath, token_id: tokenID } = router.query
 
-  console.log("account", account)
-  console.log("collectionPath", collectionPath)
-  console.log("tokenID", tokenID)
-
   const [metadataError, setMetadataError] = useState(null)
   const [metadata, setMetadata] = useState(null)
 

@@ -41,7 +41,6 @@ export default function CollectionDetail(props) {
   useEffect(() => {
     if (account && isValidFlowAddress(account)) {
       getStoredItems(account, [collectionPath]).then((items) => {
-        console.log("items", items)
         if (items.length == 0) {
           setCollectionError("No Collection Found")
         } else if (!items[0].isNFTCollection) {
@@ -64,7 +63,6 @@ export default function CollectionDetail(props) {
   useEffect(() => {
     if (nftCatalog && collection && !collection.addedCatalogInfo) {
       const newCollections = collectionsWithCatalogInfo([collection], nftCatalog)
-      console.log("newColl", newCollections[0])
       setCollection(newCollections[0])
     }
   }, [nftCatalog, collection])
@@ -117,7 +115,6 @@ export default function CollectionDetail(props) {
       externalLink = externalURL.url
     }
 
-    console.log(linkSource)
     const socials = linkSource.socials || {}
     const twitter = socials.twitter && socials.twitter.url.trim() != '' ? socials.twitter.url : null
     const discord = socials.discord && socials.discord.url.trim() != '' ? socials.discord.url : null

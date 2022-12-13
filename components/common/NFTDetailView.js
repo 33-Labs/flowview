@@ -13,8 +13,6 @@ export default function NFTDetailView(props) {
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
 
   const { metadata } = props
-  // const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
-  console.log("metadata", metadata)
 
   const getMediasView = (metadata) => {
     const medias = metadata.medias

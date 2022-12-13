@@ -130,9 +130,6 @@ export const getAddressOfDomain = async (domain) => {
 // --- Collections ---
 
 export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
-  console.log("address:", address)
-  console.log("storagePathID", storagePathID)
-  console.log("tokenID", tokenID)
   const code = `
   import NonFungibleToken from 0xNonFungibleToken
   import MetadataViews from 0xMetadataViews
@@ -611,7 +608,9 @@ export const getStoredItems = async (address, paths) => {
         if isNFTCollection && conformedMetadataViews {
           if let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path) {
             tokenIDs = collectionRef.getIDs()
-            if tokenIDs.length > 0 && path != /storage/RaribleNFTCollection {
+            if tokenIDs.length > 0 
+            && path != /storage/RaribleNFTCollection 
+            && path != /storage/ArleeScene {
               let resolver = collectionRef.borrowViewResolver(id: tokenIDs[0]) 
               if let display = MetadataViews.getNFTCollectionDisplay(resolver) {
                 collectionDisplay = CollectionDisplay(
