@@ -63,7 +63,7 @@ export default function NFT(props) {
       <Layout>
         <div className="flex w-full flex-col gap-y-3">
           <button
-            className="mb-2"
+            className="mb-2 self-start"
             onClick={() => {
               router.push({
                 pathname: "/account/[account]/collection/[collection]",

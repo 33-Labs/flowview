@@ -56,7 +56,10 @@ export default function CollectionDetail(props) {
     if (collectionData && collectionData.length > 0) {
       const newCollections =
         collectionsWithExtraData(collectionsWithDisplayInfo(collectionData))
-      setCollection(newCollections[0])
+      const tempCollection = newCollections[0]
+      const sortedIDs = tempCollection.tokenIDs.map((a) => parseInt(a)).sort((a, b) => b - a)
+      tempCollection.tokenIDs = sortedIDs
+      setCollection(tempCollection)
     }
   }, [collectionData])
 
@@ -229,7 +232,7 @@ export default function CollectionDetail(props) {
       <Layout>
         <div className="flex flex-col gap-y-3">
           <button
-            className="mb-2"
+            className="mb-2 self-start"
             onClick={() => {
               router.push({
                 pathname: "/account/[account]/collection",
