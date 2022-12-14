@@ -533,7 +533,7 @@ const getCatalogTypeData = async () => {
 
 export const bulkGetStoredItems = async (address) => {
   const paths = await getStoragePaths(address)
-  const groups = splitList(paths.map((p) => p.identifier), 100)
+  const groups = splitList(paths.map((p) => p.identifier), 50)
   const promises = groups.map((group) => {
     return getStoredItems(address, group)
   })
@@ -742,7 +742,7 @@ export const getStoredResource = async (address, path) => {
 
 export const bulkGetPublicItems = async (address) => {
   const paths = await getPublicPaths(address)
-  const groups = splitList(paths, 100)
+  const groups = splitList(paths, 50)
   const promises = groups.map((group) => {
     return getPublicItems(address, group)
   })
@@ -902,7 +902,7 @@ export const getPublicPaths = async (address) => {
 
 export const bulkGetPrivateItems = async (address) => {
   const paths = await getPrivatePaths(address)
-  const groups = splitList(paths, 100)
+  const groups = splitList(paths, 50)
   const promises = groups.map((group) => {
     return getPrivateItems(address, group)
   })
