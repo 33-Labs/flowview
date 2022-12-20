@@ -291,7 +291,7 @@ export default function ItemsView(props) {
               {getLoadResourceButton(item.isResource)}
               {item.isResource ? getDestroyButton() : null}
             </div> : getUnlinkButton()) : (
-              pathType == "Storage" && item.isResource ? getLoadResourceButton(item.isResource) : null
+              pathType == "Storage" && getLoadResourceButton(item.isResource)
             )
         }
       </div>
