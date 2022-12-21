@@ -1,15 +1,58 @@
 import { useRouter } from "next/router"
 import Layout from "../../../components/common/Layout"
 import { huntStorage, huntPrivate, huntPublic } from "../../../flow/bug_hunter"
+import { getDelegatorInfo, getEpochMetadata, getNodeInfo, getStakingInfo } from "../../../flow/staking_scripts"
 
 export default function Analyzer() {
   const router = useRouter()
   const { account } = router.query
 
+  const getNodeIDs = (collectorClusters) => {
+    let totalNodeIDs = []
+    for (let i = 0; i < collectorClusters.length; i++) {
+      let cluster = collectorClusters[i]
+      let nodeWeights = cluster.nodeWeights
+      let nodeIDs = Object.keys(nodeWeights)
+      totalNodeIDs.push(...nodeIDs)
+    }
+    return totalNodeIDs
+  } 
+
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex flex-col gap-x-2">
+        <button
+            onClick={async () => {
+              let info = await getStakingInfo("0x0a1381bc9aa8b362")
+              console.log(info)
+            }}>
+            Staking Info
+          </button>
+        <button
+            onClick={async () => {
+              let info = await getDelegatorInfo("41f82d558dad936f3b3875d08d0cbdd4045a4c7024292e195e1df1066c5197fe", "1")
+              console.log(info)
+            }}>
+            Delegator Info
+          </button>
+          <button
+            onClick={async () => {
+              let epochMetadata = await getEpochMetadata(55)
+              console.log(epochMetadata)
+              let totalNodeIDs = getNodeIDs(epochMetadata.collectorClusters)
+              console.log(totalNodeIDs)
+              for (let i = 0; i < totalNodeIDs.length; i++) {
+                let nodeID = totalNodeIDs[i]
+                let nodeInfo = await getNodeInfo(nodeID)
+                if (parseInt(nodeInfo.delegatorIDCounter) == 1) {
+                  console.log(nodeInfo)
+                  break
+                }
+              }
+            }}>
+            Staking
+          </button>
           <button
             onClick={async () => {
               await huntStorage(account)
