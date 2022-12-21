@@ -7,6 +7,7 @@ import Spinner from "../../../components/common/Spinner"
 import { getStakingInfo } from "../../../flow/staking_scripts"
 import { isValidFlowAddress } from "../../../lib/utils"
 import publicConfig from "../../../publicConfig"
+import Custom404 from "./404"
 
 const stakingInfoFetcher = async (funcName, address) => {
   return await getStakingInfo(address)
