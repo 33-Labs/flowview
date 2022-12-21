@@ -608,8 +608,11 @@ export const getStoredItems = async (address, paths) => {
         if isNFTCollection && conformedMetadataViews {
           if let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path) {
             tokenIDs = collectionRef.getIDs()
+
+            // TODO: move to a list
             if tokenIDs.length > 0 
             && path != /storage/RaribleNFTCollection 
+            && path != /storage/ARTIFACTPackV3Collection
             && path != /storage/ArleeScene {
               let resolver = collectionRef.borrowViewResolver(id: tokenIDs[0]) 
               if let display = MetadataViews.getNFTCollectionDisplay(resolver) {
