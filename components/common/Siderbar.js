@@ -11,11 +11,12 @@ export default function Sidebar(props) {
     { id: "1", label: `Key`, link: { pathname: "/account/[account]/key", query: { account: account } } },
     { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
     { id: "3", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
+    { id: "4", label: `Staking`, link: { pathname: "/account/[account]/staking", query: { account: account } } },
     {
-      id: "4", label: "Storage", subItems: [
-        { id: "4-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_item", query: { account: account } } },
-        { id: "4-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_item", query: { account: account } } },
-        { id: "4-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_item", query: { account: account } } },
+      id: "5", label: "Storage", subItems: [
+        { id: "5-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_item", query: { account: account } } },
+        { id: "5-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_item", query: { account: account } } },
+        { id: "5-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_item", query: { account: account } } },
       ]
     }
     // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
