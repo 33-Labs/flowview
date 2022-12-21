@@ -8,7 +8,7 @@ import NFTListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
 import { basicNotificationContentState, nftCatalogState, showBasicNotificationState } from "../../../../../lib/atoms"
-import { collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
+import { collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
 
@@ -137,7 +137,7 @@ export default function CollectionDetail(props) {
         {
           linkSource.uuid ?
             <a
-              href={`${publicConfig.flowscanURL}/contract/${linkSource.uuid}`}
+              href={getContractLink(linkSource.uuid)}
               target="_blank"
               rel="noopener noreferrer"
               className="p-1 rounded-full h-[24px] aspect-square bg-drizzle text-black"
@@ -196,15 +196,22 @@ export default function CollectionDetail(props) {
       const publicPathIdentifier = collection.publicPathIdentifier
       return (
         <div className="px-1 mt-4 w-full flex justify-start items-center gap-x-2">
-          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}><span className="font-normal text-emerald-500">{`Contract Name: `}</span>{`${contractName}`}</label>
+            <label className={`cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
+              onClick={() => {
+                window.open(getContractLink(`A.${contractAddress.replace("0x", "")}.${contractName}`))
+              }}
+            >
+              <span className="font-normal text-emerald-500">{`Contract Name: `}</span>
+              {`${contractName}`}
+            </label>
           <label className={`cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
-          onClick={() => {
-            router.push(`/account/${contractAddress}`)
-          }}><span className="font-normal text-emerald-500">{`Contract Address: `}</span>{`${contractAddress}`}</label>
+            onClick={() => {
+              router.push(`/account/${contractAddress}`)
+            }}><span className="font-normal text-emerald-500">{`Contract Address: `}</span>{`${contractAddress}`}</label>
           <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}><span className="font-normal text-emerald-500">{`PublicPath ID: `}</span>{`${publicPathIdentifier}`}</label>
         </div>
       )
-    } 
+    }
 
     return null
   }

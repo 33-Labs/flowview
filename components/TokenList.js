@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { getContractLink } from '../lib/utils'
 import publicConfig from "../publicConfig"
 
 export default function TokenList(props) {
@@ -41,7 +42,7 @@ export default function TokenList(props) {
                         <td className="px-3 py-4 text-sm text-black min-w-[140px]">
                           <label>
                             <a
-                              href={`${publicConfig.flowscanURL}/contract/${token.contract}`}
+                              href={getContractLink(token.contract)}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="underline font-bold decoration-drizzle decoration-2">

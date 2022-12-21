@@ -6,7 +6,7 @@ import {
   showAlertModalState,
   alertModalContentState
 } from "../../lib/atoms"
-import { classNames, getContract } from "../../lib/utils"
+import { classNames, getContract, getContractLink } from "../../lib/utils"
 import { destroy, unlink } from "../../flow/transactions"
 import { useSWRConfig } from 'swr'
 import { useState } from "react"
@@ -73,7 +73,7 @@ const formatPath = (path, classes) => {
 const formatTypeID = (typeID) => {
   // e.g. A.631e88ae7f1d7c20.NonFungibleToken .CollectionPublic
   const contract = getContract(typeID)
-  const url = `${publicConfig.flowscanURL}/contract/${contract}`
+  const url = getContractLink(contract)
   const rest = typeID.replace(contract, "")
   return (
     <label>
