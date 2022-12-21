@@ -49,8 +49,8 @@ export default function Staking(props) {
       return
     }
 
-    if (infoData) {
-      setStakingInfo(infoData)
+    if (infoData && infoData.stakingInfo) {
+      setStakingInfo(infoData.stakingInfo)
     }
   }, [infoData, infoError])
 
@@ -58,6 +58,7 @@ export default function Staking(props) {
     return <div className="h-screen"></div>
   }
 
+  console.log(infoError)
   if (!isValidFlowAddress(account) || infoError) {
     return <Custom404 title={"Account may not exist"} />
   }
@@ -80,15 +81,13 @@ export default function Staking(props) {
   }
 
   const showInfo = () => {
-    console.log(stakingInfo)
-    if (!infoData || !stakingInfo) {
-      if (!infoError) {
-        return (
-          <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
-            No Staking Info
-          </div>
-        )
-      }
+    if (infoData && !infoData.stakingInfo) {
+      return (
+        <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+          No Staking Info
+        </div>
+      )
+    } else if (!infoData || !stakingInfo) {
       return (
         <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
@@ -132,18 +131,18 @@ export default function Staking(props) {
               <div className="w-full grid grid-cols-3 gap-x-4 gap-y-4 ">
                 {dataField("Staked", `${new Decimal(stakingInfo.delegatorInfo.tokensStaked).toString()} FLOW`)}
                 {dataField("Rewarded", `${new Decimal(stakingInfo.delegatorInfo.tokensRewarded).toString()} FLOW`)}
+                {dataField("Committed", `${new Decimal(stakingInfo.delegatorInfo.tokensCommitted).toString()} FLOW`)}
                 {dataField("Requested To Unstake", `${new Decimal(stakingInfo.delegatorInfo.tokensRequestedToUnstake).toString()} FLOW`)}
                 {dataField("Unstaking", `${new Decimal(stakingInfo.delegatorInfo.tokensUnstaking).toString()} FLOW`)}
                 {dataField("Unstaked", `${new Decimal(stakingInfo.delegatorInfo.tokensUnstaked).toString()} FLOW`)}
-                {dataField("Committed", `${new Decimal(stakingInfo.delegatorInfo.tokensCommitted).toString()} FLOW`)}
               </div>
               <div className="mt-6 px-2 py-5 flex flex-col gap-y-2 rounded-2xl border-dashed border-drizzle border-4">
                 <h1 className="px-3 text-lg sm:text-xl font-bold text-gray-900">
                   {`Node Info`}
                 </h1>
                 <div className="px-3">
-                  <div className="font-normal text-gray-700"><span className="font-bold text-gray-900">{`ID: `}</span>{`${stakingInfo.nodeInfo.id}`}</div>
-                  <div className="font-normal text-gray-700"><span className="font-bold text-gray-900">{`Networking Address: `}</span>{`${stakingInfo.nodeInfo.networkingAddress}`}</div>
+                  <div className="font-normal text-gray-700">{`ID: `}<span className="font-bold text-gray-900">{`${stakingInfo.nodeInfo.id}`}</span></div>
+                  <div className="font-normal text-gray-700">{`Networking Address: `}<span className="font-bold text-gray-900">{`${stakingInfo.nodeInfo.networkingAddress}`}</span></div>
                 </div>
                 <div className="p-3">
                   <div className="border-t border-solid box-border w-full"></div>
@@ -155,17 +154,14 @@ export default function Staking(props) {
 
                   {dataField("Staked", `${new Decimal(stakingInfo.nodeInfo.tokensStaked).toString()} FLOW`)}
                   {dataField("Rewarded", `${new Decimal(stakingInfo.nodeInfo.tokensRewarded).toString()} FLOW`)}
+                  {dataField("Committed", `${new Decimal(stakingInfo.nodeInfo.tokensCommitted).toString()} FLOW`)}
                   {dataField("Requested To Unstake", `${new Decimal(stakingInfo.nodeInfo.tokensRequestedToUnstake).toString()} FLOW`)}
                   {dataField("Unstaking", `${new Decimal(stakingInfo.nodeInfo.tokensUnstaking).toString()} FLOW`)}
                   {dataField("Unstaked", `${new Decimal(stakingInfo.nodeInfo.tokensUnstaked).toString()} FLOW`)}
-                  {dataField("Committed", `${new Decimal(stakingInfo.nodeInfo.tokensCommitted).toString()} FLOW`)}
                 </div>
               </div>
             </div>
-
-
           </div>
-
         </div>
       )
     }

@@ -38,6 +38,14 @@ export const getStakingInfo = async (address) => {
     }
   }
 
+  pub struct Result {
+    pub let stakingInfo: StakingInfo?
+
+    init(stakingInfo: StakingInfo?) {
+      self.stakingInfo = stakingInfo
+    }
+  }
+
   pub struct StakingInfo {
     pub let epochInfo: EpochInfo
     pub let lockedAddress: Address   
@@ -118,11 +126,12 @@ export const getStakingInfo = async (address) => {
     }
   }
 
-  pub fun main(address: Address): StakingInfo? {
+  pub fun main(address: Address): Result {
     let tokenHolderRef = 
         getAuthAccount(address)
             .borrow<&LockedTokens.TokenHolder>(from: LockedTokens.TokenHolderStoragePath)
 
+    var stakingInfo: StakingInfo? = nil
     if let tokenHolder = tokenHolderRef {
       let lockedAddress = tokenHolder.getLockedAccountAddress()       
       let lockedBalance = tokenHolder.getLockedAccountBalance()
@@ -142,7 +151,7 @@ export const getStakingInfo = async (address) => {
         currentEpochPhase: FlowEpoch.currentEpochPhase.rawValue
       )
 
-      return StakingInfo(
+      stakingInfo = StakingInfo(
         epochInfo: epochInfo,
         lockedAddress: lockedAddress,
         lockedBalance: lockedBalance,
@@ -151,7 +160,8 @@ export const getStakingInfo = async (address) => {
         delegatorInfo: delegatorInfo 
       )
     }
-    return nil
+
+    return Result(stakingInfo: stakingInfo)
   }
   `
 
@@ -163,7 +173,7 @@ export const getStakingInfo = async (address) => {
   })
 
   return result
-} 
+}
 
 export const getNodeInfo = async (nodeID) => {
   const code = `
