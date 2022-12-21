@@ -189,6 +189,26 @@ export default function CollectionDetail(props) {
     )
   }
 
+  const getContractInfoView = () => {
+    if (collection && collection.addedCatalogInfo && collection.collectionIdentifier) {
+      const contractName = collection.contractName
+      const contractAddress = collection.contractAddress
+      const publicPathIdentifier = collection.publicPathIdentifier
+      return (
+        <div className="px-1 mt-4 w-full flex justify-start items-center gap-x-2">
+          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}><span className="font-normal text-emerald-500">{`Contract Name: `}</span>{`${contractName}`}</label>
+          <label className={`cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
+          onClick={() => {
+            router.push(`/account/${contractAddress}`)
+          }}><span className="font-normal text-emerald-500">{`Contract Address: `}</span>{`${contractAddress}`}</label>
+          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}><span className="font-normal text-emerald-500">{`PublicPath ID: `}</span>{`${publicPathIdentifier}`}</label>
+        </div>
+      )
+    } 
+
+    return null
+  }
+
   const getBasicInfoView = () => {
     let imageSrc = "/token_placeholder.png"
     let name = collectionPath
@@ -222,6 +242,7 @@ export default function CollectionDetail(props) {
           </div>
           {getLinks(linkSource)}
         </div>
+        {getContractInfoView()}
         <div className="px-1 py-2 w-[1070px]">{description}</div>
       </div>
     )
