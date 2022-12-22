@@ -107,61 +107,62 @@ export default function Staking(props) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-y-3">
-            <div className="flex flex-row justify-between gap-x-3 min-w-[1076px]">
-              <div className="flex gap-x-2 items-center">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  {`Staking Info`}
-                </h1>
-                <label className={`font-bold text-sm px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-800`}>{`Epoch: ${stakingInfo.epochInfo.currentEpochCounter}`}</label>
-                <label className={`font-bold text-sm px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`Epoch Phrase: ${getEpochPhrase(stakingInfo.epochInfo.currentEpochPhase)}`}</label>
-              </div>
-
-              <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-                <a href={`${publicConfig.incrementURL}/staking`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Staking at Increment
-                </a>
-              </label>
-
-            </div>
-            <div className="w-full min-w-[1076px] p-5 shadow-md rounded-2xl bg-white">
-              <div className="w-full grid grid-cols-3 gap-x-4 gap-y-4 ">
-                {dataField("Staked", `${new Decimal(stakingInfo.delegatorInfo.tokensStaked).toString()} FLOW`)}
-                {dataField("Rewarded", `${new Decimal(stakingInfo.delegatorInfo.tokensRewarded).toString()} FLOW`)}
-                {dataField("Committed", `${new Decimal(stakingInfo.delegatorInfo.tokensCommitted).toString()} FLOW`)}
-                {dataField("Requested To Unstake", `${new Decimal(stakingInfo.delegatorInfo.tokensRequestedToUnstake).toString()} FLOW`)}
-                {dataField("Unstaking", `${new Decimal(stakingInfo.delegatorInfo.tokensUnstaking).toString()} FLOW`)}
-                {dataField("Unstaked", `${new Decimal(stakingInfo.delegatorInfo.tokensUnstaked).toString()} FLOW`)}
-              </div>
-              <div className="mt-6 px-2 py-5 flex flex-col gap-y-2 rounded-2xl border-dashed border-drizzle border-4">
-                <h1 className="px-3 text-lg sm:text-xl font-bold text-gray-900">
-                  {`Node Info`}
-                </h1>
-                <div className="px-3">
-                  <div className="font-normal text-gray-700">{`ID: `}<span className="font-bold text-gray-900">{`${stakingInfo.nodeInfo.id}`}</span></div>
-                  <div className="font-normal text-gray-700">{`Networking Address: `}<span className="font-bold text-gray-900">{`${stakingInfo.nodeInfo.networkingAddress}`}</span></div>
+          {stakingInfo.delegatorInfo ?
+            <div className="flex flex-col gap-y-3">
+              <div className="flex flex-row justify-between gap-x-3 min-w-[1076px]">
+                <div className="flex gap-x-2 items-center">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                    {`Staking Info`}
+                  </h1>
+                  <label className={`font-bold text-sm px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-800`}>{`Epoch: ${stakingInfo.epochInfo.currentEpochCounter}`}</label>
+                  <label className={`font-bold text-sm px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`Epoch Phrase: ${getEpochPhrase(stakingInfo.epochInfo.currentEpochPhase)}`}</label>
                 </div>
-                <div className="p-3">
-                  <div className="border-t border-solid box-border w-full"></div>
-                </div>
-                <div className="w-full grid grid-cols-3 gap-x-4 gap-y-4">
-                  {dataField("Delegator Count", `${stakingInfo.nodeInfo.delegatorIDCounter}`)}
-                  {dataField("Role", `${getNodeRole(stakingInfo.nodeInfo.role)}`)}
-                  {dataField("Initial Weight", `${stakingInfo.nodeInfo.initialWeight}`)}
 
-                  {dataField("Staked", `${new Decimal(stakingInfo.nodeInfo.tokensStaked).toString()} FLOW`)}
-                  {dataField("Rewarded", `${new Decimal(stakingInfo.nodeInfo.tokensRewarded).toString()} FLOW`)}
-                  {dataField("Committed", `${new Decimal(stakingInfo.nodeInfo.tokensCommitted).toString()} FLOW`)}
-                  {dataField("Requested To Unstake", `${new Decimal(stakingInfo.nodeInfo.tokensRequestedToUnstake).toString()} FLOW`)}
-                  {dataField("Unstaking", `${new Decimal(stakingInfo.nodeInfo.tokensUnstaking).toString()} FLOW`)}
-                  {dataField("Unstaked", `${new Decimal(stakingInfo.nodeInfo.tokensUnstaked).toString()} FLOW`)}
-                </div>
+                <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                  <a href={`${publicConfig.incrementURL}/staking`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Staking at Increment
+                  </a>
+                </label>
+
               </div>
-            </div>
-          </div>
+              <div className="w-full min-w-[1076px] p-5 shadow-md rounded-2xl bg-white">
+                <div className="w-full grid grid-cols-3 gap-x-4 gap-y-4 ">
+                  {dataField("Staked", `${new Decimal(stakingInfo.delegatorInfo.tokensStaked).toString()} FLOW`)}
+                  {dataField("Rewarded", `${new Decimal(stakingInfo.delegatorInfo.tokensRewarded).toString()} FLOW`)}
+                  {dataField("Committed", `${new Decimal(stakingInfo.delegatorInfo.tokensCommitted).toString()} FLOW`)}
+                  {dataField("Requested To Unstake", `${new Decimal(stakingInfo.delegatorInfo.tokensRequestedToUnstake).toString()} FLOW`)}
+                  {dataField("Unstaking", `${new Decimal(stakingInfo.delegatorInfo.tokensUnstaking).toString()} FLOW`)}
+                  {dataField("Unstaked", `${new Decimal(stakingInfo.delegatorInfo.tokensUnstaked).toString()} FLOW`)}
+                </div>
+                {stakingInfo.nodeInfo ?
+                  <div className="mt-6 px-2 py-5 flex flex-col gap-y-2 rounded-2xl border-dashed border-drizzle border-4">
+                    <h1 className="px-3 text-lg sm:text-xl font-bold text-gray-900">
+                      {`Node Info`}
+                    </h1>
+                    <div className="px-3">
+                      <div className="font-normal text-gray-700">{`ID: `}<span className="font-bold text-gray-900">{`${stakingInfo.nodeInfo.id}`}</span></div>
+                      <div className="font-normal text-gray-700">{`Networking Address: `}<span className="font-bold text-gray-900">{`${stakingInfo.nodeInfo.networkingAddress}`}</span></div>
+                    </div>
+                    <div className="p-3">
+                      <div className="border-t border-solid box-border w-full"></div>
+                    </div>
+                    <div className="w-full grid grid-cols-3 gap-x-4 gap-y-4">
+                      {dataField("Delegator Count", `${stakingInfo.nodeInfo.delegatorIDCounter}`)}
+                      {dataField("Role", `${getNodeRole(stakingInfo.nodeInfo.role)}`)}
+                      {dataField("Initial Weight", `${stakingInfo.nodeInfo.initialWeight}`)}
+                      {dataField("Staked", `${new Decimal(stakingInfo.nodeInfo.tokensStaked).toString()} FLOW`)}
+                      {dataField("Rewarded", `${new Decimal(stakingInfo.nodeInfo.tokensRewarded).toString()} FLOW`)}
+                      {dataField("Committed", `${new Decimal(stakingInfo.nodeInfo.tokensCommitted).toString()} FLOW`)}
+                      {dataField("Requested To Unstake", `${new Decimal(stakingInfo.nodeInfo.tokensRequestedToUnstake).toString()} FLOW`)}
+                      {dataField("Unstaking", `${new Decimal(stakingInfo.nodeInfo.tokensUnstaking).toString()} FLOW`)}
+                      {dataField("Unstaked", `${new Decimal(stakingInfo.nodeInfo.tokensUnstaked).toString()} FLOW`)}
+                    </div>
+                  </div> : null}
+              </div>
+            </div> : null}
         </div>
       )
     }
