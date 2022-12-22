@@ -97,9 +97,29 @@ export default function Staking(props) {
       return (
         <div className="p-2 flex flex-col gap-y-8">
           <div className="flex flex-col gap-y-3">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Locked Account`}
-            </h1>
+            <div className="flex flex-row justify-between gap-x-3 min-w-[1076px]">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                {`Locked Account`}
+              </h1>
+              <div className="flex gap-x-2 items-center">
+                <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                  <a href={`https://port.onflow.org`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Manage Staking on FlowPort
+                  </a>
+                </label>
+                <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                  <a href={`${publicConfig.incrementURL}/staking`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Staking on Increment
+                  </a>
+                </label>
+              </div>
+            </div>
             <div className="w-full min-w-[1076px] grid grid-cols-3 gap-x-4 gap-y-4 p-5 shadow-md rounded-2xl bg-white">
               {dataField("Locked Account Address", `${stakingInfo.lockedAddress}`, true)}
               {dataField("Locked Account Balance", `${new Decimal(stakingInfo.lockedBalance).toString()} FLOW`)}
@@ -117,16 +137,6 @@ export default function Staking(props) {
                   <label className={`font-bold text-sm px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-800`}>{`Epoch: ${stakingInfo.epochInfo.currentEpochCounter}`}</label>
                   <label className={`font-bold text-sm px-2 py-1 leading-5 rounded-full bg-blue-100 text-blue-800`}>{`Epoch Phrase: ${getEpochPhrase(stakingInfo.epochInfo.currentEpochPhase)}`}</label>
                 </div>
-
-                <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-                  <a href={`${publicConfig.incrementURL}/staking`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Staking at Increment
-                  </a>
-                </label>
-
               </div>
               <div className="w-full min-w-[1076px] p-5 shadow-md rounded-2xl bg-white">
                 <div className="w-full grid grid-cols-3 gap-x-4 gap-y-4 ">
@@ -162,7 +172,8 @@ export default function Staking(props) {
                     </div>
                   </div> : null}
               </div>
-            </div> : null}
+            </div> : null
+          }
         </div>
       )
     }
