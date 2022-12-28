@@ -58,7 +58,6 @@ export default function Staking(props) {
     return <div className="h-screen"></div>
   }
 
-  console.log(infoError)
   if (!isValidFlowAddress(account) || infoError) {
     return <Custom404 title={"Account may not exist"} />
   }
@@ -81,7 +80,7 @@ export default function Staking(props) {
   }
 
   const showInfo = () => {
-    if (infoData && !infoData.stakingInfo) {
+    if (publicConfig.chainEnv != "mainnet" || (infoData && !infoData.stakingInfo)) {
       return (
         <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
           No Staking Info
