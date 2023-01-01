@@ -148,7 +148,13 @@ export default function NFTDetailView(props) {
         </h1>
         <div className="flex flex-wrap gap-x-2 gap-y-2">
           {
-            traits.sort((a, b) => { return a.value.length - b.value.length }).map((trait, index) => {
+            traits.map((t) => {
+              let tt = Object.assign({}, t)
+              if (typeof t.value == "object") {
+                tt.value = JSON.stringify(t.value)
+              }
+              return tt
+            }).sort((a, b) => { return a.value.length - b.value.length }).map((trait, index) => {
               let rarityColor = null
               if (trait.rarity && trait.rarity.description) {
                 rarityColor = getRarityColor(trait.rarity.description.toLowerCase())
