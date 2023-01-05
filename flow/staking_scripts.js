@@ -52,6 +52,7 @@ export const getStakingInfo = async (address) => {
     pub let lockedBalance: UFix64
     pub let unlockLimit: UFix64
     pub let nodeInfo: NodeInfo?
+    pub let delegatorNodeInfo: NodeInfo?
     pub let delegatorInfo: DelegatorInfo?
 
     init(
@@ -60,6 +61,7 @@ export const getStakingInfo = async (address) => {
       lockedBalance: UFix64,
       unlockLimit: UFix64,
       nodeInfo: NodeInfo?,
+      delegatorNodeInfo: NodeInfo?,
       delegatorInfo: DelegatorInfo?,
     ) {
       self.epochInfo = epochInfo
@@ -67,6 +69,7 @@ export const getStakingInfo = async (address) => {
       self.lockedBalance = lockedBalance
       self.unlockLimit = unlockLimit
       self.nodeInfo = nodeInfo
+      self.delegatorNodeInfo = delegatorNodeInfo
       self.delegatorInfo = delegatorInfo
     }
   }
@@ -138,10 +141,15 @@ export const getStakingInfo = async (address) => {
       let unlockLimit = tokenHolder.getUnlockLimit()
       
       var nodeInfo: NodeInfo? = nil
+      if let nodeID = tokenHolder.getNodeID() {
+        nodeInfo = NodeInfo(nodeID: nodeID)
+      }
+
+      var delegatorNodeInfo: NodeInfo? = nil
       var delegatorInfo: DelegatorInfo? = nil
       if let delegatorNodeID = tokenHolder.getDelegatorNodeID() {
         if let delegatorID = tokenHolder.getDelegatorID() {
-          nodeInfo = NodeInfo(nodeID: delegatorNodeID)
+          delegatorNodeInfo = NodeInfo(nodeID: delegatorNodeID)
           delegatorInfo = DelegatorInfo(nodeID: delegatorNodeID, delegatorID: delegatorID)
         } 
       } 
@@ -157,6 +165,7 @@ export const getStakingInfo = async (address) => {
         lockedBalance: lockedBalance,
         unlockLimit: unlockLimit,
         nodeInfo: nodeInfo,
+        delegatorNodeInfo: delegatorNodeInfo,
         delegatorInfo: delegatorInfo 
       )
     }
