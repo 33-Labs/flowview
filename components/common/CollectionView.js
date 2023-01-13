@@ -33,7 +33,7 @@ export default function CollectionView(props) {
                 </label>
                 : <label className="font-bold text-lg">{`${collection.contractName} (${collection.tokenIDs.length})`}</label>
             }
-            <label>
+            <label className="text-gray-600">
               {collection.path}
             </label>
           </div>
@@ -42,7 +42,7 @@ export default function CollectionView(props) {
           {
             collection.collectionIdentifier ?
               <label className={`cursor-pointer shrink-0`}>
-                <div className="h-[24px] aspect-square shrink-0 relative"
+                <div className="h-[28px] aspect-square shrink-0 relative"
                   onClick={(event) => {
                     window.open(`${publicConfig.nftCatalogURL}/${collection.collectionIdentifier}`)
                     event.stopPropagation()

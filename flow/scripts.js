@@ -82,6 +82,26 @@ export const getKeys = async (address) => {
   return accountInfo.account.keys.sort((a, b) => a.keyIndex - b.keyIndex)
 }
 
+// -- Contracts --
+
+export const getContractNames = async (address) => {
+  const code = `
+  pub fun main(address: Address): [String] {
+    let account = getAccount(address)
+    return account.contracts.names
+  }
+  `
+
+  const names = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  }) 
+
+  return names
+}
+
 // --- Domains ---
 
 export const getDefaultDomainsOfAddress = async (address) => {

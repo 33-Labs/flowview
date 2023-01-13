@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:i="&amp;#38;ns_ai;"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="98.300003"
+   height="109.9"
+   version="1.1"
+   id="svg12"
+   sodipodi:docname="flowscan-logo-only.svg"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)">
+  <metadata
+     id="metadata16">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2046"
+     inkscape:window-height="851"
+     id="namedview14"
+     showgrid="false"
+     inkscape:zoom="2.6815272"
+     inkscape:cx="159.15019"
+     inkscape:cy="114.61749"
+     inkscape:window-x="1606"
+     inkscape:window-y="173"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g8"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <defs
+     id="defs2" />
+  <switch
+     transform="translate(-284.1,-444.8)"
+     id="switch10">
+    <g
+       i:extraneous="self"
+       id="g8">
+      <path
+         stroke-width="0.9"
+         d="m 358.3,489 24.1,-14 -52.3,-30.2 -46,26.5 v 53.1 l 52.3,30.3 v -25.3 l 46,-26.6 z m -34.5,43.6 -27,-15.6 v -38.4 l 33.3,-19.2 26.9,15.5 -33.2,19.2 z m 12.7,-31 9.1,-5.3 11.4,6.5 -20.5,12 z"
+         id="path4" />
+    </g>
+  </switch>
+</svg>
