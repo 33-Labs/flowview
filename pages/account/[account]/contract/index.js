@@ -26,7 +26,7 @@ export default function Contract(props) {
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: itemsData, error: itemsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["storedItemsFetcher", account] : null, contractsFetcher
+    account && isValidFlowAddress(account) ? ["contractsFetcher", account] : null, contractsFetcher
   )
 
   console.log(itemsData)
