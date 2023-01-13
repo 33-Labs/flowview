@@ -61,7 +61,7 @@ export default function Contract(props) {
         {contracts.length > 0 ?
           contracts.map((name, index) => {
             return (
-              <div className="flex p-4 justify-between items-center shadow-md gap-x-8 rounded-2xl bg-white">
+              <div key={index} className="flex p-4 justify-between items-center shadow-md gap-x-8 rounded-2xl bg-white">
                 <div className="flex flex-col">
                   <label className="font-bold text-lg">{name}</label>
                   <label className="text-gray-600">{`A.${account.replace("0x", "")}.${name}`}</label>
