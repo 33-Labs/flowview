@@ -29,9 +29,6 @@ export default function Contract(props) {
     account && isValidFlowAddress(account) ? ["contractsFetcher", account] : null, contractsFetcher
   )
 
-  console.log(itemsData)
-  console.log(itemsError)
-
   useEffect(() => {
     if (itemsData) {
       const data = itemsData.sort((a, b) => a.localeCompare(b))
