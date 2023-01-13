@@ -196,7 +196,7 @@ export default function CollectionDetail(props) {
       const publicPathIdentifier = collection.publicPathIdentifier
       return (
         <div className="px-1 mt-4 w-full flex justify-start items-center gap-x-2">
-            <label className={`cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
+            <label className={`shrink-0 cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
               onClick={() => {
                 window.open(getContractLink(`A.${contractAddress.replace("0x", "")}.${contractName}`))
               }}
@@ -204,11 +204,11 @@ export default function CollectionDetail(props) {
               <span className="font-normal text-emerald-500">{`Contract Name: `}</span>
               {`${contractName}`}
             </label>
-          <label className={`cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
+          <label className={`shrink-0 cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
             onClick={() => {
               router.push(`/account/${contractAddress}`)
             }}><span className="font-normal text-emerald-500">{`Contract Address: `}</span>{`${contractAddress}`}</label>
-          <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}><span className="font-normal text-emerald-500">{`PublicPath ID: `}</span>{`${publicPathIdentifier}`}</label>
+          <label className={`shrink-0 font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}><span className="font-normal text-emerald-500">{`PublicPath ID: `}</span>{`${publicPathIdentifier}`}</label>
         </div>
       )
     }

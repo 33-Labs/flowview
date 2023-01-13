@@ -12,7 +12,7 @@ export default function Sidebar(props) {
     { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
     { id: "3", label: `Staking`, link: { pathname: "/account/[account]/staking", query: { account: account } } },
     { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
-    // { id: "5", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
+    { id: "5", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
     {
       id: "6", label: "Storage", subItems: [
         { id: "6-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_item", query: { account: account } } },
