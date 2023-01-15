@@ -43,7 +43,15 @@ export const outdatedPathsTestnet = {
     /storage/exampleNFTMinter002: true,
     /storage/exampleNFTMinter003: true,
     /storage/kittyItemsCollection001: true,
-    /storage/kittyItemsMarketCollection001: true
+    /storage/kittyItemsMarketCollection001: true,
+    /storage/SoulMadePackCollection: true,
+    /storage/SoulMadeMainCollection: true,
+    /storage/SoulMadeComponentCollection: true,
+    /storage/NFTLendingPlaceLenderTicket2: true,
+    /storage/NFTLendingPlaceCollection: true,
+    /storage/NFTLendingPlace2: true,
+    /storage/NFTLendingPlaceCollectionLenderTicket: true,
+    /storage/EvolutionCollection: true
   }
   `,
   public: `
