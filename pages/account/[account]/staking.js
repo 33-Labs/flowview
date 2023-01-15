@@ -82,8 +82,34 @@ export default function Staking(props) {
   const showInfo = () => {
     if (publicConfig.chainEnv != "mainnet" || (infoData && !infoData.stakingInfo)) {
       return (
-        <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
-          No Staking Info
+        <div className="flex flex-col">
+          <div className="flex flex-row justify-between gap-x-3 min-w-[1076px]">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {`Staking Info`}
+            </h1>
+            <div className="flex gap-x-2 items-center">
+              <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                <a href={`https://port.onflow.org`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Manage Staking on FlowPort
+                </a>
+              </label>
+              <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+                <a href={`${publicConfig.incrementURL}/staking`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Staking on Increment
+                </a>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex mt-20 h-[70px] text-gray-400 text-base justify-center">
+            No Staking Info
+          </div>
         </div>
       )
     } else if (!infoData || !stakingInfo) {
