@@ -193,6 +193,11 @@ export default function ItemsView(props) {
           )
         }
         onClick={async () => {
+          if (showResource) {
+            setShowResource(false)
+            return
+          }
+
           if (!showResource || resourceError) {
             setShowResource(true)
             setResourceError(null)
@@ -222,7 +227,7 @@ export default function ItemsView(props) {
           }
         }}
       >
-        SHOW DETAIL
+        {showResource ? "HIDE DETAIL" : "SHOW DETAIL"}
       </button>
     )
   }
