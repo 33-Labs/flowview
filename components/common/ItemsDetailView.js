@@ -14,6 +14,8 @@ import { getStoredResource, getStoredStruct } from "../../flow/scripts"
 import SyntaxHighlighter from 'react-syntax-highlighter'
 import Spinner from "../../components/common/Spinner"
 import { vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs'
+import { useRouter } from "next/router"
+import { isOk } from "@onflow/fcl"
 
 const getPathType = (path) => {
   if (path.includes("/public")) {
@@ -64,9 +66,9 @@ const formatPath = (path, classes) => {
   const domain = comps[1]
   const itemPath = comps[2]
   return (
-    <label className={`${classes} max-w-[830px] truncate text-ellipsis overflow-hidden shrink`}>
+    <div className={`${classes} max-w-[830px] truncate text-ellipsis overflow-hidden shrink`}>
       {`/${domain}/`}<span className="font-bold">{`${itemPath}`}</span>
-    </label>
+    </div>
   )
 }
 
@@ -137,6 +139,7 @@ export default function ItemsDetailView(props) {
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [, setShowAlertModal] = useRecoilState(showAlertModalState)
   const [, setAlertModalContent] = useRecoilState(alertModalContentState)
+  const router = useRouter()
 
   const { item, account, user } = props
   const [showResource, setShowResource] = useState(false)
@@ -170,9 +173,9 @@ export default function ItemsDetailView(props) {
         onClick={async () => {
           await unlink(item.path, setTransactionInProgress, setTransactionStatus)
           if (pathType == "Public") {
-            mutate(["publicItemFetcher", item.address, item.path.identifier])
+            mutate(["publicItemFetcher", item.address, item.path.replace("/public/", "")])
           } else if (pathType == "Private") {
-            mutate(["privateItemFetcher", item.address, item.path.identifier])
+            mutate(["privateItemFetcher", item.address, item.path.replace("/private/")])
           }
         }}
       >
@@ -251,7 +254,8 @@ export default function ItemsDetailView(props) {
             actionTitle: "DESTROY",
             action: async () => {
               await destroy(item.path, setTransactionInProgress, setTransactionStatus)
-              mutate(["storedItemFetcher", item.address, item.path.identifier])
+              console.log(item)
+              mutate(["storedItemFetcher", item.address, item.path.replace("/storage/", "")])
             }
           })
           setShowAlertModal(true)
@@ -269,7 +273,17 @@ export default function ItemsDetailView(props) {
           <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full text-purple-800 bg-purple-100`}>
             Target
           </label>
-          <label>{item.targetPath ? formatPath(item.targetPath, "text-base text-gray-600") : "Unknown"}</label>
+          {item.targetPath ?
+            <div className="cursor-pointer underline decoration-2 decoration-drizzle"
+              onClick={() => {
+                router.push({
+                  pathname: `/account/[account]/storage/[storage]`,
+                  query: { account: account, storage: item.targetPath.replace("/storage/", "") }
+                }, undefined, { shallow: true, scroll: false })
+              }}>
+              {formatPath(item.targetPath, "text-base text-gray-600")}
+            </div>
+            : "Unknown"}
         </div> : null
     )
   }

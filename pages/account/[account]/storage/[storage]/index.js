@@ -22,7 +22,7 @@ export default function StoredItemDetail(props) {
   const [user, setUser] = useState({ loggedIn: null })
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
-  const [item, setItem] = useState(null)
+  const [items, setItems] = useState(null)
   const { data: itemsData, error: itemsError} = useSWR(
     account && isValidFlowAddress(account) && storage ? ["storedItemFetcher", account, storage] : null, storedItemFetcher
   )
@@ -31,8 +31,8 @@ export default function StoredItemDetail(props) {
   console.log(itemsData)
 
   useEffect(() => {
-    if (itemsData && itemsData.length == 1) {
-      setItem(itemsData[0])
+    if (itemsData) {
+      setItems(itemsData)
     }
   }, [itemsData])
 
@@ -45,13 +45,7 @@ export default function StoredItemDetail(props) {
   }
 
   const showItem = () => {
-    if (!item) {
-      if (itemsError) {
-        return (<div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
-          Nothing found
-        </div>)
-      }
-
+    if (!items) {
       return (
         <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
@@ -59,8 +53,14 @@ export default function StoredItemDetail(props) {
       )
     }
 
+    if (itemsError || items.length == 0) {
+      return (<div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
+        Nothing found
+      </div>)
+    }
+
     return (
-      <ItemsDetailView item={item} account={account} user={user} />
+      <ItemsDetailView item={items[0]} account={account} user={user} />
     )
   }
 
