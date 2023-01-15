@@ -288,6 +288,30 @@ export default function ItemsDetailView(props) {
     )
   }
 
+  const getToCollectionButton = (path) => {
+    return (
+      <button
+        type="button"
+        disabled={transactionInProgress}
+        className={
+          classNames(
+            transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+            `px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`
+          )
+        }
+        onClick={() => {
+          router.push({
+            pathname: `/account/[account]/collection/[collection]`,
+            query: { account: account, collection: path.replace("/storage/", "") }
+          }, undefined, { shallow: true, scroll: false })
+        }}
+      >
+        {"TO COLLECTION"}
+      </button>
+    ) 
+  }
+
+  console.log("tag", tag)
   return (
     <div className="min-w-[1076px] flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
       <div className="flex gap-x-2 justify-between items-center">
@@ -306,11 +330,16 @@ export default function ItemsDetailView(props) {
         }
         {
           user && user.loggedIn && user.addr == account ?
-            (pathType == "Storage" ? <div className="flex gap-x-2 items-center">
+            (pathType == "Storage" ? 
+            <div className="flex gap-x-2 items-center">
+              {tag && tag.title == "NFT" ? getToCollectionButton(item.path) : null}
               {getLoadResourceButton(item.isResource)}
               {item.isResource ? getDestroyButton() : null}
             </div> : getUnlinkButton()) : (
-              pathType == "Storage" && getLoadResourceButton(item.isResource)
+              <div className="flex gap-x-2 items-center">
+              {tag && tag.title == "NFT" ? getToCollectionButton(item.path) : null}
+              {pathType == "Storage" && getLoadResourceButton(item.isResource)}
+              </div>
             )
         }
       </div>
