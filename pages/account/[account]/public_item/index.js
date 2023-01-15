@@ -1,14 +1,14 @@
 import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
-import ItemsView from "../../../components/common/ItemsView"
-import Layout from "../../../components/common/Layout"
-import Spinner from "../../../components/common/Spinner"
-import { bulkGetPublicItems } from "../../../flow/scripts"
-import { getCapabilityRestrictions, getResourceType, isValidFlowAddress } from "../../../lib/utils"
-import Custom404 from "./404"
+import ItemsView from "../../../../components/common/ItemsView"
+import Layout from "../../../../components/common/Layout"
+import Spinner from "../../../../components/common/Spinner"
+import { bulkGetPublicItems } from "../../../../flow/scripts"
+import { getCapabilityRestrictions, getResourceType, isValidFlowAddress } from "../../../../lib/utils"
+import Custom404 from "../404"
 import { useRecoilState } from "recoil"
-import { currentPublicItemsState } from "../../../lib/atoms"
+import { currentPublicItemsState } from "../../../../lib/atoms"
 
 const analyzeItems = (items) => {
   const dangerousItems = []
