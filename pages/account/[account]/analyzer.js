@@ -25,28 +25,23 @@ export default function Analyzer() {
         <button
             onClick={async () => {
               let info = await getStakingInfo("0x0a1381bc9aa8b362")
-              console.log(info)
             }}>
             Staking Info
           </button>
         <button
             onClick={async () => {
               let info = await getDelegatorInfo("41f82d558dad936f3b3875d08d0cbdd4045a4c7024292e195e1df1066c5197fe", "1")
-              console.log(info)
             }}>
             Delegator Info
           </button>
           <button
             onClick={async () => {
               let epochMetadata = await getEpochMetadata(55)
-              console.log(epochMetadata)
               let totalNodeIDs = getNodeIDs(epochMetadata.collectorClusters)
-              console.log(totalNodeIDs)
               for (let i = 0; i < totalNodeIDs.length; i++) {
                 let nodeID = totalNodeIDs[i]
                 let nodeInfo = await getNodeInfo(nodeID)
                 if (parseInt(nodeInfo.delegatorIDCounter) == 1) {
-                  console.log(nodeInfo)
                   break
                 }
               }

@@ -1,9 +1,28 @@
 import Image from 'next/image'
 import { getContractLink } from '../lib/utils'
 import publicConfig from "../publicConfig"
+import { useRecoilState } from "recoil"
+import { transactionInProgressState, transactionStatusState } from '../lib/atoms'
+import { addNewVault, removeVault } from '../flow/switchboard_transactions'
+import { useSWRConfig } from 'swr'
 
 export default function TokenList(props) {
-  const { tokens } = props
+  const { mutate } = useSWRConfig()
+  const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
+  const [, setTransactionStatus] = useRecoilState(transactionStatusState)
+
+  const { tokens, switchboard, isCurrentUser, account } = props
+
+  const inSwitchboard = (switchboard, token) => {
+    if (!switchboard) return false
+    for (let i = 0; i < switchboard.vaultTypes.length; i++) {
+      let type = switchboard.vaultTypes[i]
+      if (type.typeID.includes(token.contract)) {
+        return true
+      }
+    }
+    return false
+  }
 
   return (
     <div>
@@ -24,10 +43,27 @@ export default function TokenList(props) {
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
                         Balance
                       </th>
+                      {
+                        switchboard ?
+                          <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            In Switchboard?
+                          </th> : null
+                      }
+                      {
+                        switchboard && isCurrentUser ?
+                          <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                            Switchboard Action
+                          </th> : null
+                      }
+
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 bg-white">
-                    {tokens.map((token, index) => (
+                    {tokens.map((token) => {
+                      let newToken = Object.assign({}, token)
+                      newToken.inSwitchboard = inSwitchboard(switchboard, token)
+                      return newToken
+                    }).map((token, index) => (
                       <tr key={`tokens-${index}`}>
                         <td className="py-4 px-3 text-sm">
                           <div className="flex items-center">
@@ -53,6 +89,37 @@ export default function TokenList(props) {
                         <td className="px-3 py-4 text-sm text-black min-w-[140px]">
                           {token.balance}
                         </td>
+                        {
+                          switchboard ?
+                            <td className="px-3 py-4 text-sm text-black min-w-[140px]">
+                              {token.inSwitchboard ?
+                                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-green-100 text-green-800`}>{"YES"}</label> :
+                                <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-yellow-100 text-yellow-800`}>{"NO"}</label>
+                              }
+                            </td> : null
+                        }
+                        {
+                          switchboard && isCurrentUser ?
+                            <td className="px-3 py-4 text-sm text-black min-w-[140px]">
+                              <button
+                                className={`${token.inSwitchboard ? "bg-yellow-400 disabled:bg-yellow-200 hover:bg-yellow-600" : "bg-drizzle disabled:bg-drizzle-light hover:bg-drizzle-dark"} text-black disabled:text-gray-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                                disabled={transactionInProgress}
+                                onClick={async () => {
+                                  if (!account) return
+                                  if (token.inSwitchboard) {
+                                    await removeVault(token.path.receiver, setTransactionInProgress, setTransactionStatus)
+                                  } else {
+                                    await addNewVault(token.path.receiver, setTransactionInProgress, setTransactionStatus)
+                                  }
+                                  mutate(["switchboardFetcher", account])
+                                }}
+                              >
+                                {
+                                  token.inSwitchboard ? "Remove Vault" : "Add New Vault"
+                                }
+                              </button>
+                            </td> : null
+                        }
                       </tr>
                     ))}
                   </tbody>

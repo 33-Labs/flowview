@@ -8,10 +8,19 @@ import { TokenListProvider, ENV, Strategy } from 'flow-native-token-registry'
 import Custom404 from "./404"
 import publicConfig from "../../../publicConfig"
 import Spinner from "../../../components/common/Spinner"
-import { useRecoilState } from "recoil"
-import { currentStoredItemsState, tokenRegistryState } from "../../../lib/atoms"
 import Decimal from "decimal.js"
 import { Switch } from "@headlessui/react"
+import { getSwitchboard } from "../../../flow/switchboard_scripts"
+import useSWR, { useSWRConfig } from "swr"
+import * as fcl from "@onflow/fcl"
+import { setupSwitchboard } from "../../../flow/switchboard_transactions"
+import { useRecoilState } from "recoil"
+import {
+  currentStoredItemsState,
+  tokenRegistryState,
+  transactionStatusState,
+  transactionInProgressState
+} from "../../../lib/atoms"
 
 const formatBalancesData = (balances) => {
   return balances.map((data) => {
@@ -27,7 +36,16 @@ const formatBalancesData = (balances) => {
   })
 }
 
+const switchboardFetcher = async (funcName, address) => {
+  const board = await getSwitchboard(address)
+  return board
+}
+
 export default function FungibleToken(props) {
+  const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
+  const [, setTransactionStatus] = useRecoilState(transactionStatusState)
+
+  const { mutate } = useSWRConfig()
   const router = useRouter()
   const { account } = router.query
 
@@ -37,6 +55,21 @@ export default function FungibleToken(props) {
   const [currentStoredItems, setCurrentStoredItems] = useRecoilState(currentStoredItemsState)
   const [tokenRegistry, setTokenRegistry] = useRecoilState(tokenRegistryState)
   const [balanceData, setBalanceData] = useState(null)
+
+  const [user, setUser] = useState({ loggedIn: null })
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
+
+  const [board, setBoard] = useState(null)
+
+  const { data: boardData, error: boardError } = useSWR(
+    account && isValidFlowAddress(account) ? ["switchboardFetcher", account] : null, switchboardFetcher
+  )
+
+  useEffect(() => {
+    if (boardData) {
+      setBoard(boardData)
+    }
+  }, [boardData])
 
   useEffect(() => {
     if (hideZeroBalance) {
@@ -90,6 +123,7 @@ export default function FungibleToken(props) {
         if (registryInfo) {
           token.symbol = registryInfo.symbol
           token.logoURL = registryInfo.logoURI
+          token.path = registryInfo.path
         }
       }
 
@@ -119,8 +153,9 @@ export default function FungibleToken(props) {
         </div>
       )
     } else {
+      const isCurrentUser = (user && user.loggedIn && (user.addr == account)) ? true : false
       return (
-        <TokenList tokens={filteredTokens} />
+        <TokenList tokens={filteredTokens} switchboard={board} isCurrentUser={isCurrentUser} account={account} />
       )
     }
   }
@@ -157,7 +192,21 @@ export default function FungibleToken(props) {
               </Switch>
             </div>
           </div>
-          <div className="hidden sm:flex sm:gap-x-1 sm:items-center px-2">
+          <div className="hidden sm:flex sm:gap-x-1 sm:items-center px-2 overflow-hidden">
+            {
+                user && user.loggedIn && user.addr == account && !board ?
+                <button
+                  className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                  disabled={transactionInProgress}
+                  onClick={async () => {
+                    await setupSwitchboard(setTransactionInProgress, setTransactionStatus)
+                    mutate(["switchboardFetcher", account])
+                  }}
+                >
+                  Setup Switchboard
+                </button>
+                : null
+            }
             <label className={`cursor-pointer text-black bg-flow hover:bg-green-500 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
               <a href={`${publicConfig.bayouURL}`}
                 target="_blank"

@@ -28,6 +28,9 @@ if (!nonFungibleTokenAddress) throw "Missing NEXT_PUBLIC_NONFUNGIBLE_TOKEN_ADDRE
 const fungibleTokenAddress = process.env.NEXT_PUBLIC_FUNGIBLE_TOKEN_ADDRESS
 if (!fungibleTokenAddress) throw "Missing NEXT_PUBLIC_FUNGIBLE_TOKEN_ADDRESS"
 
+const fungibleTokenSwitchboardAddress = process.env.NEXT_PUBLIC_FUNGIBLE_TOKEN_SWITCHBOARD_ADDRESS
+if (!fungibleTokenSwitchboardAddress) throw "Missing NEXT_PUBLIC_FUNGIBLE_TOKEN_SWITCHBOARD_ADDRESS"
+
 const flowboxAddress = process.env.NEXT_PUBLIC_FLOWBOX_ADDRESS
 if (!flowboxAddress) throw "Missing NEXT_PUBLIC_FLOWBOX_ADDRESS"
 
@@ -60,6 +63,7 @@ const publicConfig = {
   metadataViewsAddress,
   nonFungibleTokenAddress,
   fungibleTokenAddress,
+  fungibleTokenSwitchboardAddress,
   flowboxAddress,
   flownsURL,
   findURL,
