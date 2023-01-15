@@ -1,12 +1,13 @@
 import { useRouter } from "next/router"
 import { useMemo } from "react"
 import { classNames } from "../../lib/utils"
+import publicConfig from "../../publicConfig"
 
 export default function Sidebar(props) {
   const router = useRouter()
   const { account } = router.query
 
-  const menuItems = [
+  let menuItems = [
     { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },
     { id: "1", label: `Key`, link: { pathname: "/account/[account]/key", query: { account: account } } },
     { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
@@ -22,6 +23,25 @@ export default function Sidebar(props) {
     }
     // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
   ]
+
+  if (publicConfig.chainEnv != "mainnet") {
+    menuItems = [
+      { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },
+      { id: "1", label: `Key`, link: { pathname: "/account/[account]/key", query: { account: account } } },
+      { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
+      { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
+      { id: "5", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
+      {
+        id: "6", label: "Storage", subItems: [
+          { id: "6-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public", query: { account: account } } },
+          { id: "6-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/storage", query: { account: account } } },
+          { id: "6-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private", query: { account: account } } },
+        ]
+      }
+      // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
+    ]
+  }
+
   const activeMenu = useMemo(
     () => {
       const subItems = menuItems.flatMap((menu) => {

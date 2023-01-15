@@ -58,6 +58,10 @@ export default function Staking(props) {
     return <div className="h-screen"></div>
   }
 
+  if (publicConfig.chainEnv != "mainnet") {
+    return <Custom404 title={"Only available on mainnet"} />
+  }
+
   if (!isValidFlowAddress(account) || infoError) {
     return <Custom404 title={"Account may not exist"} />
   }
