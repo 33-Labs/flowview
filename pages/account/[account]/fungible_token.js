@@ -37,6 +37,9 @@ const formatBalancesData = (balances) => {
 }
 
 const switchboardFetcher = async (funcName, address) => {
+  if (publicConfig.chainEnv == "emulator") {
+    return null
+  }
   const board = await getSwitchboard(address)
   return board
 }
