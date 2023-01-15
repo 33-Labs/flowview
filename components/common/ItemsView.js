@@ -58,18 +58,18 @@ export default function ItemsView(props) {
       onClick={() => {
         if (pathType == "Public") {
           router.push({
-            pathname: `${router.pathname}/[public_item]`,
-            query: { account: account, public_item: item.path.replace("/public/", "") }
+            pathname: `${router.pathname}/[public]`,
+            query: { account: account, public: item.path.replace("/public/", "") }
           }, undefined, {shallow: true, scroll: false})
         } else if (pathType == "Private") {
           router.push({
-            pathname: `${router.pathname}/[private_item]`,
-            query: { account: account, private_item: item.path.replace("/private/", "") }
+            pathname: `${router.pathname}/[private]`,
+            query: { account: account, private: item.path.replace("/private/", "") }
           }, undefined, {shallow: true, scroll: false})
         } else {
           router.push({
-            pathname: `${router.pathname}/[stored_item]`,
-            query: { account: account, stored_item: item.path.replace("/storage/", "") }
+            pathname: `${router.pathname}/[storage]`,
+            query: { account: account, storage: item.path.replace("/storage/", "") }
           }, undefined, {shallow: true, scroll: false})
         }
       }}

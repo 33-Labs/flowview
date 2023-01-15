@@ -18,7 +18,7 @@ const privateItemFetcher = async (funcName, address, pathID) => {
 
 export default function PrivateItemDetail(props) {
   const router = useRouter()
-  const { account, private_item } = router.query
+  const { account: account, private: private_item } = router.query
 
   const [user, setUser] = useState({ loggedIn: null })
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
@@ -73,7 +73,7 @@ export default function PrivateItemDetail(props) {
             className="mb-2 self-start"
             onClick={() => {
               router.push({
-                pathname: "/account/[account]/private_item",
+                pathname: "/account/[account]/private",
                 query: { account: account }
               }, undefined, { shallow: true, scroll: false })
             }}

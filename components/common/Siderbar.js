@@ -15,9 +15,9 @@ export default function Sidebar(props) {
     { id: "5", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
     {
       id: "6", label: "Storage", subItems: [
-        { id: "6-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public_item", query: { account: account } } },
-        { id: "6-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/stored_item", query: { account: account } } },
-        { id: "6-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private_item", query: { account: account } } },
+        { id: "6-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public", query: { account: account } } },
+        { id: "6-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/storage", query: { account: account } } },
+        { id: "6-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private", query: { account: account } } },
       ]
     }
     // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },
