@@ -75,68 +75,73 @@ export default function KeyCreator(props) {
   }
 
   return (
-    <div className="min-w-[1076px] flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
-      <div className="flex justify-between items-center">
-        <label className="font-bold text-xl">{`Create New Key`}</label>
-        {user && user.loggedIn && user.addr == account ? getCreateButton() : null}
-      </div>
-      <div className="w-full border-b-2"></div>
+    <div className="flex flex-col gap-y-1 min-w-[1076px] h-[378px]">
+      <div className="min-w-[1076px] flex flex-col gap-y-3 p-4 shadow-md rounded-2xl bg-white">
+        <div className="flex justify-between items-center">
+          <label className="font-bold text-xl">{`Create New Key`}</label>
+          {user && user.loggedIn && user.addr == account ? getCreateButton() : null}
+        </div>
+        <div className="w-full border-b-2"></div>
 
-      <div className="flex flex-col gap-y-1">
-        <div className="text-sm text-gray-500 whitespace-nowrap">{"Public Key"}</div>
-        <div className="mt-1">
-          <textarea
-            rows={3}
-            name="publicKeyInput"
-            id="publicKeyInput"
-            className={
-              "bg-drizzle-ultralight border-drizzle resize-none block w-full border-2 rounded-xl p-2 font-flow text-lg focus:outline-none"
-            }
-            placeholder={
-              "Your public key"
-            }
-            disabled={transactionInProgress}
-            value={publicKey}
-            spellCheck={false}
-            onChange={(event) => {
-              setPublicKey(event.target.value)
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-row gap-x-4">
         <div className="flex flex-col gap-y-1">
-          <div className="text-sm text-gray-500 whitespace-nowrap">{"Hash Algorithm"}</div>
-          <OptionSelector options={hashAlgoOptions} selected={hashAlgo} setSelected={setHashAlgo} />
-        </div>
-        <div className="flex flex-col gap-y-1">
-          <div className="text-sm text-gray-500 whitespace-nowrap">{"Signature Algorithm"}</div>
-          <OptionSelector options={signAlgoOptions} selected={signAlgo} setSelected={setSignAlgo} />
-        </div>
-        <div className="flex flex-col gap-y-1">
-          <div className="text-sm text-gray-500 whitespace-nowrap">{"Weight"}</div>
-          <div className="flex items-center gap-x-1 w-[140px]">
-            <input
-              type={`text`}
-              name={`weight`}
-              id={`weight`}
+          <div className="text-sm text-gray-500 whitespace-nowrap">{"Public Key"}</div>
+          <div className="mt-1">
+            <textarea
+              rows={3}
+              name="publicKeyInput"
+              id="publicKeyInput"
+              className={
+                "bg-drizzle-ultralight border-drizzle resize-none block w-full border-2 rounded-xl p-2 font-flow text-lg focus:outline-none"
+              }
+              placeholder={
+                "Your public key"
+              }
               disabled={transactionInProgress}
-              placeholder={"Key Weight"}
-              required
-              className={classNames(
-                `border-gray-500 border text-gray-900 bg-white block w-full font-flow text-sm rounded-lg px-3 py-2 focus:outline-none placeholder:text-gray-300`
-              )}
-              value={weight}
+              value={publicKey}
+              spellCheck={false}
               onChange={(event) => {
-                if (event.target.value === '' || /^(0|[1-9]\d*)$/.test(event.target.value)) {
-                  setWeight(event.target.value)
-                }
+                setPublicKey(event.target.value)
               }}
             />
-            <label className="shrink-0 text-gray-500 text-sm">&nbsp;{`/ 1000`}</label>
           </div>
         </div>
+
+        <div className="flex flex-row gap-x-4">
+          <div className="flex flex-col gap-y-1">
+            <div className="text-sm text-gray-500 whitespace-nowrap">{"Hash Algorithm"}</div>
+            <OptionSelector options={hashAlgoOptions} selected={hashAlgo} setSelected={setHashAlgo} />
+          </div>
+          <div className="flex flex-col gap-y-1">
+            <div className="text-sm text-gray-500 whitespace-nowrap">{"Signature Algorithm"}</div>
+            <OptionSelector options={signAlgoOptions} selected={signAlgo} setSelected={setSignAlgo} />
+          </div>
+          <div className="flex flex-col gap-y-1">
+            <div className="text-sm text-gray-500 whitespace-nowrap">{"Weight"}</div>
+            <div className="flex items-center gap-x-1 w-[140px]">
+              <input
+                type={`text`}
+                name={`weight`}
+                id={`weight`}
+                disabled={transactionInProgress}
+                placeholder={"Key Weight"}
+                required
+                className={classNames(
+                  `border-gray-500 border text-gray-900 bg-white block w-full font-flow text-sm rounded-lg px-3 py-2 focus:outline-none placeholder:text-gray-300`
+                )}
+                value={weight}
+                onChange={(event) => {
+                  if (event.target.value === '' || /^(0|[1-9]\d*)$/.test(event.target.value)) {
+                    setWeight(event.target.value)
+                  }
+                }}
+              />
+              <label className="shrink-0 text-gray-500 text-sm">&nbsp;{`/ 1000`}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="px-2 mt-3">
+        Note: add new key to your Blocto wallet may cause unexpected result
       </div>
     </div>
   )
