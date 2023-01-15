@@ -2,12 +2,12 @@ import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
-import ItemsView from "../../../components/common/ItemsView"
-import Layout from "../../../components/common/Layout"
-import Spinner from "../../../components/common/Spinner"
-import { bulkGetStoredItems } from "../../../flow/scripts"
-import { isValidFlowAddress } from "../../../lib/utils"
-import Custom404 from "./404"
+import ItemsView from "../../../../components/common/ItemsView"
+import Layout from "../../../../components/common/Layout"
+import Spinner from "../../../../components/common/Spinner"
+import { bulkGetStoredItems } from "../../../../flow/scripts"
+import { isValidFlowAddress } from "../../../../lib/utils"
+import Custom404 from "../404"
 
 const storedItemsFetcher = async (funcName, address) => {
   const items = await bulkGetStoredItems(address)

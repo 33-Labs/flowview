@@ -5,29 +5,26 @@ import Layout from "../../../../../components/common/Layout"
 import Spinner from "../../../../../components/common/Spinner"
 import { isValidFlowAddress } from "../../../../../lib/utils"
 import Custom404 from "../../404"
-import useSWR, { useSWRConfig } from "swr"
-import { getPublicItems } from "../../../../../flow/scripts"
+import useSWR from "swr"
+import { getStoredItems } from "../../../../../flow/scripts"
 import ItemsDetailView from "../../../../../components/common/ItemsDetailView"
 import { ArrowLeftIcon } from "@heroicons/react/outline"
 
-const publicItemFetcher = async (funcName, address, pathID) => {
-  const path = {domain: "public", identifier: pathID}
-  const items = await getPublicItems(address, [path])
+const storedItemFetcher = async (funcName, address, pathID) => {
+  const items = await getStoredItems(address, [pathID])
   return items
 }
 
-export default function PublicItemDetail(props) {
+export default function StoredItemDetail(props) {
   const router = useRouter()
-  const { account, public_item } = router.query
+  const { account, stored_item } = router.query
 
   const [user, setUser] = useState({ loggedIn: null })
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
-  const { mutate } = useSWRConfig()
-
   const [item, setItem] = useState(null)
   const { data: itemsData, error: itemsError} = useSWR(
-    account && isValidFlowAddress(account) && public_item ? ["publicItemFetcher", account, public_item] : null, publicItemFetcher
+    account && isValidFlowAddress(account) && stored_item ? ["storedItemFetcher", account, stored_item] : null, storedItemFetcher
   )
 
   console.log(itemsError)
@@ -75,20 +72,20 @@ export default function PublicItemDetail(props) {
             className="mb-2 self-start"
             onClick={() => {
               router.push({
-                pathname: "/account/[account]/public_item",
+                pathname: "/account/[account]/stored_item",
                 query: { account: account }
               }, undefined, { shallow: true, scroll: false })
             }}
           >
             <div className="flex gap-x-2 text-drizzle items-center">
               <ArrowLeftIcon className="h-5 w-5" />
-              <label className="cursor-pointer">Public Items</label>
+              <label className="cursor-pointer">Stored Items</label>
             </div>
           </button>
 
           <div className="p-2 flex flex-col gap-y-2">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              <span className="font-normal">{"/public"}</span>{`/${public_item}`}
+              <span className="font-normal">{"/storage"}</span>{`/${stored_item}`}
             </h1>
           </div>
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">

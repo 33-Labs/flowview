@@ -64,12 +64,12 @@ export default function ItemsView(props) {
         } else if (pathType == "Private") {
           router.push({
             pathname: `${router.pathname}/[private_item]`,
-            query: { account: account, public_item: item.path.replace("/private/", "") }
+            query: { account: account, private_item: item.path.replace("/private/", "") }
           }, undefined, {shallow: true, scroll: false})
         } else {
           router.push({
             pathname: `${router.pathname}/[stored_item]`,
-            query: { account: account, public_item: item.path.replace("/storage/", "") }
+            query: { account: account, stored_item: item.path.replace("/storage/", "") }
           }, undefined, {shallow: true, scroll: false})
         }
       }}

@@ -170,9 +170,9 @@ export default function ItemsDetailView(props) {
         onClick={async () => {
           await unlink(item.path, setTransactionInProgress, setTransactionStatus)
           if (pathType == "Public") {
-            mutate(["publicItemsFetcher", item.address])
+            mutate(["publicItemFetcher", item.address, item.path.identifier])
           } else if (pathType == "Private") {
-            mutate(["privateItemsFetcher", item.address])
+            mutate(["privateItemFetcher", item.address, item.path.identifier])
           }
         }}
       >
@@ -251,7 +251,7 @@ export default function ItemsDetailView(props) {
             actionTitle: "DESTROY",
             action: async () => {
               await destroy(item.path, setTransactionInProgress, setTransactionStatus)
-              mutate(["storedItemsFetcher", item.address])
+              mutate(["storedItemFetcher", item.address, item.path.identifier])
             }
           })
           setShowAlertModal(true)
