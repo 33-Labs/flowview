@@ -97,9 +97,11 @@ export const getContractNames = async (address) => {
     args: (arg, t) => [
       arg(address, t.Address)
     ]
-  }) 
+  })
 
-  return names
+  const uniqueNames = [...new Set(names)];
+
+  return uniqueNames
 }
 
 // --- Domains ---
