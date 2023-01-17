@@ -33,17 +33,8 @@ export default function CollectionView(props) {
                 </label>
                 : <label className="font-bold text-lg">{`${collection.contractName} (${collection.tokenIDs.length})`}</label>
             }
-            <div className="cursor-pointer text-gray-600 underline decoration-2 decoration-drizzle"
-              onClick={() => {
-                router.push({
-                  pathname: `/account/[account]/storage/[storage]`,
-                  query: { account: account, storage: collection.path.replace("/storage/", "") }
-                }, undefined, { shallow: true, scroll: false })
-              }}
-            >
-              <div className={`truncate text-ellipsis overflow-hidden shrink`}>
-                {`/storage/`}<span className="font-bold">{`${collection.path.replace("/storage/", "")}`}</span>
-              </div>
+            <div className={`truncate text-ellipsis overflow-hidden shrink`}>
+              {`/storage/`}<span className="font-bold">{`${collection.path.replace("/storage/", "")}`}</span>
             </div>
           </div>
         </div>

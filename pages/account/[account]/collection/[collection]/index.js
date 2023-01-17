@@ -196,14 +196,14 @@ export default function CollectionDetail(props) {
       const publicPathIdentifier = collection.publicPathIdentifier
       return (
         <div className="px-1 mt-4 w-full flex justify-start items-center gap-x-2">
-            <label className={`shrink-0 cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
-              onClick={() => {
-                window.open(getContractLink(`A.${contractAddress.replace("0x", "")}.${contractName}`))
-              }}
-            >
-              <span className="font-normal text-emerald-500">{`Contract Name: `}</span>
-              {`${contractName}`}
-            </label>
+          <label className={`shrink-0 cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
+            onClick={() => {
+              window.open(getContractLink(`A.${contractAddress.replace("0x", "")}.${contractName}`))
+            }}
+          >
+            <span className="font-normal text-emerald-500">{`Contract Name: `}</span>
+            {`${contractName}`}
+          </label>
           <label className={`shrink-0 cursor-pointer font-bold text-xs px-2 py-1 leading-5 rounded-full bg-emerald-100 text-emerald-600`}
             onClick={() => {
               router.push(`/account/${contractAddress}`)
@@ -244,7 +244,13 @@ export default function CollectionDetail(props) {
               <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
                 {`${name}`}
               </h1>
-              <label className="text-black text-xs mb-1">{`/storage/${collectionPath}`}</label>
+              <div className="cursor-pointer text-black text-xs mb-1 underline decoration-1 decoration-drizzle"
+                onClick={() => {
+                  router.push({
+                    pathname: `/account/[account]/storage/[storage]`,
+                    query: { account: account, storage: collectionPath }
+                  }, undefined, { shallow: true, scroll: false })
+                }}>{`/storage/`}<span className="font-bold">{`${collectionPath}`}</span></div>
             </div>
           </div>
           {getLinks(linkSource)}
