@@ -27,9 +27,6 @@ export default function StoredItemDetail(props) {
     account && isValidFlowAddress(account) && storage ? ["storedItemFetcher", account, storage] : null, storedItemFetcher
   )
 
-  console.log(itemsError)
-  console.log(itemsData)
-
   useEffect(() => {
     if (itemsData) {
       setItems(itemsData)

@@ -28,9 +28,6 @@ export default function PrivateItemDetail(props) {
     account && isValidFlowAddress(account) && private_item ? ["privateItemFetcher", account, private_item] : null, privateItemFetcher
   )
 
-  console.log(itemsError)
-  console.log(itemsData)
-
   useEffect(() => {
     if (itemsData) {
       setItems(itemsData)

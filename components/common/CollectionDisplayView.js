@@ -6,6 +6,7 @@ import { getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../lib/
 import NFTDisplay from "./NFTDisplay"
 import Spinner from "./Spinner"
 
+// deprecatead
 export default function CollectionDisplayView(props) {
   const router = useRouter()
   const { account } = router.query

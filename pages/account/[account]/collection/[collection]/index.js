@@ -57,7 +57,15 @@ export default function CollectionDetail(props) {
       const newCollections =
         collectionsWithExtraData(collectionsWithDisplayInfo(collectionData))
       const tempCollection = newCollections[0]
-      const sortedIDs = tempCollection.tokenIDs.map((a) => parseInt(a)).sort((a, b) => b - a)
+      const sortedIDs = tempCollection.tokenIDs.map((a) => BigInt(a)).sort((a, b) => {
+        if (b - a > 0) {
+          return 1
+        } else if (b - a == 0) {
+          return 0
+        } else if (b - a < 0) {
+          return -1
+        }
+      })
       tempCollection.tokenIDs = sortedIDs
       setCollection(tempCollection)
     }

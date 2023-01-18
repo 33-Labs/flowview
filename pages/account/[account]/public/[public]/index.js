@@ -28,9 +28,6 @@ export default function PublicItemDetail(props) {
     account && isValidFlowAddress(account) && public_item ? ["publicItemFetcher", account, public_item] : null, publicItemFetcher
   )
 
-  console.log(itemsError)
-  console.log(itemsData)
-
   useEffect(() => {
     if (itemsData) {
       setItems(itemsData)
