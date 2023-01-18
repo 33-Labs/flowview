@@ -87,7 +87,7 @@ export default function Sidebar(props) {
                   <button className={classes} onClick={() => {
                     router.push(menu.link, undefined, { shallow: true, scroll: false })
                   }}>
-                    <label>{label}</label>
+                    <label className="cursor-pointer">{label}</label>
                   </button>
                 ) : <label className={classes}>{label}</label>
               }
@@ -102,8 +102,8 @@ export default function Sidebar(props) {
                           <button className={classes} onClick={() => {
                             router.push(subMenu.link, undefined, { shallow: true, scroll: false })
                           }}>
-                            <label className={`hidden sm:block`}>{subLabel}</label>
-                            <label className={`block sm:hidden`}>{subMenu.smLabel}</label>
+                            <label className={`cursor-pointer hidden sm:block`}>{subLabel}</label>
+                            <label className={`cursor-pointer block sm:hidden`}>{subMenu.smLabel}</label>
                           </button>
                         </div>
                       )

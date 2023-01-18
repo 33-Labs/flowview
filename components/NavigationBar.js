@@ -47,7 +47,7 @@ export default function NavigationBar() {
     return (
       <div className="shrink truncate flex gap-x-2 items-center">
         <button
-          className="shrink truncate font-flow text-base
+          className="cursor-pointer shrink truncate font-flow text-base
           text-black shadow-sm
           bg-drizzle rounded-full px-3 py-2 leading-5"
           onClick={() => {
@@ -96,7 +96,7 @@ export default function NavigationBar() {
         </Link>
 
         <Link href="/">
-          <label className="font-flow font-bold text-2xl sm:text-3xl">
+          <label className="cursor-pointer font-flow font-bold text-2xl sm:text-3xl">
             flowview
           </label>
         </Link>
