@@ -21,7 +21,17 @@ export default function NFT(props) {
         setMetadata(metadataViews)
       }).catch((e) => {
         console.error(e)
-        setMetadataError("Get metadata failed")
+        if (typeof e == "object") {
+          if (e.errorMessage.includes("NFT does not exist")) {
+            setMetadataError("NFT not found")
+          } else if (e.errorMessage.includes("Get Collection Failed")) {
+            setMetadataError("No Collection Found")
+          } else {
+            setMetadataError("Get metadata failed")
+          }
+        } else {
+          setMetadataError("Get metadata failed")
+        }
       })
     }
   }, [account])

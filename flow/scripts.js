@@ -161,6 +161,11 @@ export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
     let res: {String: AnyStruct} = {}
 
     let path = StoragePath(identifier: storagePathID)!
+    let collectionRef = account.borrow<&{NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>(from: path)
+    if collectionRef == nil {
+      panic("Get Collection Failed")
+    }
+
     let type = account.type(at: path)
     if type == nil {
       return res
@@ -173,7 +178,8 @@ export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
       return res
     }
 
-    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
+    collectionRef!.borrowNFT(id: tokenID)
+
     let resolver = collectionRef!.borrowViewResolver(id: tokenID)
     if let rarity = MetadataViews.getRarity(resolver) {
       res["rarity"] = rarity
