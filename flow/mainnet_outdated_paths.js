@@ -20,7 +20,8 @@ export const outdatedPathsMainnet = {
     /storage/BnGNFTCollection: true,
     /storage/FuseCollectiveCollection: true,
     /storage/NFTLXKickCollection: true,
-    /storage/NFTLXKickMinter: true
+    /storage/NFTLXKickMinter: true,
+    /storage/revvTeleportCustodyAdmin: true
   }
   `,
   public: `
