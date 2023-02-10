@@ -6,26 +6,26 @@ import Spinner from "../../../../../components/common/Spinner"
 import { isValidFlowAddress } from "../../../../../lib/utils"
 import Custom404 from "../../404"
 import useSWR, { useSWRConfig } from "swr"
-import { getPublicItems } from "../../../../../flow/scripts"
+import { getPublicItem } from "../../../../../flow/scripts"
 import ItemsDetailView from "../../../../../components/common/ItemsDetailView"
 import { ArrowLeftIcon } from "@heroicons/react/outline"
 
 const publicItemFetcher = async (funcName, address, pathID) => {
   const path = {domain: "public", identifier: pathID}
-  const items = await getPublicItems(address, [path])
+  const items = await getPublicItem(address, [path])
   return items
 }
 
 export default function PublicItemDetail(props) {
   const router = useRouter()
-  const { account: account, public: public_item } = router.query
+  const { account: account, public: publicItem } = router.query
 
   const [user, setUser] = useState({ loggedIn: null })
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const [items, setItems] = useState(null)
   const { data: itemsData, error: itemsError} = useSWR(
-    account && isValidFlowAddress(account) && public_item ? ["publicItemFetcher", account, public_item] : null, publicItemFetcher
+    account && isValidFlowAddress(account) && publicItem ? ["publicItemFetcher", account, publicItem] : null, publicItemFetcher
   )
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function PublicItemDetail(props) {
 
           <div className="p-2 flex flex-col gap-y-2">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              <span className="font-normal">{"/public"}</span>{`/${public_item}`}
+              <span className="font-normal">{"/public"}</span>{`/${publicItem}`}
             </h1>
           </div>
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">

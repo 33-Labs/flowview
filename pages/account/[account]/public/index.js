@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import ItemsView from "../../../../components/common/ItemsView"
 import Layout from "../../../../components/common/Layout"
 import Spinner from "../../../../components/common/Spinner"
-import { bulkGetPublicItems } from "../../../../flow/scripts"
+import { bulkGetPublicItems, getBasicPublicItems } from "../../../../flow/scripts"
 import { getCapabilityRestrictions, getResourceType, isValidFlowAddress } from "../../../../lib/utils"
 import Custom404 from "../404"
 import { useRecoilState } from "recoil"
@@ -49,18 +49,14 @@ export default function PublicItem(props) {
     if (account && isValidFlowAddress(account)) {
       if (!currentPublicItems || (currentPublicItems.length > 0 && currentPublicItems[0].address != account)) {
         setCurrentPublicItems(null)
-        bulkGetPublicItems(account).then((items) => {
+        
+        getBasicPublicItems(account).then((items) => {
           const orderedItems = items.sort((a, b) => a.path.localeCompare(b.path))
           setCurrentPublicItems(orderedItems)
         })
       }
     }
   }, [currentPublicItems, account])
-
-  // useEffect(() => {
-  //   if (!currentPublicItems) return
-  //   setDangerousItems(analyzeItems(currentPublicItems))
-  // }, [currentPublicItems])
 
   if (!account) {
     return <div className="h-screen"></div>

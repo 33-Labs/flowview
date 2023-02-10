@@ -902,6 +902,125 @@ export const getPublicItems = async (address, paths) => {
   return items
 }
 
+// A workaround method
+export const getPublicItem = async (address, paths) => {
+  const pathMap = paths.reduce((acc, path) => {
+    const p = {key: `/${path.domain}/${path.identifier}`, value: true}
+    acc.push(p)
+    return acc
+  }, [])
+
+  const code = `
+  import FungibleToken from 0xFungibleToken
+  import NonFungibleToken from 0xNonFungibleToken
+   
+  pub struct Item {
+      pub let address: Address
+      pub let path: String
+      pub let type: Type
+
+      pub let targetPath: String?
+  
+      init(
+        address: Address, 
+        path: String, 
+        type: Type, 
+        targetPath: String?
+      ) {
+          self.address = address
+          self.path = path
+          self.type = type
+          self.targetPath = targetPath
+      }
+  }
+
+  pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
+    let account = getAuthAccount(address)
+
+    let items: [Item] = []
+    account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+      if !pathMap.containsKey(path.toString()) {
+        return true
+      }
+
+      var targetPath: String? = nil
+
+      if let target = account.getLinkTarget(path) {
+        targetPath = target.toString()
+      }
+
+      let item = Item(
+        address: address,
+        path: path.toString(),
+        type: type,
+        targetPath: targetPath
+      )
+
+      items.append(item)
+      return false
+    })
+
+    return items
+  }
+  `
+
+  const items = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+        arg(address, t.Address),
+        arg(pathMap, t.Dictionary({key: t.String, value: t.Bool}))
+      ]
+  }) 
+
+  return items
+}
+
+export const getBasicPublicItems = async (address) => {
+  const code = `
+  pub struct Item {
+    pub let address: Address
+    pub let path: String
+    pub let targetPath: String?
+
+    init(address: Address, path: String, targetPath: String?) {
+      self.address = address
+      self.path = path
+      self.targetPath = targetPath
+    }
+  }
+  pub fun main(address: Address): [Item] {
+    let account = getAuthAccount(address)
+    let items: [Item] = []
+
+    ${outdatedPaths(publicConfig.chainEnv).public} 
+    for path in account.publicPaths {
+      if (outdatedPaths.containsKey(path)) {
+        continue
+      }
+
+      var targetPath: String? = nil
+      if let target = account.getLinkTarget(path) {
+        targetPath = target.toString()
+      }
+
+      let item = Item(address: address, path: path.toString(), targetPath: targetPath)
+      items.append(item)
+    }
+
+    return items
+  }
+  `
+
+  const items = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+        arg(address, t.Address)
+      ]
+  }) 
+
+  return items
+}
+
 export const getPublicPaths = async (address) => {
   const code = `
   pub fun main(address: Address): [PublicPath] {
