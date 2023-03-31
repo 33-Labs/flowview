@@ -561,7 +561,7 @@ const getCatalogTypeData = async () => {
 
 export const bulkGetStoredItems = async (address) => {
   const paths = await getStoragePaths(address)
-  const groups = splitList(paths.map((p) => p.identifier), 50)
+  const groups = splitList(paths.map((p) => p.identifier), 30)
   const promises = groups.map((group) => {
     return getStoredItems(address, group)
   })
