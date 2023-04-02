@@ -6,6 +6,7 @@ import NavigationBar from '../components/NavigationBar'
 import Footer from '../components/Footer'
 import TransactionNotification from '../components/common/TransactionNotification'
 import BasicNotification from '../components/common/BasicNotification'
+import { Analytics } from '@vercel/analytics/react'
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -19,6 +20,7 @@ function MyApp({ Component, pageProps }) {
           </Head>
           <NavigationBar />
           <Component {...pageProps} />
+          <Analytics />
           <Footer />
           <TransactionNotification />
           <BasicNotification />
