@@ -145,6 +145,7 @@ export default function ItemsDetailView(props) {
   const [showResource, setShowResource] = useState(false)
   const [resource, setResource] = useState(null)
   const [resourceError, setResourceError] = useState(null)
+  const [fileContent, setFileContent] = useState(null)
 
   const { mutate } = useSWRConfig()
   const pathType = getPathType(item.path)
@@ -198,6 +199,8 @@ export default function ItemsDetailView(props) {
         onClick={async () => {
           if (showResource) {
             setShowResource(false)
+            setFileContent(null)
+            setResource(null)
             return
           }
 
@@ -208,7 +211,13 @@ export default function ItemsDetailView(props) {
             if (isResource) {
               getStoredResource(account, item.path, setTransactionInProgress, setTransactionStatus)
                 .then((resource) => {
-                  setResource(resource)
+                  const jsonObject = JSON.stringify(resource, null, 2)
+                  const byteLength = Buffer.byteLength(jsonObject)
+                  if (byteLength > 1000000) {
+                    setFileContent(jsonObject)
+                  } else {
+                    setResource(resource)
+                  }
                 })
                 .catch((e) => {
                   setResourceError(e)
@@ -287,6 +296,33 @@ export default function ItemsDetailView(props) {
     )
   }
 
+  const getDownloadFileButton = () => {
+    if (!fileContent) {
+      return <button>Something went wrong</button>
+    }
+    const blob = new Blob([fileContent], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    return (
+      <div className="px-4 flex flex-col gap-y-2 items-start" >
+        <div>
+          The content size exceeds the limit for this page. Please download the file to access it.
+        </div>
+        <a
+          className={
+            classNames(
+              transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+              `px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`
+            )
+          }
+          href={url}
+          download={`${item.path.replace("/storage/", "")}.json`}
+        >
+          Download
+        </a>
+      </div>
+    )
+  }
+
   const getToCollectionButton = (path) => {
     return (
       <button
@@ -307,7 +343,7 @@ export default function ItemsDetailView(props) {
       >
         {"TO COLLECTION"}
       </button>
-    ) 
+    )
   }
 
   return (
@@ -328,15 +364,15 @@ export default function ItemsDetailView(props) {
         }
         {
           user && user.loggedIn && user.addr == account ?
-            (pathType == "Storage" ? 
-            <div className="flex gap-x-2 items-center">
-              {tag && tag.title == "NFT" ? getToCollectionButton(item.path) : null}
-              {getLoadResourceButton(item.isResource)}
-              {item.isResource ? getDestroyButton() : null}
-            </div> : getUnlinkButton()) : (
+            (pathType == "Storage" ?
               <div className="flex gap-x-2 items-center">
-              {tag && tag.title == "NFT" ? getToCollectionButton(item.path) : null}
-              {pathType == "Storage" && getLoadResourceButton(item.isResource)}
+                {tag && tag.title == "NFT" ? getToCollectionButton(item.path) : null}
+                {getLoadResourceButton(item.isResource)}
+                {item.isResource ? getDestroyButton() : null}
+              </div> : getUnlinkButton()) : (
+              <div className="flex gap-x-2 items-center">
+                {tag && tag.title == "NFT" ? getToCollectionButton(item.path) : null}
+                {pathType == "Storage" && getLoadResourceButton(item.isResource)}
               </div>
             )
         }
@@ -349,20 +385,22 @@ export default function ItemsDetailView(props) {
 
       {
         showResource ?
-          (resource ?
-            <div className="mt-1 flex flex-col items-center">
-              <SyntaxHighlighter className="rounded-lg text-xs w-[1044px] overflow-auto max-h-[500px]" language="json" style={vs2015}>
-                {JSON.stringify(resource, null, 2)}
-              </SyntaxHighlighter>
-            </div> :
-            (
-              resourceError ? <div className="flex mt-1 h-[100px] text-gray-400 text-base justify-center items-center">
-                Load resource failed
+          (fileContent ?
+            getDownloadFileButton() :
+            (resource ?
+              <div className="mt-1 flex flex-col items-center">
+                <SyntaxHighlighter className="rounded-lg text-xs w-[1044px] overflow-auto max-h-[500px]" language="json" style={vs2015}>
+                  {JSON.stringify(resource, null, 2)}
+                </SyntaxHighlighter>
               </div> :
-                <div className="flex mt-1 h-[100px] justify-center">
-                  <Spinner />
-                </div>)
-          )
+              (
+                resourceError ? <div className="flex mt-1 h-[100px] text-gray-400 text-base justify-center items-center">
+                  Load resource failed
+                </div> :
+                  <div className="flex mt-1 h-[100px] justify-center">
+                    <Spinner />
+                  </div>)
+            ))
           : null
       }
     </div>
