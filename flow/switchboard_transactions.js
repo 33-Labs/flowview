@@ -13,33 +13,9 @@ export const setupSwitchboard = async (
 }
 
 const doSetupSwitchboard = async () => {
-  const code = `
-  import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
-  import FungibleToken from 0xFungibleToken
-  
-  transaction {
-      prepare(acct: AuthAccount) {
-          if acct.borrow<&FungibleTokenSwitchboard.Switchboard>
-            (from: FungibleTokenSwitchboard.StoragePath) == nil {
-              acct.save(
-                  <- FungibleTokenSwitchboard.createSwitchboard(), 
-                  to: FungibleTokenSwitchboard.StoragePath)
-  
-              acct.link<&FungibleTokenSwitchboard.Switchboard{FungibleToken.Receiver}>(
-                  FungibleTokenSwitchboard.ReceiverPublicPath,
-                  target: FungibleTokenSwitchboard.StoragePath
-              )
-              
-              acct.link<&FungibleTokenSwitchboard.Switchboard{FungibleTokenSwitchboard.SwitchboardPublic, FungibleToken.Receiver}>(
-                  FungibleTokenSwitchboard.PublicPath,
-                  target: FungibleTokenSwitchboard.StoragePath
-              )
-          }
-      }
-  }
-  `
+  const code = await (await fetch("/transactions/switchboard/setup.cdc")).text()
 
-  const transactionId = await fcl.mutate({
+  const transactionId = fcl.mutate({
     cadence: code,
     proposer: fcl.currentUser,
     payer: fcl.currentUser,
@@ -62,33 +38,10 @@ export const addNewVault = async (
 }
 
 const doAddNewVault = async (tokenReceiverPath) => {
-  const code = `
-  import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
-  import FungibleToken from 0xFungibleToken
-  
-  transaction {
-      let capability: Capability<&{FungibleToken.Receiver}>
-      let switchboardRef:  &FungibleTokenSwitchboard.Switchboard
-  
-      prepare(signer: AuthAccount) {
-          self.capability= 
-              signer.getCapability<&{FungibleToken.Receiver}>(${tokenReceiverPath})
-          
-          assert(self.capability.check(), 
-              message: "Signer does not have a token receiver capability")
-          
-          self.switchboardRef = signer.borrow<&FungibleTokenSwitchboard.Switchboard>
-              (from: FungibleTokenSwitchboard.StoragePath) 
-              ?? panic("Could not borrow reference to switchboard")
-      }
-  
-      execute {
-          self.switchboardRef.addNewVault(capability: self.capability)
-      }
-  }
-  `
+  let code = await (await fetch("/transactions/switchboard/add_new_vault.cdc")).text()
+  code = code.replace('__TOKEN_RECEIVER_PATH__', tokenReceiverPath)
 
-  const transactionId = await fcl.mutate({
+  const transactionId = fcl.mutate({
     cadence: code,
     proposer: fcl.currentUser,
     payer: fcl.currentUser,
@@ -111,29 +64,10 @@ export const removeVault = async (
 }
 
 const doRemoveVault = async (tokenReceiverPath) => {
-  const code = `
-  import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
-  import FungibleToken from 0xFungibleToken
+  let code = await (await fetch("/transactions/switchboard/remove_vault.cdc")).text()
+  code = code.replace('__TOKEN_RECEIVER_PATH__', tokenReceiverPath)
 
-  transaction {
-    let capability: Capability<&{FungibleToken.Receiver}>
-    let switchboardRef: &FungibleTokenSwitchboard.Switchboard
-
-    prepare(signer: AuthAccount) {
-      self.capability = signer.getCapability<&{FungibleToken.Receiver}>(${tokenReceiverPath})
-      
-      self.switchboardRef = signer.borrow<&FungibleTokenSwitchboard.Switchboard>
-        (from: FungibleTokenSwitchboard.StoragePath) 
-          ?? panic("Could not borrow reference to switchboard")
-    }
-
-    execute {
-      self.switchboardRef.removeVault(capability: self.capability)
-    }
-  }
-  `
-
-  const transactionId = await fcl.mutate({
+  const transactionId = fcl.mutate({
     cadence: code,
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

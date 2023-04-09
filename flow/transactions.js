@@ -38,29 +38,9 @@ export const createKey = async (
 }
 
 const doCreateKey = async (publicKey, signAlgo, hashAlgo, weight) => {
-  const code = `
-  transaction(
-    publicKey: String,
-    signAlgo: UInt8,
-    hashAlgo: UInt8,
-    weight: UFix64
-  ) {
-    prepare(signer: AuthAccount) {
-      let pubkey = PublicKey(
-        publicKey: publicKey.decodeHex(),
-        signatureAlgorithm: SignatureAlgorithm(rawValue: signAlgo)!
-      )
+  const code = await (await fetch("/transactions/key/create_key.cdc")).text()
 
-      signer.keys.add(
-        publicKey: pubkey,
-        hashAlgorithm: HashAlgorithm(rawValue: hashAlgo)!,
-        weight: weight
-      )
-    }
-  }
-  `
-
-  const transactionId = await fcl.mutate({
+  const transactionId = fcl.mutate({
     cadence: code,
     args: (arg, t) => [
       arg(publicKey, t.String),
@@ -90,15 +70,9 @@ export const revokeKey = async (
 }
 
 const doRevokeKey = async (keyIndex) => {
-  const code = `
-  transaction(keyIndex: Int) {
-    prepare(signer: AuthAccount) {
-      signer.keys.revoke(keyIndex: keyIndex)
-    }
-  }
-  `
+  const code = await (await fetch("/transactions/key/revoke_key.cdc")).text()
 
-  const transactionId = await fcl.mutate({
+  const transactionId = fcl.mutate({
     cadence: code,
     args: (arg, t) => [
       arg(`${keyIndex}`, t.Int)
@@ -125,15 +99,10 @@ export const unlink = async (
 }
 
 const doUnlink = async (path) => {
-  const code = `
-  transaction() {
-    prepare(signer: AuthAccount) {
-      signer.unlink(${path})
-    }
-  }
-  `
+  let code = await (await fetch("/transactions/storage/unlink.cdc")).text()
+  code = code.replace('__PATH__', path)
 
-  const transactionId = await fcl.mutate({
+  const transactionId = fcl.mutate({
     cadence: code,
     proposer: fcl.currentUser,
     payer: fcl.currentUser,
@@ -156,17 +125,10 @@ export const destroy = async (
 }
 
 const doDestroy = async (path) => {
-  const code = `
-  transaction() {
-    prepare(signer: AuthAccount) {
-      if let rsc <- signer.load<@AnyResource>(from: ${path}) {
-        destroy rsc
-      }
-    }
-  }
-  `
+  let code = await (await fetch("/transactions/storage/destroy.cdc")).text()
+  code = code.replace('__PATH__', path)
 
-  const transactionId = await fcl.mutate({
+  const transactionId = fcl.mutate({
     cadence: code,
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

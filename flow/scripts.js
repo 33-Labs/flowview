@@ -1,7 +1,7 @@
 import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
-import { outdatedPathsMainnet } from "./mainnet_outdated_paths"
-import { outdatedPathsTestnet } from "./testnet_outdated_paths"
+import { outdatedPathsMainnet } from "./outdated_paths/mainnet"
+import { outdatedPathsTestnet } from "./outdated_paths/testnet"
 
 const outdatedPaths = (network) => {
   if (network == "mainnet") {
@@ -30,40 +30,7 @@ const splitList = (list, chunkSize) => {
 // --- Basic Info ---
 
 export const getAccountInfo = async (address) => {
-  const code = `
-  pub struct Result {
-    pub let address: Address
-    pub let balance: UFix64
-    pub let availableBalance: UFix64
-    pub let storageUsed: UInt64
-    pub let storageCapacity: UInt64
-
-    init(
-      address: Address,
-      balance: UFix64,
-      availableBalance: UFix64,
-      storageUsed: UInt64,
-      storageCapacity: UInt64
-    ) {
-      self.address = address
-      self.balance = balance
-      self.availableBalance = availableBalance
-      self.storageUsed = storageUsed
-      self.storageCapacity = storageCapacity
-    }
-  }
-
-  pub fun main(address: Address): Result {
-    let account = getAuthAccount(address)
-    return Result(
-      address: account.address,
-      balance: account.balance,
-      availableBalance: account.availableBalance,
-      storageUsed: account.storageUsed,
-      storageCapacity: account.storageCapacity
-    )
-  }
-  `
+  const code = await (await fetch("/scripts/basic/get_account_info.cdc")).text()
 
   const result = await fcl.query({
     cadence: code,
@@ -85,12 +52,8 @@ export const getKeys = async (address) => {
 // -- Contracts --
 
 export const getContractNames = async (address) => {
-  const code = `
-  pub fun main(address: Address): [String] {
-    let account = getAccount(address)
-    return account.contracts.names
-  }
-  `
+  const code = await (await fetch("/scripts/contract/get_contract_names.cdc")).text()
+
 
   const names = await fcl.query({
     cadence: code,
@@ -107,13 +70,7 @@ export const getContractNames = async (address) => {
 // --- Domains ---
 
 export const getDefaultDomainsOfAddress = async (address) => {
-  const code = `
-  import DomainUtils from 0xFlowbox
-
-  pub fun main(address: Address): {String: String} {
-    return DomainUtils.getDefaultDomainsOfAddress(address)
-  }
-  `
+  const code = await (await fetch("/scripts/domain/get_default_domains_of_address.cdc")).text()
 
   const domains = await fcl.query({
     cadence: code,
@@ -130,13 +87,7 @@ export const getAddressOfDomain = async (domain) => {
   const name = comps[0]
   const root = comps[1]
 
-  const code = `
-  import DomainUtils from 0xFlowbox
-
-  pub fun main(name: String, root: String): Address? {
-    return DomainUtils.getAddressOfDomain(name: name, root: root)
-  }
-  `
+  const code = await (await fetch("/scripts/domain/get_address_of_domain.cdc")).text()
 
   const address = await fcl.query({
     cadence: code,
@@ -152,78 +103,7 @@ export const getAddressOfDomain = async (domain) => {
 // --- Collections ---
 
 export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
-  const code = `
-  import NonFungibleToken from 0xNonFungibleToken
-  import MetadataViews from 0xMetadataViews
-
-  pub fun main(address: Address, storagePathID: String, tokenID: UInt64): {String: AnyStruct} {
-    let account = getAuthAccount(address)
-    let res: {String: AnyStruct} = {}
-
-    let path = StoragePath(identifier: storagePathID)!
-    let collectionRef = account.borrow<&{NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>(from: path)
-    if collectionRef == nil {
-      panic("Get Collection Failed")
-    }
-
-    let type = account.type(at: path)
-    if type == nil {
-      return res
-    }
-
-    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
-    let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
-
-    if (!conformedMetadataViews) {
-      return res
-    }
-
-    collectionRef!.borrowNFT(id: tokenID)
-
-    let resolver = collectionRef!.borrowViewResolver(id: tokenID)
-    if let rarity = MetadataViews.getRarity(resolver) {
-      res["rarity"] = rarity
-    }
-
-    if let display = MetadataViews.getDisplay(resolver) {
-      res["display"] = display
-    }
-
-    if let editions = MetadataViews.getEditions(resolver) {
-      res["editions"] = editions
-    }
-
-    if let serial = MetadataViews.getSerial(resolver) {
-      res["serial"] = serial
-    }
-
-    if let royalties = MetadataViews.getRoyalties(resolver) {
-      res["royalties"] = royalties
-    }
-
-    if let license = MetadataViews.getLicense(resolver) {
-      res["license"] = license
-    }
-
-    if let medias = MetadataViews.getMedias(resolver) {
-      res["medias"] = medias
-    }
-
-    if let externalURL = MetadataViews.getExternalURL(resolver) {
-      res["externalURL"] = externalURL
-    }
-
-    if let traits = MetadataViews.getTraits(resolver) {
-      res["traits"] = traits
-    }
-
-    if let collectionDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
-      res["collectionDisplay"] = collectionDisplay
-    }
-
-    return res
-  }
-  `
+  const code = await (await fetch("/scripts/collection/get_nft_metadata_views.cdc")).text()
 
   const metadata = await fcl.query({
     cadence: code,
@@ -239,94 +119,7 @@ export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
 
 export const getNftViews = async (address, storagePathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
-  const code = `
-  import NonFungibleToken from 0xNonFungibleToken
-  import MetadataViews from 0xMetadataViews
-
-  pub struct ViewInfo {
-    pub let name: String
-    pub let description: String
-    pub let thumbnail: AnyStruct{MetadataViews.File}
-    pub let rarity: String?
-    pub let collectionDisplay: MetadataViews.NFTCollectionDisplay?
-
-    init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, collectionDisplay: MetadataViews.NFTCollectionDisplay?) {
-      self.name = name
-      self.description = description
-      self.thumbnail = thumbnail
-      self.rarity = rarity
-      self.collectionDisplay = collectionDisplay
-    }
-  }
-
-  pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: ViewInfo}{
-    let account = getAuthAccount(address)
-    let res: {UInt64: ViewInfo} = {}
-    var collectionDisplayFetched = false
-
-    if tokenIDs.length == 0 {
-      return res
-    }
-
-    let path = StoragePath(identifier: storagePathID)!
-    let type = account.type(at: path)
-    if type == nil {
-      return res
-    }
-
-    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
-
-    let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
-    if !conformedMetadataViews {
-      for tokenID in tokenIDs {
-        res[tokenID] = ViewInfo(
-          name: storagePathID,
-          description: "",
-          thumbnail: MetadataViews.HTTPFile(url: ""),
-          rarity: nil,
-          collectionDisplay: nil
-        )
-      }
-      return res
-    }
-
-    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path)
-    for tokenID in tokenIDs {
-      let resolver = collectionRef!.borrowViewResolver(id: tokenID)
-      if let display = MetadataViews.getDisplay(resolver) {
-        var rarityDesc: String? = nil
-        if let rarityView = MetadataViews.getRarity(resolver) {
-          rarityDesc = rarityView.description
-        }
-
-        var collectionDisplay: MetadataViews.NFTCollectionDisplay? = nil
-        if (!collectionDisplayFetched) {
-          if let cDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
-            collectionDisplay = cDisplay
-            collectionDisplayFetched = true
-          }
-        }
-
-        res[tokenID] = ViewInfo(
-          name: display.name,
-          description: display.description,
-          thumbnail: display.thumbnail,
-          rarity: rarityDesc,
-          collectionDisplay: collectionDisplay
-        )
-      } else {
-        res[tokenID] = ViewInfo(
-          name: storagePathID,
-          description: "",
-          thumbnail: MetadataViews.HTTPFile(url: ""),
-          rarity: nil,
-          collectionDisplay: nil
-        )
-      }
-    }
-    return res
-  }
-  `
+  const code = await (await fetch("/scripts/collection/get_nft_displays.cdc")).text()
 
   const displays = await fcl.query({
     cadence: code,
@@ -356,134 +149,6 @@ export const bulkGetNftViews = async (address, collection, limit, offset) => {
   return displays
 }
 
-// --- deprecated ---
-
-export const getNftDisplays = async (address, storagePathID, tokenIDs) => {
-  const ids = tokenIDs.map((id) => `${id}`)
-  const code = `
-  import NonFungibleToken from 0xNonFungibleToken
-  import MetadataViews from 0xMetadataViews
-
-  pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: MetadataViews.Display?}{
-    let account = getAuthAccount(address)
-    let res: {UInt64: MetadataViews.Display?} = {}
-
-    let path = StoragePath(identifier: storagePathID)!
-    let collectionRef = account.borrow<&{MetadataViews.ResolverCollection}>(from: path)
-    if (collectionRef == nil) {
-      for tokenID in tokenIDs {
-        res[tokenID] = MetadataViews.Display(
-          name: storagePathID,
-          description: "",
-          thumbnail: MetadataViews.HTTPFile(url: "")
-        )
-      }
-      return res
-    }
-
-    for tokenID in tokenIDs {
-      let resolver = collectionRef!.borrowViewResolver(id: tokenID)
-      if let display = MetadataViews.getDisplay(resolver) {
-        res[tokenID] = display
-      } else {
-        res[tokenID] = MetadataViews.Display(
-          name: storagePathID,
-          description: "",
-          thumbnail: MetadataViews.HTTPFile(url: "")
-        )
-      }
-    }
-    return res
-  }
-  `
-
-  const displays = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-      arg(storagePathID, t.String),
-      arg(ids, t.Array(t.UInt64))
-    ]
-  }) 
-
-  return displays  
-}
-
-export const bulkGetNftDisplays = async (address, collection, limit, offset) => {
-  const totalTokenIDs = collection.tokenIDs
-  const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
-
-  const groups = splitList(tokenIDs, 20) 
-  const promises = groups.map((group) => {
-    return getNftDisplays(address, collection.path.replace("/storage/", ""), group)
-  }) 
-  const displayGroups = await Promise.all(promises)
-  const displays = displayGroups.reduce((acc, current) => {
-    return Object.assign(acc, current)
-  }, {}) 
-
-  return displays
-}
-
-export const getLinkedItems = async (path, address) => {
-  if (path != "public" && path != "private") throw "invalid path"
-
-  let func = "forEachPublic"
-  let pathType = "PublicPath"
-  let outdated = outdatedPaths(publicConfig.chainEnv).public
-  if (path == "private") {
-    func = "forEachPrivate"
-    pathType = "PrivatePath"
-    outdated = outdatedPaths(publicConfig.chainEnv).private
-  }
-
-  const code = `
-  pub struct Item {
-    pub let address: Address
-    pub let path: String
-    pub let type: Type
-    pub let linkTarget: String?
-
-    init(address: Address, path: String, type: Type, linkTarget: String?) {
-      self.address = address
-      self.path = path
-      self.type = type
-      self.linkTarget = linkTarget
-    }
-  }
-
-  pub fun main(address: Address): [Item] {
-    ${outdated}
-    let account = getAuthAccount(address)
-    let items: [Item] = []
-    account.${func}(fun (path: ${pathType}, type: Type): Bool {
-      if (outdatedPaths.containsKey(path)) {
-        return true
-      }
-      
-      let target = account.getLinkTarget(path)
-      var targetPath: String? = nil
-      if let t = target {
-        targetPath = t.toString()
-      }
-      let item = Item(address: address, path: path.toString(), type: type, linkTarget: targetPath)
-      items.append(item)
-      return true
-    })
-    return items
-  }
-  `
-
-  const items = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address)
-    ]
-  }) 
-
-  return items
-}
-
 // --- NFT Catalog ---
 
 export const bulkGetNftCatalog = async () => {
@@ -501,19 +166,7 @@ export const bulkGetNftCatalog = async () => {
 }
 
 export const getNftCatalogByCollectionIDs = async (collectionIDs) => {
-  const code = `
-  import NFTCatalog from 0xNFTCatalog
-
-  pub fun main(collectionIdentifiers: [String]): {String: NFTCatalog.NFTCatalogMetadata} {
-    let res: {String: NFTCatalog.NFTCatalogMetadata} = {}
-    for collectionID in collectionIdentifiers {
-        if let catalog = NFTCatalog.getCatalogEntry(collectionIdentifier: collectionID) {
-          res[collectionID] = catalog
-        }
-    }
-    return res
-  }
-  `
+  const code = await (await fetch("/scripts/collection/get_nft_catalog_by_collection_ids.cdc")).text() 
 
   const catalogs = await fcl.query({
     cadence: code,
@@ -541,14 +194,7 @@ const getCollectionIdentifiers = async () => {
 }
 
 const getCatalogTypeData = async () => {
-  const code = `
-  import NFTCatalog from 0xNFTCatalog
-
-  pub fun main(): {String : {String : Bool}} {
-    let catalog = NFTCatalog.getCatalogTypeData()
-    return catalog
-  }
-  `
+  const code = await (await fetch("/scripts/collection/get_catalog_type_data.cdc")).text()
 
   const typeData = await fcl.query({
     cadence: code
@@ -574,116 +220,7 @@ export const bulkGetStoredItems = async (address) => {
 }
 
 export const getStoredItems = async (address, paths) => {
-  const code = `
-  import FungibleToken from 0xFungibleToken
-  import NonFungibleToken from 0xNonFungibleToken
-  import MetadataViews from 0xMetadataViews
-
-  pub struct CollectionDisplay {
-    pub let name: String
-    pub let squareImage: MetadataViews.Media
-
-    init(name: String, squareImage: MetadataViews.Media) {
-      self.name = name
-      self.squareImage = squareImage
-    }
-  }
-
-  pub struct Item {
-      pub let address: Address
-      pub let path: String
-      pub let type: Type
-      pub let isResource: Bool
-      pub let isNFTCollection: Bool
-      pub let display: CollectionDisplay?
-      pub let tokenIDs: [UInt64]
-      pub let isVault: Bool
-      pub let balance: UFix64?
-  
-      init(address: Address, path: String, type: Type, isResource: Bool, 
-        isNFTCollection: Bool, display: CollectionDisplay?,
-        tokenIDs: [UInt64], isVault: Bool, balance: UFix64?) {
-          self.address = address
-          self.path = path
-          self.type = type
-          self.isResource = isResource
-          self.isNFTCollection = isNFTCollection
-          self.display = display
-          self.tokenIDs = tokenIDs
-          self.isVault = isVault
-          self.balance = balance
-      }
-  }
-
-  pub fun main(address: Address, pathIdentifiers: [String]): [Item] {
-    let account = getAuthAccount(address)
-    let resourceType = Type<@AnyResource>()
-    let vaultType = Type<@FungibleToken.Vault>()
-    let collectionType = Type<@NonFungibleToken.Collection>()
-    let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
-    let items: [Item] = []
-
-    for identifier in pathIdentifiers {
-      let path = StoragePath(identifier: identifier)!
-
-      if let type = account.type(at: path) {
-        let isResource = type.isSubtype(of: resourceType)
-        let isNFTCollection = type.isSubtype(of: collectionType)
-        let conformedMetadataViews = type.isSubtype(of: metadataViewType)
-
-        var tokenIDs: [UInt64] = []
-        var collectionDisplay: CollectionDisplay? = nil
-        if isNFTCollection && conformedMetadataViews {
-          if let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path) {
-            tokenIDs = collectionRef.getIDs()
-
-            // TODO: move to a list
-            if tokenIDs.length > 0 
-            && path != /storage/RaribleNFTCollection 
-            && path != /storage/ARTIFACTPackV3Collection
-            && path != /storage/ArleeScene {
-              let resolver = collectionRef.borrowViewResolver(id: tokenIDs[0]) 
-              if let display = MetadataViews.getNFTCollectionDisplay(resolver) {
-                collectionDisplay = CollectionDisplay(
-                  name: display.name,
-                  squareImage: display.squareImage
-                )
-              }
-            }
-          }
-        } else if isNFTCollection {
-          if let collectionRef = account.borrow<&NonFungibleToken.Collection>(from: path) {
-            tokenIDs = collectionRef.getIDs()
-          }
-        }
-
-        let isVault = type.isSubtype(of: vaultType) 
-        var balance: UFix64? = nil
-        if isVault {
-          if let vaultRef = account.borrow<&FungibleToken.Vault>(from: path) {
-            balance = vaultRef.balance
-          }
-        }
-
-        let item = Item(
-          address: address,
-          path: path.toString(),
-          type: type,
-          isResource: isResource,
-          isNFTCollection: isNFTCollection,
-          display: collectionDisplay,
-          tokenIDs: tokenIDs,
-          isVault: isVault,
-          balance: balance
-        )
-
-        items.append(item)
-      }
-    }
-
-    return items
-  }
-  `
+  const code = await (await fetch("/scripts/storage/get_stored_items.cdc")).text()
 
   const items = await fcl.query({
     cadence: code,
@@ -697,21 +234,8 @@ export const getStoredItems = async (address, paths) => {
 }
 
 const getStoragePaths = async (address) => {
-  const code = `
-  pub fun main(address: Address): [StoragePath] {
-    ${outdatedPaths(publicConfig.chainEnv).storage} 
-    let account = getAuthAccount(address)
-    let cleandPaths: [StoragePath] = []
-    for path in account.storagePaths {
-      if (outdatedPaths.containsKey(path)) {
-        continue
-      }
-
-      cleandPaths.append(path)
-    }
-    return cleandPaths
-  }
-  `
+  let code = await (await fetch("/scripts/storage/get_storage_paths.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).storage)
 
   const paths = await fcl.query({
     cadence: code,
@@ -726,13 +250,7 @@ const getStoragePaths = async (address) => {
 export const getStoredStruct = async (address, path) => {
   const pathIdentifier = path.replace("/storage/", "")
 
-  const code = `
-  pub fun main(address: Address, pathStr: String): &AnyStruct? {
-    let account = getAuthAccount(address)
-    let path = StoragePath(identifier: pathStr)!
-    return account.borrow<&AnyStruct>(from: path)
-  }
-  `
+  const code = await (await fetch("/scripts/storage/get_stored_struct.cdc")).text()
 
   const resource = await fcl.query({
     cadence: code,
@@ -749,13 +267,7 @@ export const getStoredStruct = async (address, path) => {
 export const getStoredResource = async (address, path) => {
   const pathIdentifier = path.replace("/storage/", "")
 
-  const code = `
-  pub fun main(address: Address, pathStr: String): &AnyResource? {
-    let account = getAuthAccount(address)
-    let path = StoragePath(identifier: pathStr)!
-    return account.borrow<&AnyResource>(from: path)
-  }
-  `
+  const code = await (await fetch("/scripts/storage/get_stored_resource.cdc")).text()
 
   const resource = await fcl.query({
     cadence: code,
@@ -792,104 +304,7 @@ export const getPublicItems = async (address, paths) => {
     return acc
   }, [])
 
-  const code = `
-  import FungibleToken from 0xFungibleToken
-  import NonFungibleToken from 0xNonFungibleToken
-   
-  pub struct Item {
-      pub let address: Address
-      pub let path: String
-      pub let type: Type
-
-      pub let targetPath: String?
-
-      pub let isCollectionCap: Bool
-      pub let tokenIDs: [UInt64]
-
-      pub let isBalanceCap: Bool
-      pub let balance: UFix64?
-  
-      init(
-        address: Address, 
-        path: String, 
-        type: Type, 
-        targetPath: String?, 
-        isCollectionCap: Bool, 
-        tokenIDs: [UInt64],
-        isBalanceCap: Bool,
-        balance: UFix64?
-      ) {
-          self.address = address
-          self.path = path
-          self.type = type
-          self.targetPath = targetPath
-          self.isCollectionCap = isCollectionCap
-          self.tokenIDs = tokenIDs
-          self.isBalanceCap = isBalanceCap
-          self.balance = balance
-      }
-  }
-
-  pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
-    let account = getAuthAccount(address)
-
-    let items: [Item] = []
-    let balanceCapType = Type<Capability<&AnyResource{FungibleToken.Balance}>>()
-    let collectionType = Type<Capability<&AnyResource{NonFungibleToken.CollectionPublic}>>()
-
-    account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
-      if !pathMap.containsKey(path.toString()) {
-        return true
-      }
-
-      var targetPath: String? = nil
-      var isCollectionCap = false
-      var isBalanceCap = false
-      var tokenIDs: [UInt64] = []
-      var balance: UFix64? = nil
-
-      if let target = account.getLinkTarget(path) {
-        targetPath = target.toString()
-      }
-
-      if (type.isSubtype(of: balanceCapType)) {
-        isBalanceCap = true
-        let vaultRef = account
-            .getCapability(path)
-            .borrow<&{FungibleToken.Balance}>()
-
-        if let vault = vaultRef {
-            balance = vault.balance
-        }
-      } else if (type.isSubtype(of: collectionType)) {
-        isCollectionCap = true
-        let collectionRef = account
-          .getCapability(path)
-          .borrow<&{NonFungibleToken.CollectionPublic}>()
-
-        if let collection = collectionRef {
-          tokenIDs = collection.getIDs()
-        }
-      }
-
-      let item = Item(
-        address: address,
-        path: path.toString(),
-        type: type,
-        targetPath: targetPath,
-        isCollectionCap: isCollectionCap,
-        tokenIDs: tokenIDs,
-        isBalanceCap: isBalanceCap,
-        balance: balance
-      )
-
-      items.append(item)
-      return true
-    })
-
-    return items
-  }
-  `
+  const code = await (await fetch("/scripts/storage/get_public_items.cdc")).text()
 
   const items = await fcl.query({
     cadence: code,
@@ -910,59 +325,7 @@ export const getPublicItem = async (address, paths) => {
     return acc
   }, [])
 
-  const code = `
-  import FungibleToken from 0xFungibleToken
-  import NonFungibleToken from 0xNonFungibleToken
-   
-  pub struct Item {
-      pub let address: Address
-      pub let path: String
-      pub let type: Type
-
-      pub let targetPath: String?
-  
-      init(
-        address: Address, 
-        path: String, 
-        type: Type, 
-        targetPath: String?
-      ) {
-          self.address = address
-          self.path = path
-          self.type = type
-          self.targetPath = targetPath
-      }
-  }
-
-  pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
-    let account = getAuthAccount(address)
-
-    let items: [Item] = []
-    account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
-      if !pathMap.containsKey(path.toString()) {
-        return true
-      }
-
-      var targetPath: String? = nil
-
-      if let target = account.getLinkTarget(path) {
-        targetPath = target.toString()
-      }
-
-      let item = Item(
-        address: address,
-        path: path.toString(),
-        type: type,
-        targetPath: targetPath
-      )
-
-      items.append(item)
-      return false
-    })
-
-    return items
-  }
-  `
+  const code = await (await fetch("/scripts/storage/get_public_items.cdc")).text()
 
   const items = await fcl.query({
     cadence: code,
@@ -976,40 +339,8 @@ export const getPublicItem = async (address, paths) => {
 }
 
 export const getBasicPublicItems = async (address) => {
-  const code = `
-  pub struct Item {
-    pub let address: Address
-    pub let path: String
-    pub let targetPath: String?
-
-    init(address: Address, path: String, targetPath: String?) {
-      self.address = address
-      self.path = path
-      self.targetPath = targetPath
-    }
-  }
-  pub fun main(address: Address): [Item] {
-    let account = getAuthAccount(address)
-    let items: [Item] = []
-
-    ${outdatedPaths(publicConfig.chainEnv).public} 
-    for path in account.publicPaths {
-      if (outdatedPaths.containsKey(path)) {
-        continue
-      }
-
-      var targetPath: String? = nil
-      if let target = account.getLinkTarget(path) {
-        targetPath = target.toString()
-      }
-
-      let item = Item(address: address, path: path.toString(), targetPath: targetPath)
-      items.append(item)
-    }
-
-    return items
-  }
-  `
+  let code = await (await fetch("/scripts/storage/get_basic_public_items.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).public)
 
   const items = await fcl.query({
     cadence: code,
@@ -1022,21 +353,8 @@ export const getBasicPublicItems = async (address) => {
 }
 
 export const getPublicPaths = async (address) => {
-  const code = `
-  pub fun main(address: Address): [PublicPath] {
-    ${outdatedPaths(publicConfig.chainEnv).public} 
-    let account = getAuthAccount(address)
-    let cleandPaths: [PublicPath] = []
-    for path in account.publicPaths {
-      if (outdatedPaths.containsKey(path)) {
-        continue
-      }
-
-      cleandPaths.append(path)
-    }
-    return cleandPaths
-  }
-  `
+  let code = await (await fetch("/scripts/storage/get_public_paths.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).public)
 
   const paths = await fcl.query({
     cadence: code,
@@ -1071,54 +389,7 @@ export const getPrivateItems = async (address, paths) => {
     return acc
   }, [])
 
-  const code = `
-  pub struct Item {
-      pub let address: Address
-      pub let path: String
-      pub let type: Type
-      pub let targetPath: String?
-
-      init(
-        address: Address, 
-        path: String, 
-        type: Type, 
-        targetPath: String?
-      ) {
-        self.address = address
-        self.path = path
-        self.type = type
-        self.targetPath = targetPath
-      }
-  }
-
-  pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
-    let account = getAuthAccount(address)
-
-    let items: [Item] = []
-    account.forEachPrivate(fun (path: PrivatePath, type: Type): Bool {
-      if !pathMap.containsKey(path.toString()) {
-        return true
-      }
-
-      var targetPath: String? = nil
-      if let target = account.getLinkTarget(path) {
-        targetPath = target.toString()
-      }
-
-      let item = Item(
-        address: address,
-        path: path.toString(),
-        type: type,
-        targetPath: targetPath
-      )
-
-      items.append(item)
-      return true
-    })
-
-    return items
-  }
-  `
+  const code = await (await fetch("/scripts/storage/get_private_items.cdc")).text()
 
   const items = await fcl.query({
     cadence: code,
@@ -1132,21 +403,8 @@ export const getPrivateItems = async (address, paths) => {
 }
 
 export const getPrivatePaths = async (address) => {
-  const code = `
-  pub fun main(address: Address): [PrivatePath] {
-    ${outdatedPaths(publicConfig.chainEnv).private} 
-    let account = getAuthAccount(address)
-    let cleandPaths: [PrivatePath] = []
-    for path in account.privatePaths {
-      if (outdatedPaths.containsKey(path)) {
-        continue
-      }
-
-      cleandPaths.append(path)
-    }
-    return cleandPaths
-  }
-  `
+  let code = await (await fetch("/scripts/storage/get_private_paths.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).private)
 
   const paths = await fcl.query({
     cadence: code,

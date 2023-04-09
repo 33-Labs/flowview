@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useEffect } from 'react'
 import SearchBar from '../components/common/SearchBar'
 import publicConfig from '../publicConfig'
 
