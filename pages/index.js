@@ -1,10 +1,8 @@
 import Image from 'next/image'
-import { useEffect } from 'react'
 import SearchBar from '../components/common/SearchBar'
 import publicConfig from '../publicConfig'
 
 export default function Home() {
-
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-6">
       <div className={`flex flex-col items-center ${publicConfig.chainEnv === "emulator" ? "mt-0" : "mt-20"} mb-20 gap-y-12 justify-stretch`}>

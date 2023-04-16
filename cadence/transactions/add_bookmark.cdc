@@ -2,7 +2,6 @@ import FlowviewAccountBookmark from "../contracts/FlowviewAccountBookmark.cdc"
 
 transaction(
   address: Address,
-  name: String,
   note: String
 ) {
   let bookmarkCollection: &FlowviewAccountBookmark.AccountBookmarkCollection
@@ -23,6 +22,6 @@ transaction(
   }
 
   execute {
-    self.bookmarkCollection.addAccountBookmark(address: address, name: name, note: note)
+    self.bookmarkCollection.addAccountBookmark(address: address, note: note)
   }
 }

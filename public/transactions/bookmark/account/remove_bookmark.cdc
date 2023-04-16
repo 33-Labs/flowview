@@ -1,9 +1,6 @@
-import FlowviewAccountBookmark from "../contracts/FlowviewAccountBookmark.cdc"
+import FlowviewAccountBookmark from 0xFlowviewAccountBookmark
 
-transaction(
-  address: Address,
-  note: String
-) {
+transaction(address: Address) {
   let bookmarkCollection: &FlowviewAccountBookmark.AccountBookmarkCollection
 
   prepare(signer: AuthAccount) {
@@ -22,9 +19,6 @@ transaction(
   }
 
   execute {
-    let bookmark = self.bookmarkCollection.borrowAccountBookmark(address: address)
-      ?? panic("Could not borrow bookmark")
-
-    bookmark.setNote(note: note)
+    self.bookmarkCollection.removeAccountBookmark(address: address)
   }
 }

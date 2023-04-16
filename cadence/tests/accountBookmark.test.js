@@ -23,18 +23,18 @@ describe("Account bookmark", ()=>{
   test("Owner can add/edit/remove bookmark", async () => {
     const alice = await getAccountAddress("Alice")
     const bob = await getAccountAddress("Bob")
-    const [, error] = await addAccountBookmark(alice, bob, "Bob", "Bob's account")
+    const [, error] = await addAccountBookmark(alice, bob, "Bob's account")
     expect(error).toBeNull()
 
     const [bookmark1, error2] = await getBookmark(alice, bob)
     expect(error2).toBeNull()
-    expect(bookmark1.name).toBe("Bob")
+    expect(bookmark1.note).toBe("Bob's account")
 
-    const [, error3] = await editAccountBookmark(alice, bob, "Bob 2", "Bob's account note 2")
+    const [, error3] = await editAccountBookmark(alice, bob, "Bob's account note 2")
     expect(error3).toBeNull()
     const [bookmark2, error4] = await getBookmark(alice, bob)
     expect(error4).toBeNull()
-    expect(bookmark2.name).toBe("Bob 2")
+    expect(bookmark2.note).toBe("Bob's account note 2")
 
     const [, error5] = await removeAccountBookmark(alice, bob)
     expect(error5).toBeNull()

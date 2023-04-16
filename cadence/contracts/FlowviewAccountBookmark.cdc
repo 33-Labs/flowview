@@ -8,23 +8,16 @@ pub contract FlowviewAccountBookmark {
 
   pub resource interface AccountBookmarkPublic {
     pub let address: Address
-    pub var name: String
     pub var note: String
   }
 
   pub resource AccountBookmark: AccountBookmarkPublic {
     pub let address: Address
-    pub var name: String
     pub var note: String
 
-    init(address: Address, name: String, note: String) {
+    init(address: Address, note: String) {
       self.address = address
-      self.name = name
       self.note = note
-    }
-
-    pub fun setName(name: String) {
-      self.name = name
     }
 
     pub fun setNote(note: String) {
@@ -44,11 +37,11 @@ pub contract FlowviewAccountBookmark {
       self.bookmarks <- {}
     }
 
-    pub fun addAccountBookmark(address: Address, name: String, note: String) {
+    pub fun addAccountBookmark(address: Address, note: String) {
       pre {
         self.bookmarks[address] == nil: "Account bookmark already exists"
       }
-      self.bookmarks[address] <-! create AccountBookmark(address: address, name: name, note: note)
+      self.bookmarks[address] <-! create AccountBookmark(address: address, note: note)
     }
 
     pub fun removeAccountBookmark(address: Address) {

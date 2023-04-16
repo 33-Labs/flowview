@@ -12,7 +12,7 @@ import {
   showBasicNotificationState,
   basicNotificationContentState,
 } from "../lib/atoms.js"
-import { LogoutIcon } from "@heroicons/react/outline"
+import { LogoutIcon, StarIcon } from "@heroicons/react/outline"
 
 export default function NavigationBar() {
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
@@ -58,6 +58,16 @@ export default function NavigationBar() {
         >
           {user && user.addr}
         </button>
+
+        <button
+          type="button"
+          className="shrink-0 bg-drizzle rounded-full p-2"
+          onClick={() => {
+            router.push(`/bookmark`, undefined, { shallow: true })
+          }}>
+          <StarIcon className="h-5 w-5 text-black" />
+        </button>
+
         <button
           type="button"
           className="shrink-0 bg-drizzle rounded-full p-2"

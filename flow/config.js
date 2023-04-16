@@ -15,5 +15,6 @@ config({
   "0xNonFungibleToken": publicConfig.nonFungibleTokenAddress,
   "0xFungibleToken": publicConfig.fungibleTokenAddress,
   "0xFungibleTokenSwitchboard": publicConfig.fungibleTokenSwitchboardAddress,
-  "0xFlowbox": publicConfig.flowboxAddress
+  "0xFlowbox": publicConfig.flowboxAddress,
+  "0xFlowviewAccountBookmark": publicConfig.accountBookmarkAddress,
 })

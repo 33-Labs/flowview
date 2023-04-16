@@ -5,16 +5,16 @@ import {
 
 // transactions
 
-export const addAccountBookmark = async (signer, address, name, note) => {
+export const addAccountBookmark = async (signer, address, note) => {
   const signers = [signer]
-  const params = [address, name, note]
+  const params = [address, note]
   const txName = "add_bookmark"
   return await sendTransaction({ name: txName, signers: signers, args: params})
 }
 
-export const editAccountBookmark = async (signer, address, name, note) => {
+export const editAccountBookmark = async (signer, address, note) => {
   const signers = [signer]
-  const params = [address, name, note]
+  const params = [address, note]
   const txName = "edit_bookmark"
   return await sendTransaction({ name: txName, signers: signers, args: params})
 }

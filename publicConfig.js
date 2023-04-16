@@ -34,6 +34,9 @@ if (!fungibleTokenSwitchboardAddress) throw "Missing NEXT_PUBLIC_FUNGIBLE_TOKEN_
 const flowboxAddress = process.env.NEXT_PUBLIC_FLOWBOX_ADDRESS
 if (!flowboxAddress) throw "Missing NEXT_PUBLIC_FLOWBOX_ADDRESS"
 
+const accountBookmarkAddress = process.env.NEXT_PUBLIC_ACCOUNTBOOKMARK_ADDRESS
+if (!accountBookmarkAddress) throw "Missing NEXT_PUBLIC_ACCOUNTBOOKMARK_ADDRESS"
+
 const flownsURL = process.env.NEXT_PUBLIC_FLOWNS_URL
 if (!flownsURL) throw "Missing NEXT_PUBLIC_FLOWNS_URL"
 
@@ -65,6 +68,7 @@ const publicConfig = {
   fungibleTokenAddress,
   fungibleTokenSwitchboardAddress,
   flowboxAddress,
+  accountBookmarkAddress,
   flownsURL,
   findURL,
   bayouURL,

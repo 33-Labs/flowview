@@ -5,5 +5,5 @@ pub fun main(owner: Address): &{Address: FlowviewAccountBookmark.AccountBookmark
   let collection = acct.borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
     ?? panic("Could not borrow AccountBookmarkCollection")
 
-  return collection.borrowAccountBookmarks()
+  return collection.getAccountBookmarks()
 }
