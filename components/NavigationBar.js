@@ -22,13 +22,13 @@ export default function NavigationBar() {
   const [user, setUser] = useState({ loggedIn: null })
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
-  useEffect(() => {
-    const shouldDoConnectionJump = localStorage.getItem("shouldDoConnectionJump") || "YES"
-    if ((user && user.loggedIn && shouldDoConnectionJump) == "YES") {
-      localStorage.setItem("shouldDoConnectionJump", "NO")
-      router.push(`/account/${user.addr}`, undefined, { shallow: true })
-    }
-  }, [user])
+  // useEffect(() => {
+  //   const shouldDoConnectionJump = localStorage.getItem("shouldDoConnectionJump") || "YES"
+  //   if ((user && user.loggedIn && shouldDoConnectionJump) == "YES") {
+  //     localStorage.setItem("shouldDoConnectionJump", "NO")
+  //     router.push(`/account/${user.addr}`, undefined, { shallow: true })
+  //   }
+  // }, [user])
 
   useEffect(() => {
     window.addEventListener("message", async (d) => {

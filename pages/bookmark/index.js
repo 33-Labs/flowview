@@ -57,7 +57,16 @@ export default function Bookmark() {
     }
   }, [accountBookmarksData])
 
+
   const showAccountBookmarks = () => {
+    if (!(user && user.loggedIn)) {
+      return (
+        <div className="flex mt-10 h-[168px] text-gray-400 text-base justify-center">
+          Connect wallet to view your bookmarks.
+        </div>
+      )
+    }
+
     if (!accountBookmarksData && !accountBookmarksError) {
       return (
         <div className="flex mt-10 h-[168px] justify-center">

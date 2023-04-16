@@ -118,6 +118,13 @@ export default function Layout({ children }) {
                 if (transactionInProgress) {
                   return
                 }
+
+                if (!user || !user.loggedIn) {
+                  setShowBasicNotification(true)
+                  setBasicNotificationContent({ type: "information", title: "Please connect your wallet first", detail: null })
+                  return
+                }
+
                 setAccountBookmark({
                   address: account,
                   note: ""
