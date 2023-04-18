@@ -4,6 +4,9 @@ pub contract FlowviewAccountBookmark {
   pub let AccountBookmarkCollectionPublicPath: PublicPath
   pub let AccountBookmarkCollectionPrivatePath: PrivatePath
 
+  pub event AccountBookmarkAdded(owner: Address, address: Address, note: String)
+  pub event AccountBookmarkRemoved(owner: Address, address: Address)
+
   pub event ContractInitialized()
 
   pub resource interface AccountBookmarkPublic {
@@ -42,10 +45,12 @@ pub contract FlowviewAccountBookmark {
         self.bookmarks[address] == nil: "Account bookmark already exists"
       }
       self.bookmarks[address] <-! create AccountBookmark(address: address, note: note)
+      emit AccountBookmarkAdded(owner: self.owner!.address, address: address, note: note)
     }
 
     pub fun removeAccountBookmark(address: Address) {
       destroy self.bookmarks.remove(key: address)
+      emit AccountBookmarkRemoved(owner: self.owner!.address, address: address)
     }
 
     pub fun borrowPublicAccountBookmark(address: Address): &AccountBookmark{AccountBookmarkPublic}? {
