@@ -230,7 +230,7 @@ export default function NFTDetailView(props) {
             <label className="text-black text-base">{display.description}</label>
           </div>
           {
-            externalURL ?
+            externalURL && externalURL.url ?
               <div className="font-semibold">
                 {`View on `}
                 <a href={externalURL.url}
