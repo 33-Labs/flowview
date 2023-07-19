@@ -22,6 +22,7 @@ export default function NFT(props) {
       }).catch((e) => {
         console.error(e)
         if (typeof e == "object") {
+          console.log(e)
           if (e.errorMessage.includes("NFT does not exist")) {
             setMetadataError("NFT not found")
           } else if (e.errorMessage.includes("Get Collection Failed")) {

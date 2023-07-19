@@ -3,9 +3,6 @@ import { StarIcon as SolidStar } from "@heroicons/react/solid"
 import { useRecoilState } from "recoil"
 import { useSWRConfig } from "swr"
 import {
-  showBasicNotificationState,
-  basicNotificationContentState,
-  currentDefaultDomainsState,
   transactionStatusState,
   showNoteEditorState,
   accountBookmarkState,

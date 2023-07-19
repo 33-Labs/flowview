@@ -1,16 +1,26 @@
-import { ShareIcon } from "@heroicons/react/outline"
+import { GiftIcon, ShareIcon } from "@heroicons/react/outline"
 import Decimal from "decimal.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useRecoilState } from "recoil"
-import { basicNotificationContentState, showBasicNotificationState } from "../../lib/atoms"
 import { getImageSrcFromMetadataViewsFile, getRarityColor } from "../../lib/utils"
+import NFTTransferModal from "./NFTTransferModal"
+import {
+  basicNotificationContentState,
+  showBasicNotificationState,
+  transactionStatusState,
+  transactionInProgressState,
+  showNftTransferState
+} from "../../lib/atoms"
 
 export default function NFTDetailView(props) {
   const router = useRouter()
-  const { collection: collectionPath, token_id: tokenID} = router.query
+  const { collection: collectionPath, token_id: tokenID } = router.query
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
+  const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
+  const [, setTransactionStatus] = useRecoilState(transactionStatusState)
+  const [showNftTransfer, setShowNftTransfer] = useRecoilState(showNftTransferState)
 
   const { metadata } = props
 
@@ -205,14 +215,25 @@ export default function NFTDetailView(props) {
                 <label className="font-semibold text-gray-500">{collectionDisplay.name}</label>
                 : null
             }
-            <div className="w-full flex gap-x-3 justify-between items-center">
+            <div className="w-full flex gap-x-4 justify-between items-center">
               <label className="font-bold text-black text-3xl">{display.name}</label>
-              <ShareIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
-                onClick={async () => {
-                  await navigator.clipboard.writeText(window.location.href)
-                  setShowBasicNotification(true)
-                  setBasicNotificationContent({ type: "information", title: "Link Copied!", detail: null })
-                }} />
+              <div className="flex gap-x-2 justify-between items-center">
+                <GiftIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+                  onClick={async () => {
+                    if (transactionInProgress) {
+                      return
+                    }
+
+                    setShowNftTransfer(true)
+                  }} />
+                <ShareIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(window.location.href)
+                    setShowBasicNotification(true)
+                    setBasicNotificationContent({ type: "information", title: "Link Copied!", detail: null })
+                  }} />
+              </div>
+
             </div>
             <div className="flex gap-x-1">
               {
@@ -249,21 +270,28 @@ export default function NFTDetailView(props) {
   }
 
   return (
-    <div className={`w-full flex flex-col gap-y-1 pb-2 justify-between shrink-0 overflow-hidden`}>
-      {
-        !metadata || Object.keys(metadata).length == 0 ?
-          <div className="w-full flex flex-col mt-10 h-[70px] text-gray-400 text-base justify-center items-center">
-            <label>{`${collectionPath} #${tokenID}`}</label>
-            <label>{`No metadata found`}</label>
-          </div> :
-          <>
-            {getDisplayView(metadata)}
-            {getTraitsView(metadata)}
-            {getEditionsView(metadata)}
-            {getRoyaltiesView(metadata)}
-            {getMediasView(metadata)}
-          </>
-      }
-    </div>
+    <>
+      <div className={`w-full flex flex-col gap-y-1 pb-2 justify-between shrink-0 overflow-hidden`}>
+        {
+          !metadata || Object.keys(metadata).length == 0 ?
+            <div className="w-full flex flex-col mt-10 h-[70px] text-gray-400 text-base justify-center items-center">
+              <label>{`${collectionPath} #${tokenID}`}</label>
+              <label>{`No metadata found`}</label>
+            </div> :
+            <>
+              {getDisplayView(metadata)}
+              {getTraitsView(metadata)}
+              {getEditionsView(metadata)}
+              {getRoyaltiesView(metadata)}
+              {getMediasView(metadata)}
+            </>
+        }
+        <NFTTransferModal
+          tokenId={tokenID}
+          collectionStoragePath={`/storage/${metadata.collectionData.storagePath.identifier}`}
+          collectionPublicPath={`/public/${metadata.collectionData.publicPath.identifier}`}
+        />
+      </div>
+    </>
   )
 }
