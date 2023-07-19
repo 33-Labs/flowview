@@ -91,9 +91,11 @@ export default function NFTTransferModal(props) {
                       const res = await transferNft(recipient, tokenId,
                         collectionStoragePath, collectionPublicPath,
                         setTransactionInProgress, 
-                        setTransactionStatus)
+                        setTransactionStatus
+                      )
                       if (res && res.status === 4) {
-                        router.back()
+                        const {account, collection} = router.query
+                        router.push(`/account/${account}/collection/${collection}`)
                       }
                     }}
                   >

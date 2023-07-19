@@ -22,7 +22,7 @@ export default function NFTDetailView(props) {
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showNftTransfer, setShowNftTransfer] = useRecoilState(showNftTransferState)
 
-  const { metadata } = props
+  const { metadata, user, account } = props
 
   const getMediasView = (metadata) => {
     const medias = metadata.medias
@@ -218,14 +218,17 @@ export default function NFTDetailView(props) {
             <div className="w-full flex gap-x-4 justify-between items-center">
               <label className="font-bold text-black text-3xl">{display.name}</label>
               <div className="flex gap-x-2 justify-between items-center">
-                <GiftIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+                {
+                  user && user.loggedIn && user.addr === account ?
+                  <GiftIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
                   onClick={async () => {
                     if (transactionInProgress) {
                       return
                     }
 
                     setShowNftTransfer(true)
-                  }} />
+                  }} /> : null
+                }
                 <ShareIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
                   onClick={async () => {
                     await navigator.clipboard.writeText(window.location.href)

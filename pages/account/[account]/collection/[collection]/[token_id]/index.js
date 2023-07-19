@@ -7,6 +7,7 @@ import Spinner from "../../../../../../components/common/Spinner"
 import { getNftMetadataViews } from "../../../../../../flow/scripts"
 import { isValidFlowAddress } from "../../../../../../lib/utils"
 import Custom404 from "../../../404"
+import * as fcl from "@onflow/fcl"
 
 export default function NFT(props) {
   const router = useRouter()
@@ -14,6 +15,9 @@ export default function NFT(props) {
 
   const [metadataError, setMetadataError] = useState(null)
   const [metadata, setMetadata] = useState(null)
+
+  const [user, setUser] = useState({ loggedIn: null })
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   useEffect(() => {
     if (account && isValidFlowAddress(account)) {
@@ -63,7 +67,7 @@ export default function NFT(props) {
     } else {
       return (
         <div className="p-1 w-[1076px] h-screen overflow-auto">
-          <NFTDetailView metadata={metadata} />
+          <NFTDetailView metadata={metadata} user={user} account={account} />
         </div>
       )
     }
