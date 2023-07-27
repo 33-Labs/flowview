@@ -52,21 +52,24 @@ export default function NavigationBar() {
           bg-drizzle rounded-full px-3 py-2 leading-5"
           onClick={() => {
             if (user && user.loggedIn) {
-              router.push(`/account/${user.addr}`, undefined, { shallow: true }) 
+              router.push(`/account/${user.addr}`, undefined, { shallow: true })
             }
           }}
         >
           {user && user.addr}
         </button>
 
-        <button
-          type="button"
-          className="shrink-0 bg-drizzle rounded-full p-2"
-          onClick={() => {
-            router.push(`/bookmark`, undefined, { shallow: true })
-          }}>
-          <StarIcon className="h-5 w-5 text-black" />
-        </button>
+        {
+          publicConfig.chainEnv == "emulator" ? null :
+            <button
+              type="button"
+              className="shrink-0 bg-drizzle rounded-full p-2"
+              onClick={() => {
+                router.push(`/bookmark`, undefined, { shallow: true })
+              }}>
+              <StarIcon className="h-5 w-5 text-black" />
+            </button>
+        }
 
         <button
           type="button"
@@ -111,10 +114,10 @@ export default function NavigationBar() {
           </label>
         </Link>
         <label className="hidden sm:block px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
-        {`${publicConfig.chainEnv.toUpperCase()}`}
+          {`${publicConfig.chainEnv.toUpperCase()}`}
         </label>
         <label className="block sm:hidden px-1 text-center font-flow text-drizzle font-medium text-xs border border-1 border-drizzle">
-        {`${publicConfig.chainEnv.toUpperCase().charAt(0)}`}
+          {`${publicConfig.chainEnv.toUpperCase().charAt(0)}`}
         </label>
       </div>
 

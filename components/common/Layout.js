@@ -52,7 +52,7 @@ export default function Layout({ children }) {
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
-  const { data: bookmarkData, error: bookmarkError} = useSWR(
+  const { data: bookmarkData, error: bookmarkError } = useSWR(
     user && user.loggedIn && account && isValidFlowAddress(account) ? ["accountBookmarkFetcher", user.addr, account] : null, accountBookmarkFetcher
   )
 
@@ -94,6 +94,46 @@ export default function Layout({ children }) {
     }
   }, [currentDefaultDomains, account])
 
+  const showStarIcon = (bookmark) => {
+    if (publicConfig.chainEnv == "emulator") {
+      return null
+    }
+    if (!bookmark) {
+      return <StarIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
+        onClick={async () => {
+          if (transactionInProgress) {
+            return
+          }
+
+          if (!user || !user.loggedIn) {
+            setShowBasicNotification(true)
+            setBasicNotificationContent({ type: "information", title: "Please connect your wallet first", detail: null })
+            return
+          }
+
+          setAccountBookmark({
+            address: account,
+            note: ""
+          })
+          setShowNoteEditor(true)
+        }}
+      />
+    }
+
+    return <SolidStar className="text-yellow-400 w-6 h-6"
+      onClick={async () => {
+        if (transactionInProgress) {
+          return
+        }
+        await removeAccountBookmark(account, setTransactionInProgress, setTransactionStatus)
+        if (user && user.loggedIn && account) {
+          mutate(["accountBookmarkFetcher", user.addr, account])
+        }
+      }}
+    />
+
+  }
+
   return (
     <>
       <div className="flex flex-col gap-y-2">
@@ -111,49 +151,17 @@ export default function Layout({ children }) {
                 setShowBasicNotification(true)
                 setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
               }} />
-            {
-              !bookmark ?
-              <StarIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
-              onClick={async () => {
-                if (transactionInProgress) {
-                  return
-                }
-
-                if (!user || !user.loggedIn) {
-                  setShowBasicNotification(true)
-                  setBasicNotificationContent({ type: "information", title: "Please connect your wallet first", detail: null })
-                  return
-                }
-
-                setAccountBookmark({
-                  address: account,
-                  note: ""
-                })
-                setShowNoteEditor(true)
-              }}
-            /> : <SolidStar className="text-yellow-400 w-6 h-6" 
-              onClick={async () => {
-                if (transactionInProgress) {
-                  return
-                }
-                await removeAccountBookmark(account, setTransactionInProgress, setTransactionStatus)
-                if (user && user.loggedIn && account) {
-                  mutate(["accountBookmarkFetcher", user.addr, account])
-                }
-              }}
-            />
-            }
-
+            {showStarIcon(bookmark)}
           </div>
           {
             bookmark ?
-            <div className="flex gap-x-2 items-center">
-              <label className={`font-semibold text-xs px-2 py-1 leading-4 rounded-full text-black bg-drizzle`}>
-                Note
-              </label>
-              <div className="text-gray-600 text-sm">{bookmark.note}</div>
-            </div>
-            : null
+              <div className="flex gap-x-2 items-center">
+                <label className={`font-semibold text-xs px-2 py-1 leading-4 rounded-full text-black bg-drizzle`}>
+                  Note
+                </label>
+                <div className="text-gray-600 text-sm">{bookmark.note}</div>
+              </div>
+              : null
           }
         </div>
 
