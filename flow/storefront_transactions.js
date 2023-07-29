@@ -1,6 +1,30 @@
 import * as fcl from "@onflow/fcl"
 import { txHandler } from "./transactions"
 
+export const setupAccount = async (
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doSetupAccount()
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doSetupAccount = async () => {
+  const code = await (await fetch("/transactions/storefront/setup_account.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
 export const cleanupGhosted = async (
   account,
   listingIds,

@@ -1,4 +1,4 @@
-import NFTStorefrontV2 from 0x4eb8a10cb9f87357
+import NFTStorefrontV2 from 0xNFTStorefrontV2
 
 transaction(account: Address, from: UInt64, to: UInt64) {
     let storefrontRef: &NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}
