@@ -11,7 +11,7 @@ import publicConfig from "../../../../publicConfig"
 import Custom404 from "../404"
 import { getListings } from "../../../../flow/storefront_scripts"
 import ListingGroup from "../../../../components/storefront/ListingGroup"
-import { useRecoilState } from "recoil"
+import { constSelector, useRecoilState } from "recoil"
 import {
   transactionStatusState,
   transactionInProgressState
@@ -81,6 +81,12 @@ export default function Storefront(props) {
   }
 
   const showItems = () => {
+    if (itemsError) {
+      return <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
+        Nothing found
+      </div>
+    }
+
     if (!listingGroups) {
       return (
         <div className="flex mt-10 h-[200px] justify-center">
