@@ -55,6 +55,9 @@ if (!incrementURL) throw "Missing NEXT_PUBLIC_INCREMENT_URL"
 const linkURL = process.env.NEXT_PUBLIC_LINK_URL
 if (!linkURL) throw "Missing NEXT_PUBLIC_LINK_URL"
 
+const nftStorefrontV2Address = process.env.NEXT_PUBLIC_NFTSTOREFRONTV2_ADDRESS
+if (!nftStorefrontV2Address) throw "Missing NEXT_PUBLIC_NFTSTOREFRONTV2_ADDRESS"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -69,6 +72,7 @@ const publicConfig = {
   fungibleTokenSwitchboardAddress,
   flowboxAddress,
   accountBookmarkAddress,
+  nftStorefrontV2Address,
   flownsURL,
   findURL,
   bayouURL,

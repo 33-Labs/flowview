@@ -17,4 +17,5 @@ config({
   "0xFungibleTokenSwitchboard": publicConfig.fungibleTokenSwitchboardAddress,
   "0xFlowbox": publicConfig.flowboxAddress,
   "0xFlowviewAccountBookmark": publicConfig.accountBookmarkAddress,
+  "0xNFTStorefrontV2": publicConfig.nftStorefrontV2Address,
 })
