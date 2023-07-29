@@ -1,6 +1,4 @@
-import { CodeIcon } from "@heroicons/react/outline"
 import * as fcl from "@onflow/fcl"
-import Image from "next/image"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
@@ -11,7 +9,7 @@ import publicConfig from "../../../../publicConfig"
 import Custom404 from "../404"
 import { getListings } from "../../../../flow/storefront_scripts"
 import ListingGroup from "../../../../components/storefront/ListingGroup"
-import { constSelector, useRecoilState } from "recoil"
+import { useRecoilState } from "recoil"
 import {
   transactionStatusState,
   transactionInProgressState
@@ -56,6 +54,9 @@ export default function Storefront(props) {
 
   const [listings, setListings] = useState(null)
   const [listingGroups, setListingGroups] = useState(null)
+  const [purchasedCount, setPurchasedCount] = useState(0)
+  const [ghostedCount, setGhostedCount] = useState(0)
+  const [expiredCount, setExpiredCount] = useState(0)
   const [user, setUser] = useState({ loggedIn: null })
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
@@ -67,6 +68,9 @@ export default function Storefront(props) {
   useEffect(() => {
     if (itemsData) {
       setListings(itemsData)
+      setPurchasedCount(itemsData.invalidItems.filter(item => item.isPurchased).length)
+      setGhostedCount(itemsData.invalidItems.filter(item => item.isGhosted && !item.isPurchased).length)
+      setExpiredCount(itemsData.invalidItems.filter(item => item.isExpired).length)
       const groupedListings = groupListings(itemsData.validItems)
       setListingGroups(groupedListings)
     }
@@ -100,7 +104,7 @@ export default function Storefront(props) {
         {listingGroups.length > 0 ?
           listingGroups.map((listings, index) => {
             return (
-              <ListingGroup key={`listing-groups-${index}`} listings={listings} />
+              <ListingGroup key={`listing-groups-${index}`} listings={listings} user={user} />
             )
           }) :
           <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
@@ -116,7 +120,6 @@ export default function Storefront(props) {
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="flex w-full flex-col gap-y-3 overflow-auto">
-
             <div className="p-x flex gap-x-5 justify-between w-full min-w-[1076px]">
               <div className="p-2 flex flex-col gap-y-2 justify-between w-full">
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
@@ -125,7 +128,7 @@ export default function Storefront(props) {
                 {
                   listings && listings.invalidItems.length > 0 ?
                     <label className="text-sm text-red-400">
-                      {`There are ${listings.invalidItems.length} invalid listings, which are either ghosted, purchased, or expired.`}
+                      {`In addition, there are ${ghostedCount} ghosted, ${purchasedCount} purchased, and ${expiredCount} expired listing(s).`}
                     </label> : null
                 }
               </div>

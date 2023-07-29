@@ -85,7 +85,6 @@ const doCleanupPurchased = async (account, listingIds) => {
   return transactionId
 }
 
-
 export const cleanupExpired = async (
   account,
   fromIndex, toIndex,
@@ -108,6 +107,34 @@ const doCleanupExpired = async (account, fromIndex, toIndex) => {
       arg(account, t.Address),
       arg(fromIndex, t.UInt64),
       arg(toIndex, t.UInt64)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+export const removeItem = async (
+  listingResourceId,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doRemoveItem(listingResourceId)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doRemoveItem = async (listingResourceId) => {
+  const code = await (await fetch("/transactions/storefront/remove_item.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(listingResourceId, t.UInt64)
     ],
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

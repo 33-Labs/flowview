@@ -11,7 +11,7 @@ const getTypeId = (listing) => {
 }
 
 export default function ListingGroup(props) {
-  const { listings } = props
+  const { listings, user } = props
   const firstListing = listings[0]
   const typeId = getTypeId(firstListing)
 
@@ -24,12 +24,11 @@ export default function ListingGroup(props) {
         {
           listings.map((listing, index) => {
             return (
-              <Listing key={`listing-${index}`} listing={listing} typeId={typeId} />
+              <Listing key={`listing-${index}`} listing={listing} typeId={typeId} user={user} />
             )
           })
         }
       </div>
-
     </div>
   )
 }
