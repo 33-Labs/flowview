@@ -1,5 +1,6 @@
 import * as fcl from "@onflow/fcl"
 import { txHandler } from "./transactions"
+import Decimal from "decimal.js"
 
 export const setupAccount = async (
   setTransactionInProgress,
@@ -107,6 +108,43 @@ const doCleanupExpired = async (account, fromIndex, toIndex) => {
       arg(account, t.Address),
       arg(fromIndex, t.UInt64),
       arg(toIndex, t.UInt64)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+export const sellItem = async (
+  contractName, contractAddress,
+  saleItemID, saleItemPrice, days,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doSellItem(contractName, contractAddress, saleItemID, saleItemPrice, days)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doSellItem = async (contractName, contractAddress, saleItemID, saleItemPrice, days) => {
+  let code = await (await fetch("/transactions/storefront/sell_item.cdc")).text()
+  code = code
+    .replaceAll("__NFT_CONTRACT_NAME__", contractName)
+    .replaceAll("__NFT_CONTRACT_ADDRESS__", contractAddress)
+
+  console.log(code)
+
+  let price = new Decimal(saleItemPrice).toFixed(8)
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(saleItemID, t.UInt64),
+      arg(price, t.UFix64),
+      arg(days, t.UInt64)
     ],
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

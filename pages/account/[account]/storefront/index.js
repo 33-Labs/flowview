@@ -134,7 +134,7 @@ export default function Storefront(props) {
               </div>
               <div className="p-x flex gap-x-2 justify-end w-full">
                 {
-                  user && user.loggedIn && user.addr == account && !listings?
+                  user && user.loggedIn && user.addr == account && !listings ?
                     <button
                       className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
                       disabled={transactionInProgress}

@@ -1,4 +1,4 @@
-import { GiftIcon, ShareIcon } from "@heroicons/react/outline"
+import { CurrencyDollarIcon, GiftIcon, ShareIcon } from "@heroicons/react/outline"
 import Decimal from "decimal.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
@@ -10,12 +10,14 @@ import {
   showBasicNotificationState,
   transactionStatusState,
   transactionInProgressState,
-  showNftTransferState
+  showNftTransferState,
+  showCreateListingState
 } from "../../lib/atoms"
 import publicConfig from "../../publicConfig"
 import useSWR from "swr"
 import { useEffect, useState } from "react"
 import { getExistingListings } from "../../flow/storefront_scripts"
+import CreateListingModal from "../storefront/CreateListingModal"
 
 const listingInfoFetcher = async (funcName, address, contractName, contractAddress, tokenId) => {
   const listings = await getExistingListings(address, contractName, contractAddress, tokenId)
@@ -45,6 +47,7 @@ export default function NFTDetailView(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showNftTransfer, setShowNftTransfer] = useRecoilState(showNftTransferState)
+  const [, setShowCreateListing] = useRecoilState(showCreateListingState)
 
   const { metadata, user, account } = props
   const { contractName, contractAddress } = extractContractInfo(metadata)
@@ -228,6 +231,46 @@ export default function NFTDetailView(props) {
     )
   }
 
+  const getListingInfo = (listingInfo) => {
+    if (!listingInfo) return null
+    if (user && user.loggedIn && user.addr == account) {
+      return (
+        <div className="flex gap-x-2 items-center">
+          <div className="w-[32px] h-[32px] relative">
+            <Image src="/flow_logo.png" alt="" fill sizes="16vw" priority={true} />
+          </div>
+          <label className="font-semibold text-black text-3xl">{`${new Decimal(listingInfo.details.salePrice)}`}</label>
+          <button
+            className={`ml-3 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
+            disabled={transactionInProgress}
+            onClick={async () => {
+              console.log("Remove")
+            }}
+          >
+            Remove
+          </button>
+        </div>
+      )
+    }
+    return (
+      <div className="flex gap-x-2 items-center">
+        <div className="w-[32px] h-[32px] relative">
+          <Image src="/flow_logo.png" alt="" fill sizes="16vw" priority={true} />
+        </div>
+        <label className="font-semibold text-black text-3xl">{`${new Decimal(listingInfo.details.salePrice)}`}</label>
+        <button
+          className={`ml-3 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
+          disabled={transactionInProgress}
+          onClick={async () => {
+            console.log("BUY NOW")
+          }}
+        >
+          Buy Now
+        </button>
+      </div>
+    )
+  }
+
   const getDisplayView = (metadata) => {
     const display = metadata.display
     if (!display) return null
@@ -255,6 +298,17 @@ export default function NFTDetailView(props) {
             <div className="w-full flex gap-x-4 justify-between items-center">
               <label className="font-bold text-black text-3xl">{display.name}</label>
               <div className="flex gap-x-2 justify-between items-center">
+                {
+                  user && user.loggedIn && user.addr === account && !listingInfo ?
+                    <CurrencyDollarIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+                      onClick={async () => {
+                        if (transactionInProgress) {
+                          return
+                        }
+
+                        setShowCreateListing(true)
+                      }} /> : null
+                }
                 {
                   user && user.loggedIn && user.addr === account ?
                     <GiftIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
@@ -292,23 +346,7 @@ export default function NFTDetailView(props) {
           </div>
           <div className="flex flex-col gap-y-4">
             {
-              listingInfo ?
-                <div className="flex gap-x-2 items-center">
-                  <div className="w-[32px] h-[32px] relative">
-                    <Image src="/flow_logo.png" alt="" fill sizes="16vw" priority={true} />
-                  </div>
-                  <label className="font-semibold text-black text-3xl">{`${new Decimal(listingInfo.details.salePrice)}`}</label>
-                  <button
-                    className={`ml-3 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
-                    disabled={transactionInProgress}
-                    onClick={async () => {
-                      console.log("BUY NOW")
-                    }}
-                  >
-                    Buy Now
-                  </button>
-                </div>
-                : null
+              getListingInfo(listingInfo)
             }
             {
               externalURL && externalURL.url ?
@@ -351,6 +389,11 @@ export default function NFTDetailView(props) {
           tokenId={tokenID}
           collectionStoragePath={`/storage/${metadata.collectionData.storagePath.identifier}`}
           collectionPublicPath={`/public/${metadata.collectionData.publicPath.identifier}`}
+        />
+        <CreateListingModal
+          tokenId={tokenID}
+          contractName={contractName}
+          contractAddress={contractAddress}
         />
       </div>
     </>

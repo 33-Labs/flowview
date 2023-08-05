@@ -10,6 +10,7 @@ config({
   "app.detail.title": "flowview",
   "app.detail.icon": "https://i.imgur.com/YL8MLEd.png",
 
+  "0xFlowToken": publicConfig.flowTokenAddress,
   "0xNFTCatalog": publicConfig.nftCatalogAddress,
   "0xMetadataViews": publicConfig.metadataViewsAddress,
   "0xNonFungibleToken": publicConfig.nonFungibleTokenAddress,
