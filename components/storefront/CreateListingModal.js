@@ -12,7 +12,7 @@ import { useSWRConfig } from 'swr'
 export default function CreateListingModal(props) {
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  const {account, contractName, contractAddress, tokenId} = props
+  const {account, contractName, contractAddress, collectionStoragePath, collectionPublicPath, tokenId} = props
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
 
@@ -153,10 +153,8 @@ export default function CreateListingModal(props) {
                       }
 
                       setShowCreateListing(false)
-                      console.log("priceInFlow", priceInFlow)
-                      console.log("expiry", expiry)
                       await sellItem(
-                        contractName, contractAddress, tokenId, priceInFlow, expiry,
+                        contractName, contractAddress, collectionStoragePath, collectionPublicPath, tokenId, priceInFlow, expiry,
                         setTransactionInProgress, setTransactionStatus
                       )
                       mutate(["listingInfoFetcher", account, contractName, contractAddress, tokenId])

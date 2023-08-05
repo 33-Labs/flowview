@@ -1,6 +1,7 @@
 import * as fcl from "@onflow/fcl"
 import { txHandler } from "./transactions"
 import Decimal from "decimal.js"
+import publicConfig from "../publicConfig"
 
 export const setupAccount = async (
   setTransactionInProgress,
@@ -118,25 +119,25 @@ const doCleanupExpired = async (account, fromIndex, toIndex) => {
 }
 
 export const sellItem = async (
-  contractName, contractAddress,
+  contractName, contractAddress, collectionStoragePath, collectionPublicPath,
   saleItemID, saleItemPrice, days,
   setTransactionInProgress,
   setTransactionStatus
 ) => {
   const txFunc = async () => {
-    return await doSellItem(contractName, contractAddress, saleItemID, saleItemPrice, days)
+    return await doSellItem(contractName, contractAddress, collectionStoragePath, collectionPublicPath, saleItemID, saleItemPrice, days)
   }
 
   return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
 }
 
-const doSellItem = async (contractName, contractAddress, saleItemID, saleItemPrice, days) => {
+const doSellItem = async (contractName, contractAddress, collectionStoragePath, collectionPublicPath, saleItemID, saleItemPrice, days) => {
   let code = await (await fetch("/transactions/storefront/sell_item.cdc")).text()
   code = code
     .replaceAll("__NFT_CONTRACT_NAME__", contractName)
     .replaceAll("__NFT_CONTRACT_ADDRESS__", contractAddress)
-
-  console.log(code)
+    .replaceAll("__NFT_COLLECTION_STORAGE_PATH__", collectionStoragePath)
+    .replaceAll("__NFT_COLLECTION_PUBLIC_PATH__", collectionPublicPath)
 
   let price = new Decimal(saleItemPrice).toFixed(8)
   const transactionId = fcl.mutate({
@@ -173,6 +174,42 @@ const doRemoveItem = async (listingResourceId) => {
     cadence: code,
     args: (arg, t) => [
       arg(listingResourceId, t.UInt64)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+export const buyItem = async (
+  contractName, contractAddress, collectionStoragePath,
+  listingResourceId, storefrontAddress,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doBuyItem(contractName, contractAddress, collectionStoragePath, listingResourceId, storefrontAddress)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doBuyItem = async (contractName, contractAddress, collectionStoragePath, listingResourceId, storefrontAddress) => {
+  let code = await (await fetch("/transactions/storefront/buy_item.cdc")).text()
+  code = code
+    .replaceAll("__NFT_CONTRACT_NAME__", contractName)
+    .replaceAll("__NFT_CONTRACT_ADDRESS__", contractAddress)
+    .replaceAll("__NFT_COLLECTION_STORAGE_PATH__", collectionStoragePath)
+
+  const commissionRecipient = publicConfig.accountBookmarkAddress
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(listingResourceId, t.UInt64),
+      arg(storefrontAddress, t.Address),
+      arg(commissionRecipient, t.Optional(t.Address)),
     ],
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

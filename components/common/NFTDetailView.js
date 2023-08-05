@@ -19,11 +19,10 @@ import { useSWRConfig } from 'swr'
 import { useEffect, useState } from "react"
 import { getExistingListings } from "../../flow/storefront_scripts"
 import CreateListingModal from "../storefront/CreateListingModal"
-import { removeItem } from "../../flow/storefront_transactions"
+import { buyItem, removeItem } from "../../flow/storefront_transactions"
 
 const listingInfoFetcher = async (funcName, address, contractName, contractAddress, tokenId) => {
   const listings = await getExistingListings(address, contractName, contractAddress, tokenId)
-  console.log("listings", listings)
   const sortedListings = listings.sort((a, b) => {
     return parseInt(b.listingResourceId) - parseInt(a.listingResourceId)
   })
@@ -60,7 +59,6 @@ export default function NFTDetailView(props) {
     publicConfig.chainEnv == "mainnet" && account && isValidFlowAddress(account) && contractName && contractAddress ? ["listingInfoFetcher", account, contractName, contractAddress, tokenID] : null, listingInfoFetcher
   )
 
-  console.log("itemsError", itemsError)
   useEffect(() => {
     if (!itemsData) return
     if (itemsData.length > 0) {
@@ -251,7 +249,6 @@ export default function NFTDetailView(props) {
             disabled={transactionInProgress}
             onClick={async () => {
               if (!listingInfo) return
-              console.log(listingInfo)
               await removeItem(listingInfo.listingResourceId, setTransactionInProgress, setTransactionStatus)
               mutate(["listingInfoFetcher", account, contractName, contractAddress, tokenID])
             }}
@@ -271,13 +268,33 @@ export default function NFTDetailView(props) {
           className={`ml-3 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
           disabled={transactionInProgress}
           onClick={async () => {
-            console.log("BUY NOW")
+            if (!listingInfo) return
+            const collectionStoragePath = getCollectionStoragePath(metadata)
+            const res = await buyItem(
+              contractName, contractAddress, collectionStoragePath,
+              listingInfo.listingResourceId, account, setTransactionInProgress, setTransactionStatus
+            )
+            if (res && res.status === 4) {
+              router.push(`/account/${account}/collection/${collectionPath}`)
+            }
           }}
         >
           Buy Now
         </button>
       </div>
     )
+  }
+
+  const getCollectionStoragePath = (metadata) => {
+    const { domain, identifier }= metadata.collectionData.storagePath
+    const collectionStoragePath = `/${domain}/${identifier}`
+    return collectionStoragePath
+  }
+
+  const getCollectionPublicPath = (metadata) => {
+    const { domain, identifier }= metadata.collectionData.publicPath
+    const path = `/${domain}/${identifier}`
+    return path
   }
 
   const getDisplayView = (metadata) => {
@@ -402,6 +419,8 @@ export default function NFTDetailView(props) {
         <CreateListingModal
           account={account}
           tokenId={tokenID}
+          collectionStoragePath={getCollectionStoragePath(metadata)}
+          collectionPublicPath={getCollectionPublicPath(metadata)}
           contractName={contractName}
           contractAddress={contractAddress}
         />

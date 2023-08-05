@@ -38,12 +38,12 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, days: UInt64) {
 
         // Check if the Provider capability exists or not if `no` then create a new link for the same.
         if !acct.getCapability<&{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(nftCollectionProviderPrivatePath)!.check() {
-            acct.link<&{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(nftCollectionProviderPrivatePath, target: __NFT_CONTRACT_NAME__.CollectionStoragePath)
+            acct.link<&{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(nftCollectionProviderPrivatePath, target: __NFT_COLLECTION_STORAGE_PATH__)
         }
 
         self.nftProvider = acct.getCapability<&{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}>(nftCollectionProviderPrivatePath)!
         let collection = acct
-            .getCapability(__NFT_CONTRACT_NAME__.CollectionPublicPath)
+            .getCapability(__NFT_COLLECTION_PUBLIC_PATH__)
             .borrow<&{NonFungibleToken.CollectionPublic}>()
             ?? panic("Could not borrow a reference to the collection")
         var totalRoyaltyCut = 0.0
@@ -55,8 +55,6 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, days: UInt64) {
             let royalties = (royaltiesRef as! MetadataViews.Royalties).getRoyalties()
             for royalty in royalties {
                 // TODO - Verify the type of the vault and it should exists
-                let r = royalty.receiver.borrow() as? &FlowToken.Vault{FungibleToken.Receiver}
-                assert(r != nil, message: "Missing or mis-typed receiver")
                 self.saleCuts.append(NFTStorefrontV2.SaleCut(receiver: royalty.receiver, amount: royalty.cut * effectiveSaleItemPrice))
                 totalRoyaltyCut = totalRoyaltyCut + royalty.cut * effectiveSaleItemPrice
             }
