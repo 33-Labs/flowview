@@ -15,13 +15,15 @@ import {
 } from "../../lib/atoms"
 import publicConfig from "../../publicConfig"
 import useSWR from "swr"
+import { useSWRConfig } from 'swr'
 import { useEffect, useState } from "react"
 import { getExistingListings } from "../../flow/storefront_scripts"
 import CreateListingModal from "../storefront/CreateListingModal"
+import { removeItem } from "../../flow/storefront_transactions"
 
 const listingInfoFetcher = async (funcName, address, contractName, contractAddress, tokenId) => {
   const listings = await getExistingListings(address, contractName, contractAddress, tokenId)
-  console.log(listings)
+  console.log("listings", listings)
   const sortedListings = listings.sort((a, b) => {
     return parseInt(b.listingResourceId) - parseInt(a.listingResourceId)
   })
@@ -42,6 +44,7 @@ const extractContractInfo = (metadata) => {
 export default function NFTDetailView(props) {
   const router = useRouter()
   const { collection: collectionPath, token_id: tokenID } = router.query
+  const { mutate } = useSWRConfig()
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
@@ -59,8 +62,11 @@ export default function NFTDetailView(props) {
 
   console.log("itemsError", itemsError)
   useEffect(() => {
-    if (itemsData && itemsData.length > 0) {
+    if (!itemsData) return
+    if (itemsData.length > 0) {
       setListingInfo(itemsData[0])
+    } else {
+      setListingInfo(null)
     }
   }, [itemsData])
 
@@ -244,7 +250,10 @@ export default function NFTDetailView(props) {
             className={`ml-3 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
             disabled={transactionInProgress}
             onClick={async () => {
-              console.log("Remove")
+              if (!listingInfo) return
+              console.log(listingInfo)
+              await removeItem(listingInfo.listingResourceId, setTransactionInProgress, setTransactionStatus)
+              mutate(["listingInfoFetcher", account, contractName, contractAddress, tokenID])
             }}
           >
             Remove
@@ -391,6 +400,7 @@ export default function NFTDetailView(props) {
           collectionPublicPath={`/public/${metadata.collectionData.publicPath.identifier}`}
         />
         <CreateListingModal
+          account={account}
           tokenId={tokenID}
           contractName={contractName}
           contractAddress={contractAddress}

@@ -7,10 +7,12 @@ import { transferNft } from '../../flow/nft_transactions'
 import { isValidFlowAddress, isValidPositiveFlowDecimals, isValidPositiveNumber } from '../../lib/utils'
 import { useRouter } from 'next/router'
 import { sellItem } from '../../flow/storefront_transactions';
+import { useSWRConfig } from 'swr'
 
 export default function CreateListingModal(props) {
   const router = useRouter()
-  const {contractName, contractAddress, tokenId} = props
+  const { mutate } = useSWRConfig()
+  const {account, contractName, contractAddress, tokenId} = props
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
 
@@ -146,22 +148,18 @@ export default function CreateListingModal(props) {
                     disabled={transactionInProgress || priceInFlowError || expiryError}
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-drizzle text-base font-medium text-black hover:bg-drizzle-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle sm:col-start-2 sm:text-sm disabled:bg-drizzle-light disabled:text-gray-500"
                     onClick={async () => {
-                      if (!contractName || !contractAddress || !tokenId) {
+                      if (!account || !contractName || !contractAddress || !tokenId) {
                         return
                       }
 
                       setShowCreateListing(false)
                       console.log("priceInFlow", priceInFlow)
                       console.log("expiry", expiry)
-                      const res = await sellItem(
+                      await sellItem(
                         contractName, contractAddress, tokenId, priceInFlow, expiry,
                         setTransactionInProgress, setTransactionStatus
                       )
-                      console.log(res)
-                      // if (res && res.status === 4) {
-                        // const {account, collection} = router.query
-                        // router.push(`/account/${account}/collection/${collection}`)
-                      // }
+                      mutate(["listingInfoFetcher", account, contractName, contractAddress, tokenId])
                     }}
                   >
                     {"Confirm"}
