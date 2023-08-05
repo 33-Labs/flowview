@@ -10,15 +10,16 @@ export default function Sidebar(props) {
   let menuItems = [
     { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },
     { id: "1", label: `Key`, link: { pathname: "/account/[account]/key", query: { account: account } } },
-    { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
-    { id: "3", label: `Staking`, link: { pathname: "/account/[account]/staking", query: { account: account } } },
+    { id: "2", label: `Staking`, link: { pathname: "/account/[account]/staking", query: { account: account } } },
+    { id: "3", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
     { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
-    { id: "5", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
+    { id: "5", label: `Storefront`, link: { pathname: "/account/[account]/storefront", query: { account: account } } },
+    { id: "6", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
     {
-      id: "6", label: "Storage", subItems: [
-        { id: "6-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public", query: { account: account } } },
-        { id: "6-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/storage", query: { account: account } } },
-        { id: "6-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private", query: { account: account } } },
+      id: "7", label: "Storage", subItems: [
+        { id: "7-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public", query: { account: account } } },
+        { id: "7-1", isSubItem: true, label: "Stored Items", smLabel: "Stored", link: { pathname: "/account/[account]/storage", query: { account: account } } },
+        { id: "7-2", isSubItem: true, label: "Private Items", smLabel: "Private", link: { pathname: "/account/[account]/private", query: { account: account } } },
       ]
     }
     // { id: "5", label: `Analyzer`, link: { pathname: "/account/[account]/analyzer", query: { account: account } } },

@@ -13,6 +13,9 @@ if (!walletDiscovery) throw "Missing NEXT_PUBLIC_WALLET_DISCOVERY"
 const flowscanURL = process.env.NEXT_PUBLIC_FLOWSCAN_URL
 if (!flowscanURL) throw "Missing NEXT_PUBLIC_FLOWSCAN_URL"
 
+const flowTokenAddress = process.env.NEXT_PUBLIC_FLOW_TOKEN_ADDRESS
+if (!flowTokenAddress) throw "Missing NEXT_PUBLIC_FLOW_TOKEN_ADDRESS"
+
 const nftCatalogURL = process.env.NEXT_PUBLIC_NFTCATALOG_URL
 if (!nftCatalogURL) throw "Missing NEXT_PUBLIC_NFTCATALOG_URL"
 
@@ -55,6 +58,9 @@ if (!incrementURL) throw "Missing NEXT_PUBLIC_INCREMENT_URL"
 const linkURL = process.env.NEXT_PUBLIC_LINK_URL
 if (!linkURL) throw "Missing NEXT_PUBLIC_LINK_URL"
 
+const nftStorefrontV2Address = process.env.NEXT_PUBLIC_NFTSTOREFRONTV2_ADDRESS
+if (!nftStorefrontV2Address) throw "Missing NEXT_PUBLIC_NFTSTOREFRONTV2_ADDRESS"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -62,6 +68,7 @@ const publicConfig = {
   walletDiscovery,
   flowscanURL,
   nftCatalogURL,
+  flowTokenAddress,
   nftCatalogAddress,
   metadataViewsAddress,
   nonFungibleTokenAddress,
@@ -69,6 +76,7 @@ const publicConfig = {
   fungibleTokenSwitchboardAddress,
   flowboxAddress,
   accountBookmarkAddress,
+  nftStorefrontV2Address,
   flownsURL,
   findURL,
   bayouURL,

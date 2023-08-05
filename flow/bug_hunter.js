@@ -113,7 +113,6 @@ export const getTypeOfStoragePath = async (address, path) => {
 
 export const huntStorage = async (address) => {
   const paths = await getStoragePaths(address)
-  console.log(paths)
   const bugs = []
   for (let i = 0; i < paths.length; i++) {
     const path = paths[i]
@@ -131,7 +130,6 @@ export const huntStorage = async (address) => {
     let bug = bugs[i]
     bugPaths[bug.path] = true
   }
-  console.log("bugPaths:", bugPaths)
 
   const publicPaths = await getPublicPaths(address)
   const bugPublicPaths = {}

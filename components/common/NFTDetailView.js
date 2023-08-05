@@ -1,28 +1,72 @@
-import { GiftIcon, ShareIcon } from "@heroicons/react/outline"
+import { CurrencyDollarIcon, GiftIcon, ShareIcon } from "@heroicons/react/outline"
 import Decimal from "decimal.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useRecoilState } from "recoil"
-import { getImageSrcFromMetadataViewsFile, getRarityColor } from "../../lib/utils"
+import { getImageSrcFromMetadataViewsFile, getRarityColor, getResourceType, isValidFlowAddress } from "../../lib/utils"
 import NFTTransferModal from "./NFTTransferModal"
 import {
   basicNotificationContentState,
   showBasicNotificationState,
   transactionStatusState,
   transactionInProgressState,
-  showNftTransferState
+  showNftTransferState,
+  showCreateListingState
 } from "../../lib/atoms"
+import publicConfig from "../../publicConfig"
+import useSWR from "swr"
+import { useSWRConfig } from 'swr'
+import { useEffect, useState } from "react"
+import { getExistingListings } from "../../flow/storefront_scripts"
+import CreateListingModal from "../storefront/CreateListingModal"
+import { buyItem, removeItem } from "../../flow/storefront_transactions"
+
+const listingInfoFetcher = async (funcName, address, contractName, contractAddress, tokenId) => {
+  const listings = await getExistingListings(address, contractName, contractAddress, tokenId)
+  const sortedListings = listings.sort((a, b) => {
+    return parseInt(b.listingResourceId) - parseInt(a.listingResourceId)
+  })
+  return sortedListings
+}
+
+const extractContractInfo = (metadata) => {
+  if (!metadata) {
+    return { contractName: null, contractAddress: null }
+  }
+
+  let collectionType = getResourceType(metadata.collectionData.providerLinkedType)
+  let contractAddress = `0x${collectionType.split(".")[1]}`
+  let contractName = collectionType.split(".")[2]
+  return { contractName: contractName, contractAddress: contractAddress }
+}
 
 export default function NFTDetailView(props) {
   const router = useRouter()
   const { collection: collectionPath, token_id: tokenID } = router.query
+  const { mutate } = useSWRConfig()
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showNftTransfer, setShowNftTransfer] = useRecoilState(showNftTransferState)
+  const [, setShowCreateListing] = useRecoilState(showCreateListingState)
 
   const { metadata, user, account } = props
+  const { contractName, contractAddress } = extractContractInfo(metadata)
+
+  const [listingInfo, setListingInfo] = useState(null)
+  const { data: itemsData, error: itemsError } = useSWR(
+    publicConfig.chainEnv == "mainnet" && account && isValidFlowAddress(account) && contractName && contractAddress ? ["listingInfoFetcher", account, contractName, contractAddress, tokenID] : null, listingInfoFetcher
+  )
+
+  useEffect(() => {
+    if (!itemsData) return
+    if (itemsData.length > 0) {
+      setListingInfo(itemsData[0])
+    } else {
+      setListingInfo(null)
+    }
+  }, [itemsData])
 
   const getMediasView = (metadata) => {
     const medias = metadata.medias
@@ -191,6 +235,68 @@ export default function NFTDetailView(props) {
     )
   }
 
+  const getListingInfo = (listingInfo) => {
+    if (!listingInfo) return null
+    if (user && user.loggedIn && user.addr == account) {
+      return (
+        <div className="flex gap-x-2 items-center">
+          <div className="w-[32px] h-[32px] relative">
+            <Image src="/flow_logo.png" alt="" fill sizes="16vw" priority={true} />
+          </div>
+          <label className="font-semibold text-black text-3xl">{`${new Decimal(listingInfo.details.salePrice)}`}</label>
+          <button
+            className={`ml-3 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
+            disabled={transactionInProgress}
+            onClick={async () => {
+              if (!listingInfo) return
+              await removeItem(listingInfo.listingResourceId, setTransactionInProgress, setTransactionStatus)
+              mutate(["listingInfoFetcher", account, contractName, contractAddress, tokenID])
+            }}
+          >
+            Remove
+          </button>
+        </div>
+      )
+    }
+    return (
+      <div className="flex gap-x-2 items-center">
+        <div className="w-[32px] h-[32px] relative">
+          <Image src="/flow_logo.png" alt="" fill sizes="16vw" priority={true} />
+        </div>
+        <label className="font-semibold text-black text-3xl">{`${new Decimal(listingInfo.details.salePrice)}`}</label>
+        <button
+          className={`ml-3 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
+          disabled={transactionInProgress}
+          onClick={async () => {
+            if (!listingInfo) return
+            const collectionStoragePath = getCollectionStoragePath(metadata)
+            const res = await buyItem(
+              contractName, contractAddress, collectionStoragePath,
+              listingInfo.listingResourceId, account, setTransactionInProgress, setTransactionStatus
+            )
+            if (res && res.status === 4) {
+              router.push(`/account/${account}/collection/${collectionPath}`)
+            }
+          }}
+        >
+          Buy Now
+        </button>
+      </div>
+    )
+  }
+
+  const getCollectionStoragePath = (metadata) => {
+    const { domain, identifier }= metadata.collectionData.storagePath
+    const collectionStoragePath = `/${domain}/${identifier}`
+    return collectionStoragePath
+  }
+
+  const getCollectionPublicPath = (metadata) => {
+    const { domain, identifier }= metadata.collectionData.publicPath
+    const path = `/${domain}/${identifier}`
+    return path
+  }
+
   const getDisplayView = (metadata) => {
     const display = metadata.display
     if (!display) return null
@@ -219,15 +325,26 @@ export default function NFTDetailView(props) {
               <label className="font-bold text-black text-3xl">{display.name}</label>
               <div className="flex gap-x-2 justify-between items-center">
                 {
-                  user && user.loggedIn && user.addr === account ?
-                  <GiftIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
-                  onClick={async () => {
-                    if (transactionInProgress) {
-                      return
-                    }
+                  user && user.loggedIn && user.addr === account && !listingInfo ?
+                    <CurrencyDollarIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+                      onClick={async () => {
+                        if (transactionInProgress) {
+                          return
+                        }
 
-                    setShowNftTransfer(true)
-                  }} /> : null
+                        setShowCreateListing(true)
+                      }} /> : null
+                }
+                {
+                  user && user.loggedIn && user.addr === account ?
+                    <GiftIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
+                      onClick={async () => {
+                        if (transactionInProgress) {
+                          return
+                        }
+
+                        setShowNftTransfer(true)
+                      }} /> : null
                 }
                 <ShareIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
                   onClick={async () => {
@@ -253,20 +370,25 @@ export default function NFTDetailView(props) {
 
             <label className="text-black text-base">{display.description}</label>
           </div>
-          {
-            externalURL && externalURL.url ?
-              <div className="font-semibold">
-                {`View on `}
-                <a href={externalURL.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline font-bold decoration-drizzle decoration-2"
-                >
-                  {new URL(externalURL.url).hostname}
-                </a>
-              </div>
-              : null
-          }
+          <div className="flex flex-col gap-y-4">
+            {
+              getListingInfo(listingInfo)
+            }
+            {
+              externalURL && externalURL.url ?
+                <div className="font-semibold h-[24px]">
+                  {`View on `}
+                  <a href={externalURL.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-bold decoration-drizzle decoration-2"
+                  >
+                    {new URL(externalURL.url).hostname}
+                  </a>
+                </div>
+                : <div className="h-[24px] invisible">Placeholder</div>
+            }
+          </div>
         </div>
       </div>
     )
@@ -293,6 +415,14 @@ export default function NFTDetailView(props) {
           tokenId={tokenID}
           collectionStoragePath={`/storage/${metadata.collectionData.storagePath.identifier}`}
           collectionPublicPath={`/public/${metadata.collectionData.publicPath.identifier}`}
+        />
+        <CreateListingModal
+          account={account}
+          tokenId={tokenID}
+          collectionStoragePath={getCollectionStoragePath(metadata)}
+          collectionPublicPath={getCollectionPublicPath(metadata)}
+          contractName={contractName}
+          contractAddress={contractAddress}
         />
       </div>
     </>

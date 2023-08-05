@@ -10,6 +10,7 @@ config({
   "app.detail.title": "flowview",
   "app.detail.icon": "https://i.imgur.com/YL8MLEd.png",
 
+  "0xFlowToken": publicConfig.flowTokenAddress,
   "0xNFTCatalog": publicConfig.nftCatalogAddress,
   "0xMetadataViews": publicConfig.metadataViewsAddress,
   "0xNonFungibleToken": publicConfig.nonFungibleTokenAddress,
@@ -17,4 +18,5 @@ config({
   "0xFungibleTokenSwitchboard": publicConfig.fungibleTokenSwitchboardAddress,
   "0xFlowbox": publicConfig.flowboxAddress,
   "0xFlowviewAccountBookmark": publicConfig.accountBookmarkAddress,
+  "0xNFTStorefrontV2": publicConfig.nftStorefrontV2Address,
 })
