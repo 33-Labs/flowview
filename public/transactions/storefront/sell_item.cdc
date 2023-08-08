@@ -23,7 +23,7 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, days: UInt64) {
             acct.link<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(NFTStorefrontV2.StorefrontPublicPath, target: NFTStorefrontV2.StorefrontStoragePath)
         }
 
-        self.customID = nil
+        self.customID = "Flowview"
         self.commissionAmount = 0.0
         self.marketplacesAddress = []
         self.saleCuts = []
