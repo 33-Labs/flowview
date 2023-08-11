@@ -1,26 +1,28 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { useRecoilState } from "recoil"
-import { showSetupOwnedAccountState, transactionStatusState, transactionInProgressState } from '../../lib/atoms'
+import { showPublishToParentState, transactionStatusState, transactionInProgressState } from '../../lib/atoms'
 import * as fcl from "@onflow/fcl";
 import { isValidFlowAddress, isValidPositiveFlowDecimals, isValidPositiveNumber, isValidUrl } from '../../lib/utils'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
-import { setupOwnedAccount, setupOwnedAccountAndPublishToParent } from '../../flow/hc_transactions';
+import { publishToParent, setupOwnedAccount, setupOwnedAccountAndPublishToParent } from '../../flow/hc_transactions';
 
-export default function SetupOwnedAccountModal(props) {
+export default function PublishToParentModal(props) {
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  const { account } = props
+  const {account} = props
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
 
-  const [showSetupOwnedAccount, setShowSetupOwnedAccount] = useRecoilState(showSetupOwnedAccountState)
-  const [name, setName] = useState("")
-  const [desc, setDesc] = useState("")
-  const thumbnailPlaceholder = "https://assets-global.website-files.com/5f734f4dbd95382f4fdfa0ea/6395e6749db8fe00a41cc279_flow-flow-logo.svg"
-  const [thumbnail, setThumbnail] = useState(thumbnailPlaceholder)
-  const [thumbnailError, setThumbnailError] = useState(null)
+  const [showPublishToParent, setShowPublishToParent] = useRecoilState(showPublishToParentState)
+
+  const [parent, setParent] = useState("")
+  const [parentError, setParentError] = useState(null)
+  const [factory, setFactory] = useState("")
+  const [factoryError, setFactoryError] = useState(null)
+  const [filter, setFilter] = useState("")
+  const [filterError, setFilterError] = useState(null)
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
   const [user, setUser] = useState({ loggedIn: null })
@@ -28,8 +30,8 @@ export default function SetupOwnedAccountModal(props) {
   const cancelButtonRef = useRef(null)
 
   return (
-    <Transition.Root show={showSetupOwnedAccount} as={Fragment}>
-      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setShowSetupOwnedAccount}>
+    <Transition.Root show={showPublishToParent} as={Fragment}>
+      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setShowPublishToParent}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -61,76 +63,108 @@ export default function SetupOwnedAccountModal(props) {
                     </Dialog.Title>
                     <div className='flex flex-col gap-y-4'>
                       <div>
-                        <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">
-                          Name
+                        <label htmlFor="parent" className="block text-sm font-medium leading-6 text-gray-900">
+                          Parent Address
                         </label>
                         <div className="mt-1 relative rounded-md shadow-sm">
                           <input
                             type="text"
-                            name="name"
-                            id="name"
+                            name="parent"
+                            id="parent"
                             className={`bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
                             focus:border-drizzle-dark
                           outline-0 focus:outline-2 focus:outline-drizzle-dark 
                           placeholder:text-gray-300`}
-                            placeholder="Owned Account 1"
+                            placeholder="0x"
+                            aria-describedby="price-currency"
                             onChange={(e) => {
-                              setName(e.target.value)
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">
-                          Description
-                        </label>
-                        <div className="mt-1 relative rounded-md shadow-sm">
-                          <input
-                            type="text"
-                            name="desc"
-                            id="desc"
-                            className={`bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
-                            focus:border-drizzle-dark
-                          outline-0 focus:outline-2 focus:outline-drizzle-dark 
-                          placeholder:text-gray-300`}
-                            placeholder="This is my owned account"
-                            onChange={(e) => {
-                              setDesc(e.target.value)
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label htmlFor="price" className="block text-sm font-medium leading-6 text-gray-900">
-                          Thumbnail
-                        </label>
-                        <div className="mt-1 relative rounded-md shadow-sm">
-                          <input
-                            type="text"
-                            name="thumbnail"
-                            id="thumbnail"
-                            className={`bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
-                            focus:border-drizzle-dark
-                          outline-0 focus:outline-2 focus:outline-drizzle-dark 
-                          placeholder:text-gray-300`}
-                            placeholder={thumbnailPlaceholder}
-                            onChange={(e) => {
-                              setThumbnailError(null)
+                              setParentError(null)
+                              setParent("")
                               if (e.target.value === "") {
                                 return
                               }
 
-                              if (!isValidUrl(e.target.value)) {
-                                setThumbnailError("Invalid URL")
+                              if (!isValidFlowAddress(e.target.value)) {
+                                setParentError("Invalid address")
                                 return
                               }
-                              setThumbnail(e.target.value)
+                              setParent(e.target.value)
                             }}
                           />
                         </div>
                         {
-                          thumbnailError ?
-                            <label className='text-base text-red-600 mt-1'>{thumbnailError}</label> : null
+                          parentError ?
+                            <label className='text-base text-red-600 mt-1'>{parentError}</label> : null
+                        }
+                      </div>
+                      <div>
+                        <label htmlFor="factory" className="block text-sm font-medium leading-6 text-gray-900">
+                          Factory Address
+                        </label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <input
+                            type="text"
+                            name="factory"
+                            id="factory"
+                            className={`bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
+                            focus:border-drizzle-dark
+                          outline-0 focus:outline-2 focus:outline-drizzle-dark 
+                          placeholder:text-gray-300`}
+                            placeholder="0x"
+                            aria-describedby="price-currency"
+                            onChange={(e) => {
+                              setFactoryError(null)
+                              setFactory("")
+                              if (e.target.value === "") {
+                                return
+                              }
+
+                              if (!isValidFlowAddress(e.target.value)) {
+                                setFactoryError("Invalid address")
+                                return
+                              }
+                              setFactory(e.target.value)
+                            }}
+                          />
+                        </div>
+                        {
+                          factoryError ?
+                            <label className='text-base text-red-600 mt-1'>{factoryError}</label> : null
+                        }
+                      </div>
+                      <div>
+                        <label htmlFor="filter" className="block text-sm font-medium leading-6 text-gray-900">
+                          Filter Address
+                        </label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <input
+                            type="text"
+                            name="filter"
+                            id="filter"
+                            className={`bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
+                            focus:border-drizzle-dark
+                          outline-0 focus:outline-2 focus:outline-drizzle-dark 
+                          placeholder:text-gray-300`}
+                            placeholder="0x"
+                            aria-describedby="price-currency"
+                            onChange={(e) => {
+                              setFilterError(null)
+                              setFilter("")
+                              if (e.target.value === "") {
+                                return
+                              }
+
+                              if (!isValidFlowAddress(e.target.value)) {
+                                setFilterError("Invalid address")
+                                return
+                              }
+                              setFilter(e.target.value)
+                            }}
+                          />
+                        </div>
+                        {
+                          filterError ?
+                            <label className='text-base text-red-600 mt-1'>{filterError}</label> : null
                         }
                       </div>
                     </div>
@@ -139,15 +173,15 @@ export default function SetupOwnedAccountModal(props) {
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                   <button
                     type="button"
-                    disabled={transactionInProgress || thumbnailError}
+                    disabled={transactionInProgress || parentError || filterError || factoryError || !parent || !filter || !factory}
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-drizzle text-base font-medium text-black hover:bg-drizzle-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle sm:col-start-2 sm:text-sm disabled:bg-drizzle-light disabled:text-gray-500"
                     onClick={async () => {
-                      if (!name || !parent || !desc || !thumbnail) {
+                      if (!parent || !factory || !filter) {
                         return
                       }
 
-                      setShowSetupOwnedAccount(false)
-                      await setupOwnedAccount(name, desc, thumbnail, setTransactionInProgress, setTransactionStatus)
+                      setShowPublishToParent(false)
+                      await publishToParent(parent, factory, filter, setTransactionInProgress, setTransactionStatus)
                       mutate(["ownedAccountInfoFetcher", account])
                     }}
                   >
@@ -156,7 +190,7 @@ export default function SetupOwnedAccountModal(props) {
                   <button
                     type="button"
                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle sm:mt-0 sm:col-start-1 sm:text-sm"
-                    onClick={() => setShowSetupOwnedAccount(false)}
+                    onClick={() => setShowPublishToParent(false)}
                     ref={cancelButtonRef}
                   >
                     Cancel

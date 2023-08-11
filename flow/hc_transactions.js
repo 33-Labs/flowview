@@ -61,3 +61,33 @@ const doSetupOwnedAccount = async (name, desc, thumbnail) => {
 
   return transactionId
 }
+
+export const publishToParent = async (
+  parent, factory, filter,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doPublishToParent(parent, factory, filter)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doPublishToParent = async (parent, factory, filter) => {
+  const code = await (await fetch("/transactions/linked_accounts/publish_to_parent.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(parent, t.Address),
+      arg(factory, t.Address),
+      arg(filter, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}

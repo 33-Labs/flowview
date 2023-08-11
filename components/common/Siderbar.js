@@ -15,10 +15,9 @@ export default function Sidebar(props) {
     { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
     { id: "5", label: `Storefront`, link: { pathname: "/account/[account]/storefront", query: { account: account } } },
     { id: "6", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
-    { id: "7", label: `Linked Accts`, subItems: [
-        { id: "7-0", isSubItem: true, label: "Parents", smLabel: "Parents", link: { pathname: "/account/[account]/parent", query: { account: account } } },
-        { id: "7-1", isSubItem: true, label: "Child Accts", smLabel: "ChildAccts", link: { pathname: "/account/[account]/child_account", query: { account: account } } },
-        { id: "7-2", isSubItem: true, label: "Owned Accts", smLabel: "OwnedAccts", link: { pathname: "/account/[account]/owned_account", query: { account: account } } },
+    { id: "7", label: `Acct Linking`, subItems: [
+        { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_acct", query: { account: account } } },
+        { id: "7-1", isSubItem: true, label: "Manager", smLabel: "Manager", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
       ]
     },
     {

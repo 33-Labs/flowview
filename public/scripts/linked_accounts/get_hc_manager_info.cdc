@@ -22,8 +22,8 @@ pub struct OwnedAccountInfo {
 
 pub fun main(child: Address): OwnedAccountInfo {
     let acct = getAuthAccount(child)
-    let o = acct.borrow<&HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
-    if let owned = o {
+    let m = acct.borrow<&HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
+    if let manager = m {
       let viewType = Type<MetadataViews.Display>()
       let display = owned.resolveView(viewType) as! MetadataViews.Display?
       return OwnedAccountInfo(

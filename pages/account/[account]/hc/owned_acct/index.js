@@ -2,24 +2,28 @@ import * as fcl from "@onflow/fcl"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
-import ItemsView from "../../../../components/common/ItemsView"
-import Layout from "../../../../components/common/Layout"
-import Spinner from "../../../../components/common/Spinner"
-import { isValidFlowAddress } from "../../../../lib/utils"
-import Custom404 from "../404"
-import { getParentAddresses } from "../../../../flow/hc_scripts"
+import ItemsView from "../../../../../components/common/ItemsView"
+import Layout from "../../../../../components/common/Layout"
+import Spinner from "../../../../../components/common/Spinner"
+import { isValidFlowAddress } from "../../../../../lib/utils"
+import Custom404 from "../../404"
+import { getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
 import { useRecoilState } from "recoil"
-import { showSetupOwnedAccountState, transactionInProgressState, transactionStatusState } from "../../../../lib/atoms"
-import SetupOwnedAccountModal from "../../../../components/hybrid_custody/SetupOwnedAccountModal"
+import { showPublishToParentState, showSetupOwnedAccountState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
+import SetupOwnedAccountModal from "../../../../../components/hybrid_custody/SetupOwnedAccountModal"
+import PublishToParentModal from "../../../../../components/hybrid_custody/PublishToParentModal"
+import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
+import ParentView from "../../../../../components/hybrid_custody/ParentView"
 
-const parentsFetcher = async (funcName, address) => {
-  return getParentAddresses(address)
+const ownedAccountInfoFetcher = async (funcName, address) => {
+  return getOwnedAccountInfo(address)
 }
 
 export default function Parents(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showSetupOwnedAccount, setShowSetupOwnedAccount] = useRecoilState(showSetupOwnedAccountState)
+  const [showPublishToParent, setShowPublishToParent] = useRecoilState(showPublishToParentState)
 
   const router = useRouter()
   const { account } = router.query
@@ -30,7 +34,7 @@ export default function Parents(props) {
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: itemsData, error: itemsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["parentsFetcher", account] : null, parentsFetcher
+    account && isValidFlowAddress(account) ? ["ownedAccountInfoFetcher", account] : null, ownedAccountInfoFetcher
   )
 
   useEffect(() => {
@@ -59,10 +63,10 @@ export default function Parents(props) {
 
     return (
       <>
-        {ownedAccountInfo && ownedAccountInfo.parentAddresses.length > 0 ?
-          ownedAccountInfo.parentAddresses.map((item, index) => {
+        {ownedAccountInfo && ownedAccountInfo.parents.length > 0 ?
+          ownedAccountInfo.parents.map((item, index) => {
             return (
-              <ItemsView key={`parents-${index}`} item={item} account={account} user={user} />
+              <ParentView key={`parents-${index}`} parent={item} account={account} user={user} />
             )
           }) :
           <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
@@ -79,7 +83,7 @@ export default function Parents(props) {
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between w-full">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Parents ${ownedAccountInfo ? `(${ownedAccountInfo.parentAddresses.length})` : ""}`}
+              {`Parents ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}
             </h1>
             <div className="flex gap-x-2 justify-end">
             {
@@ -88,11 +92,7 @@ export default function Parents(props) {
                   className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
                   disabled={transactionInProgress}
                   onClick={async () => {
-                    console.log("SetupOwnedAccount")
                     setShowSetupOwnedAccount(true)
-                    // TODO: Modal a form
-                    // await setupSwitchboard(setTransactionInProgress, setTransactionStatus)
-                    // mutate(["switchboardFetcher", account])
                   }}
                 >
                   Setup Owned Acct
@@ -105,13 +105,10 @@ export default function Parents(props) {
                   className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
                   disabled={transactionInProgress}
                   onClick={async () => {
-                    console.log("SetupOwnedAccount")
-                    // TODO: Modal a form
-                    // await setupSwitchboard(setTransactionInProgress, setTransactionStatus)
-                    // mutate(["switchboardFetcher", account])
+                    setShowPublishToParent(true)
                   }}
                 >
-                  Publish Ownership
+                  Publish To Parent
                 </button>
                 : null
             }
@@ -127,6 +124,7 @@ export default function Parents(props) {
         </div>
       </Layout>
       <SetupOwnedAccountModal />
+      <PublishToParentModal />
     </div>
   )
 }
