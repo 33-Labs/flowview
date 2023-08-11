@@ -14,7 +14,7 @@ export const setupOwnedAccountAndPublishToParent = async (
 }
 
 const doSetupOwnedAccountAndPublishToParent = async (parent, name, desc, thumbnail) => {
-  const code = await (await fetch("/transactions/linked_accounts/setup_owned_account_and_publish_to_parent.cdc")).text()
+  const code = await (await fetch("/transactions/hc/setup_owned_account_and_publish_to_parent.cdc")).text()
 
   const transactionId = fcl.mutate({
     cadence: code,
@@ -45,7 +45,7 @@ export const setupOwnedAccount = async (
 }
 
 const doSetupOwnedAccount = async (name, desc, thumbnail) => {
-  const code = await (await fetch("/transactions/linked_accounts/setup_owned_account.cdc")).text()
+  const code = await (await fetch("/transactions/hc/setup_owned_account.cdc")).text()
 
   const transactionId = fcl.mutate({
     cadence: code,
@@ -75,7 +75,7 @@ export const publishToParent = async (
 }
 
 const doPublishToParent = async (parent, factory, filter) => {
-  const code = await (await fetch("/transactions/linked_accounts/publish_to_parent.cdc")).text()
+  const code = await (await fetch("/transactions/hc/publish_to_parent.cdc")).text()
 
   const transactionId = fcl.mutate({
     cadence: code,
@@ -83,6 +83,34 @@ const doPublishToParent = async (parent, factory, filter) => {
       arg(parent, t.Address),
       arg(factory, t.Address),
       arg(filter, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+export const removeParentFromChild = async (
+  parent,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doRemoveParentFromChild(parent)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doRemoveParentFromChild = async (parent) => {
+  const code = await (await fetch("/transactions/hc/remove_parent_from_child.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(parent, t.Address)
     ],
     proposer: fcl.currentUser,
     payer: fcl.currentUser,
