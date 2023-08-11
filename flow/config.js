@@ -19,4 +19,9 @@ config({
   "0xFlowbox": publicConfig.flowboxAddress,
   "0xFlowviewAccountBookmark": publicConfig.accountBookmarkAddress,
   "0xNFTStorefrontV2": publicConfig.nftStorefrontV2Address,
+
+  "0xHybridCustody": publicConfig.hybridCustodyAddress,
+  "0xCapabilityFactory": publicConfig.hybridCustodyAddress,
+  "0xCapabilityFilter": publicConfig.hybridCustodyAddress,
+  "0xCapabilityDelegator": publicConfig.hybridCustodyAddress
 })
