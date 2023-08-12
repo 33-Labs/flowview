@@ -89,7 +89,7 @@ export default function Sidebar(props) {
     <div
       className="flex flex-col p-3 rounded-xl"
     >
-      <div className="flex flex-col gap-y-4 items-start">
+      <div className="flex flex-col gap-y-3 items-start">
         {menuItems.map(({ label: label, ...menu }, index) => {
           const classes = getNavItemClasses(menu)
           return (

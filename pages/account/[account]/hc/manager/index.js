@@ -19,7 +19,7 @@ const ownedAccountInfoFetcher = async (funcName, address) => {
   return getOwnedAccountInfo(address)
 }
 
-export default function HybridCustodyOwnedAcct(props) {
+export default function HybridCustodyManager(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showSetupOwnedAccount, setShowSetupOwnedAccount] = useRecoilState(showSetupOwnedAccountState)
@@ -83,7 +83,7 @@ export default function HybridCustodyOwnedAcct(props) {
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between w-full">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Parents ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}
+              {`Children ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}
             </h1>
             <div className="flex gap-x-2 justify-end">
             {
@@ -95,7 +95,7 @@ export default function HybridCustodyOwnedAcct(props) {
                     setShowSetupOwnedAccount(true)
                   }}
                 >
-                  Setup Owned Acct
+                  Setup Manager
                 </button>
                 : null
             }

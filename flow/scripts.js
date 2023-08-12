@@ -212,12 +212,16 @@ export const bulkGetStoredItems = async (address) => {
 
 export const getStoredItems = async (address, paths) => {
   const code = await (await fetch("/scripts/storage/get_stored_items.cdc")).text()
+  const filteredPaths = paths.filter((item) => 
+    item !== "BnGNFTCollection" && item !== "RacingTimeCollection" && item !== "FuseCollectiveCollection" && item !== "ARTIFACTV2Collection"
+  )
+  console.log(filteredPaths)
 
   const items = await fcl.query({
     cadence: code,
     args: (arg, t) => [
       arg(address, t.Address),
-      arg(paths, t.Array(t.String))
+      arg(filteredPaths, t.Array(t.String))
     ]
   }) 
 
