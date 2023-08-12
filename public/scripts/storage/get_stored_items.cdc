@@ -64,6 +64,7 @@ pub fun main(address: Address, pathIdentifiers: [String]): [Item] {
           if tokenIDs.length > 0 
           && path != /storage/RaribleNFTCollection 
           && path != /storage/ARTIFACTPackV3Collection
+          && path != /storage/ARTIFACTV2Collection
           && path != /storage/ArleeScene {
             let resolver = collectionRef.borrowViewResolver(id: tokenIDs[0]) 
             if let display = MetadataViews.getNFTCollectionDisplay(resolver) {

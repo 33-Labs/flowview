@@ -1,5 +1,14 @@
 import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
+import { outdatedPathsMainnet } from "./outdated_paths/mainnet"
+import { outdatedPathsTestnet } from "./outdated_paths/testnet"
+
+const outdatedPaths = (network) => {
+  if (network == "mainnet") {
+    return outdatedPathsMainnet
+  }
+  return outdatedPathsTestnet
+}
 
 // --- Utils ---
 
@@ -226,6 +235,7 @@ export const getStoredItems = async (address, paths) => {
 
 const getStoragePaths = async (address) => {
   let code = await (await fetch("/scripts/storage/get_storage_paths.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).storage)
 
   const paths = await fcl.query({
     cadence: code,
@@ -330,6 +340,7 @@ export const getPublicItem = async (address, paths) => {
 
 export const getBasicPublicItems = async (address) => {
   let code = await (await fetch("/scripts/storage/get_basic_public_items.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).public)
 
   const items = await fcl.query({
     cadence: code,
@@ -343,6 +354,7 @@ export const getBasicPublicItems = async (address) => {
 
 export const getPublicPaths = async (address) => {
   let code = await (await fetch("/scripts/storage/get_public_paths.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).public)
 
   const paths = await fcl.query({
     cadence: code,
@@ -392,6 +404,7 @@ export const getPrivateItems = async (address, paths) => {
 
 export const getPrivatePaths = async (address) => {
   let code = await (await fetch("/scripts/storage/get_private_paths.cdc")).text()
+  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).private)
 
   const paths = await fcl.query({
     cadence: code,

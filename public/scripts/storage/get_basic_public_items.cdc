@@ -14,7 +14,12 @@ pub fun main(address: Address): [Item] {
   let account = getAuthAccount(address)
   let items: [Item] = []
 
+  __OUTDATED_PATHS__
   for path in account.publicPaths {
+    if (outdatedPaths.containsKey(path)) {
+      continue
+    }
+
     var targetPath: String? = nil
     if let target = account.getLinkTarget(path) {
       targetPath = target.toString()
