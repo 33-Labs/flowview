@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import publicConfig from "../../publicConfig";
 import { useRecoilState } from "recoil";
 import { showSetupDisplayState, transactionInProgressState, transactionStatusState } from "../../lib/atoms";
-import { removeChildFromChild, setupChildAccountDisplay } from "../../flow/hc_transactions";
+import { removeChildAccount, removeChildFromChild, setupChildAccountDisplay } from "../../flow/hc_transactions";
 import { useSWRConfig } from "swr";
 
 export default function ChildView(props) {
@@ -52,7 +52,7 @@ export default function ChildView(props) {
               disabled={transactionInProgress}
               className={`text-white disabled:bg-red-400 disabled:text-white bg-red-600 hover:bg-red-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
               onClick={async () => {
-                // TODO: REMOVE CHILD
+                await removeChildAccount(child.address, setTransactionInProgress, setTransactionStatus)
                 mutate(["hcManagerInfoFetcher", account])
               }}
             >

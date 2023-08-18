@@ -207,3 +207,31 @@ const doSetupChildAccountDisplay = async (childAddress, name, desc, thumbnail) =
 
   return transactionId
 }
+
+export const removeChildAccount = async (
+  childAddress,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doRemoveChildAccount(childAddress)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doRemoveChildAccount = async (childAddress) => {
+  const code = await (await fetch("/transactions/hc/remove_child_account.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(childAddress, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
