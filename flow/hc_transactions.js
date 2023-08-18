@@ -7,13 +7,13 @@ export const setupOwnedAccountAndPublishToParent = async (
   setTransactionStatus
 ) => {
   const txFunc = async () => {
-    return await doSetupOwnedAccountAndPublishToParent(parent, name, desc, thumbnail)
+    return await doSetupDisplayAndPublishToParent(parent, name, desc, thumbnail)
   }
 
   return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
 }
 
-const doSetupOwnedAccountAndPublishToParent = async (parent, name, desc, thumbnail) => {
+const doSetupDisplayAndPublishToParent = async (parent, name, desc, thumbnail) => {
   const code = await (await fetch("/transactions/hc/setup_owned_account_and_publish_to_parent.cdc")).text()
 
   const transactionId = fcl.mutate({
@@ -168,6 +168,37 @@ const doRedeemAccount = async (childAddress) => {
     cadence: code,
     args: (arg, t) => [
       arg(childAddress, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+export const setupChildAccountDisplay = async (
+  childAddress, name, desc, thumbnail,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doSetupChildAccountDisplay(childAddress, name, desc, thumbnail)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doSetupChildAccountDisplay = async (childAddress, name, desc, thumbnail) => {
+  const code = await (await fetch("/transactions/hc/setup_child_display.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(childAddress, t.Address),
+      arg(name, t.Optional(t.String)),
+      arg(desc, t.Optional(t.String)),
+      arg(thumbnail, t.Optional(t.String))
     ],
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

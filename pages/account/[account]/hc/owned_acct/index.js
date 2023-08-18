@@ -9,8 +9,8 @@ import { isValidFlowAddress } from "../../../../../lib/utils"
 import Custom404 from "../../404"
 import { getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
 import { useRecoilState } from "recoil"
-import { showPublishToParentState, showSetupOwnedAccountState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
-import SetupOwnedAccountModal from "../../../../../components/hybrid_custody/SetupOwnedAccountModal"
+import { showPublishToParentState, showSetupDisplayState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
+import SetupDisplayModal from "../../../../../components/hybrid_custody/SetupDisplayModal"
 import PublishToParentModal from "../../../../../components/hybrid_custody/PublishToParentModal"
 import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
 import ParentView from "../../../../../components/hybrid_custody/ParentView"
@@ -22,7 +22,7 @@ const ownedAccountInfoFetcher = async (funcName, address) => {
 export default function HybridCustodyOwnedAcct(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
-  const [showSetupOwnedAccount, setShowSetupOwnedAccount] = useRecoilState(showSetupOwnedAccountState)
+  const [showSetupDisplay, setShowSetupDisplay] = useRecoilState(showSetupDisplayState)
   const [showPublishToParent, setShowPublishToParent] = useRecoilState(showPublishToParentState)
 
   const router = useRouter()
@@ -92,7 +92,7 @@ export default function HybridCustodyOwnedAcct(props) {
                   className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
                   disabled={transactionInProgress}
                   onClick={async () => {
-                    setShowSetupOwnedAccount(true)
+                    setShowSetupDisplay({show: true, mode: "OwnedAccount"})
                   }}
                 >
                   Setup Owned Acct
@@ -123,7 +123,7 @@ export default function HybridCustodyOwnedAcct(props) {
           </div>
         </div>
       </Layout>
-      <SetupOwnedAccountModal />
+      <SetupDisplayModal />
       <PublishToParentModal />
     </div>
   )

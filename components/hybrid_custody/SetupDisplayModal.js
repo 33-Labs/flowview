@@ -1,21 +1,21 @@
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { useRecoilState } from "recoil"
-import { showSetupOwnedAccountState, transactionStatusState, transactionInProgressState } from '../../lib/atoms'
+import { showSetupDisplayState, transactionStatusState, transactionInProgressState } from '../../lib/atoms'
 import * as fcl from "@onflow/fcl";
 import { isValidFlowAddress, isValidPositiveFlowDecimals, isValidPositiveNumber, isValidUrl } from '../../lib/utils'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
-import { setupOwnedAccount, setupOwnedAccountAndPublishToParent } from '../../flow/hc_transactions';
+import { setupChildAccountDisplay, setupOwnedAccount, setupOwnedAccountAndPublishToParent } from '../../flow/hc_transactions';
 
-export default function SetupOwnedAccountModal(props) {
+export default function SetupDisplayModal(props) {
   const router = useRouter()
   const { mutate } = useSWRConfig()
   const { account } = props
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
 
-  const [showSetupOwnedAccount, setShowSetupOwnedAccount] = useRecoilState(showSetupOwnedAccountState)
+  const [showSetupDisplay, setShowSetupDisplay] = useRecoilState(showSetupDisplayState)
   const [name, setName] = useState("")
   const [desc, setDesc] = useState("")
   const thumbnailPlaceholder = "https://assets-global.website-files.com/5f734f4dbd95382f4fdfa0ea/6395e6749db8fe00a41cc279_flow-flow-logo.svg"
@@ -28,8 +28,10 @@ export default function SetupOwnedAccountModal(props) {
   const cancelButtonRef = useRef(null)
 
   return (
-    <Transition.Root show={showSetupOwnedAccount} as={Fragment}>
-      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={setShowSetupOwnedAccount}>
+    <Transition.Root show={showSetupDisplay.show || false} as={Fragment}>
+      <Dialog as="div" className="relative z-10" initialFocus={cancelButtonRef} onClose={() => setShowSetupDisplay(prevState => ({
+        ...prevState, show: false
+      }))}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -57,7 +59,10 @@ export default function SetupOwnedAccountModal(props) {
                 <div>
                   <div className="mt-3">
                     <Dialog.Title as="h3" className="text-xl leading-6 font-bold text-gray-900 mb-4">
-                      {"Setup Owned Account"}
+                      {
+                        showSetupDisplay.mode == "OwnedAccount" ?
+                          "Setup Owned Account" : "Setup ChildAccount Display"
+                      }
                     </Dialog.Title>
                     <div className='flex flex-col gap-y-4'>
                       <div>
@@ -73,7 +78,7 @@ export default function SetupOwnedAccountModal(props) {
                             focus:border-drizzle-dark
                           outline-0 focus:outline-2 focus:outline-drizzle-dark 
                           placeholder:text-gray-300`}
-                            placeholder="Owned Account 1"
+                            placeholder="Account Name"
                             onChange={(e) => {
                               setName(e.target.value)
                             }}
@@ -93,7 +98,7 @@ export default function SetupOwnedAccountModal(props) {
                             focus:border-drizzle-dark
                           outline-0 focus:outline-2 focus:outline-drizzle-dark 
                           placeholder:text-gray-300`}
-                            placeholder="This is my owned account"
+                            placeholder="This is the account description"
                             onChange={(e) => {
                               setDesc(e.target.value)
                             }}
@@ -139,16 +144,28 @@ export default function SetupOwnedAccountModal(props) {
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                   <button
                     type="button"
-                    disabled={transactionInProgress || thumbnailError}
+                    disabled={transactionInProgress || thumbnailError || !name || !desc || !thumbnail}
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-drizzle text-base font-medium text-black hover:bg-drizzle-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle sm:col-start-2 sm:text-sm disabled:bg-drizzle-light disabled:text-gray-500"
                     onClick={async () => {
                       if (!name || !desc || !thumbnail) {
                         return
                       }
 
-                      setShowSetupOwnedAccount(false)
-                      await setupOwnedAccount(name, desc, thumbnail, setTransactionInProgress, setTransactionStatus)
-                      mutate(["ownedAccountInfoFetcher", account])
+
+                      if (showSetupDisplay.mode == "OwnedAccount") {
+                        setShowSetupDisplay(prevState => ({
+                          ...prevState, show: false
+                        }))
+                        await setupOwnedAccount(name, desc, thumbnail, setTransactionInProgress, setTransactionStatus)
+                        mutate(["ownedAccountInfoFetcher", account])
+                      } else if (showSetupDisplay.mode == "ChildAccount") {
+                        setShowSetupDisplay(prevState => ({
+                          ...prevState, show: false
+                        }))
+                        console.log("Setup Display")
+                        await setupChildAccountDisplay(showSetupDisplay.childAddress, name, desc, thumbnail, setTransactionInProgress, setTransactionStatus)
+                        mutate(["hcManagerInfoFetcher", account])
+                      } 
                     }}
                   >
                     {"Confirm"}
@@ -156,7 +173,9 @@ export default function SetupOwnedAccountModal(props) {
                   <button
                     type="button"
                     className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle sm:mt-0 sm:col-start-1 sm:text-sm"
-                    onClick={() => setShowSetupOwnedAccount(false)}
+                    onClick={() => setShowSetupDisplay(prevState => ({
+                      ...prevState, show: false
+                    }))}
                     ref={cancelButtonRef}
                   >
                     Cancel

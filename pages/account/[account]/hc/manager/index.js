@@ -10,7 +10,7 @@ import Custom404 from "../../404"
 import { getHcManagerInfo, getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
 import { useRecoilState } from "recoil"
 import { showRedeemAccountState, showSetupHcManagerState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
-import SetupOwnedAccountModal from "../../../../../components/hybrid_custody/SetupOwnedAccountModal"
+import SetupDisplayModal from "../../../../../components/hybrid_custody/SetupDisplayModal"
 import PublishToParentModal from "../../../../../components/hybrid_custody/PublishToParentModal"
 import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
 import ParentView from "../../../../../components/hybrid_custody/ParentView"
@@ -128,6 +128,7 @@ export default function HybridCustodyManager(props) {
       </Layout>
       <SetupHcManagerModal />
       <RedeemAccountModal />
+      <SetupDisplayModal />
     </div>
   )
 }
