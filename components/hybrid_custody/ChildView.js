@@ -63,7 +63,7 @@ export default function ChildView(props) {
         {
           child.display && child.display.name ?
             <div className="flex gap-x-2 items-center">
-              <label className={`w-[54px] font-semibold text-xs px-2 py-1 text-center rounded-full text-black bg-drizzle`}>
+              <label className={`text-sm font-semibold text-black pl-2`}>
                 Name
               </label>
               <div className="text-gray-600 text-sm">{child.display.name}</div>
@@ -72,7 +72,7 @@ export default function ChildView(props) {
         {
           child.display && child.display.description ?
             <div className="flex gap-x-2 items-center">
-              <label className={`w-[54px] font-semibold text-xs px-2 py-1 text-center rounded-full text-black bg-drizzle`}>
+              <label className={`text-sm font-semibold text-black pl-2`}>
                 Desc
               </label>
               <div className="text-gray-600 text-sm">{child.display.description}</div>

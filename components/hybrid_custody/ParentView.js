@@ -25,7 +25,7 @@ export default function ParentView(props) {
               <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-green-100 text-green-800`}>{"CLAIMED"}</label>
             </div>
         }
-        <div className="flex gap-x-2 mb-2 justify-between items-center">
+        <div className="flex gap-x-2 justify-between items-center">
           <div className="cursor-pointer px-2 text-xl font-bold text-black decoration-drizzle decoration-2 underline">
             <a href={`${publicConfig.appURL}//account/${parent.address}`}
               target="_blank"
@@ -47,24 +47,24 @@ export default function ParentView(props) {
             </button>
           </div>
         </div>
-        <div className="flex gap-x-2 px-2 text-base font-semibold text-black">
-          <div>Factory:&nbsp;
+        <div className="flex gap-x-2 px-2 text-base text-black">
+          <div className="text-sm font-semibold text-black">Factory&nbsp;
             <a
               href={`${publicConfig.appURL}/account/${parent.childAccount.factory.address}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="cursor-pointer decoration-drizzle decoration-2 underline">
+              className="text-gray-600 text-sm font-medium cursor-pointer decoration-drizzle decoration-2 underline">
               {`${parent.childAccount.factory.address}`}
             </a>
           </div>
         </div>
         <div className="flex gap-x-2 px-2 text-base font-semibold text-black">
-          <div>Filter:&nbsp;
+        <div className="text-sm font-semibold text-black">Filter&nbsp;
             <a
               href={`${publicConfig.appURL}/account/${parent.childAccount.filter.address}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="cursor-pointer decoration-drizzle decoration-2 underline">
+              className="text-gray-600 text-sm font-medium cursor-pointer decoration-drizzle decoration-2 underline">
               {`${parent.childAccount.filter.address}`}
             </a>
           </div>
