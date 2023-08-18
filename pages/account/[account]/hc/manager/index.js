@@ -7,40 +7,43 @@ import Layout from "../../../../../components/common/Layout"
 import Spinner from "../../../../../components/common/Spinner"
 import { isValidFlowAddress } from "../../../../../lib/utils"
 import Custom404 from "../../404"
-import { getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
+import { getHcManagerInfo, getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
 import { useRecoilState } from "recoil"
-import { showPublishToParentState, showSetupOwnedAccountState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
+import { showRedeemAccountState, showSetupHcManagerState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
 import SetupOwnedAccountModal from "../../../../../components/hybrid_custody/SetupOwnedAccountModal"
 import PublishToParentModal from "../../../../../components/hybrid_custody/PublishToParentModal"
 import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
 import ParentView from "../../../../../components/hybrid_custody/ParentView"
+import SetupHcManagerModal from "../../../../../components/hybrid_custody/SetupHcManagerModal"
+import RedeemAccountModal from "../../../../../components/hybrid_custody/RedeemAccountModal"
+import ChildView from "../../../../../components/hybrid_custody/ChildView"
 
-const ownedAccountInfoFetcher = async (funcName, address) => {
-  return getOwnedAccountInfo(address)
+const hcManagerInfoFetcher = async (funcName, address) => {
+  return getHcManagerInfo(address)
 }
 
 export default function HybridCustodyManager(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
-  const [showSetupOwnedAccount, setShowSetupOwnedAccount] = useRecoilState(showSetupOwnedAccountState)
-  const [showPublishToParent, setShowPublishToParent] = useRecoilState(showPublishToParentState)
+  const [showSetupHcManager, setShowSetupHcManager] = useRecoilState(showSetupHcManagerState)
+  const [showRedeemAccount, setShowRedeemAccount] = useRecoilState(showRedeemAccountState)
 
   const router = useRouter()
   const { account } = router.query
 
-  const [ownedAccountInfo, setOwnedAccountInfo] = useState(null)
+  const [hcManagerInfo, setHcManagerInfo] = useState(null)
   const [user, setUser] = useState({ loggedIn: null })
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: itemsData, error: itemsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["ownedAccountInfoFetcher", account] : null, ownedAccountInfoFetcher
+    account && isValidFlowAddress(account) ? ["hcManagerInfoFetcher", account] : null, hcManagerInfoFetcher
   )
 
   useEffect(() => {
     console.log(itemsData)
     if (itemsData) {
-      setOwnedAccountInfo(itemsData)
+      setHcManagerInfo(itemsData)
     }
   }, [itemsData])
 
@@ -53,7 +56,7 @@ export default function HybridCustodyManager(props) {
   }
 
   const showItems = () => {
-    if (!ownedAccountInfo) {
+    if (!hcManagerInfo) {
       return (
         <div className="flex w-full mt-10 h-[200px] justify-center">
           <Spinner />
@@ -63,10 +66,10 @@ export default function HybridCustodyManager(props) {
 
     return (
       <>
-        {ownedAccountInfo && ownedAccountInfo.parents.length > 0 ?
-          ownedAccountInfo.parents.map((item, index) => {
+        {hcManagerInfo && hcManagerInfo.childAccounts.length > 0 ?
+          hcManagerInfo.childAccounts.map((item, index) => {
             return (
-              <ParentView key={`parents-${index}`} parent={item} account={account} user={user} />
+              <ChildView key={`child-${index}`} child={item} account={account} user={user} />
             )
           }) :
           <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
@@ -83,16 +86,16 @@ export default function HybridCustodyManager(props) {
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between w-full">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Children ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}
+              {`Children ${hcManagerInfo ? `(${hcManagerInfo.childAccounts.length})` : ""}`}
             </h1>
             <div className="flex gap-x-2 justify-end">
             {
-                user && user.loggedIn && user.addr == account && ownedAccountInfo && !ownedAccountInfo.isOwnedAccountExists ?
+                user && user.loggedIn && user.addr == account && hcManagerInfo && !hcManagerInfo.isManagerExists ?
                 <button
                   className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
                   disabled={transactionInProgress}
                   onClick={async () => {
-                    setShowSetupOwnedAccount(true)
+                    setShowSetupHcManager(true)
                   }}
                 >
                   Setup Manager
@@ -100,15 +103,15 @@ export default function HybridCustodyManager(props) {
                 : null
             }
             {
-                user && user.loggedIn && user.addr == account && ownedAccountInfo && ownedAccountInfo.isOwnedAccountExists ?
+                user && user.loggedIn && user.addr == account && hcManagerInfo && hcManagerInfo.isManagerExists ?
                 <button
                   className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
                   disabled={transactionInProgress}
                   onClick={async () => {
-                    setShowPublishToParent(true)
+                    setShowRedeemAccount(true)
                   }}
                 >
-                  Publish To Parent
+                  Redeem Account
                 </button>
                 : null
             }
@@ -123,8 +126,8 @@ export default function HybridCustodyManager(props) {
           </div>
         </div>
       </Layout>
-      <SetupOwnedAccountModal />
-      <PublishToParentModal />
+      <SetupHcManagerModal />
+      <RedeemAccountModal />
     </div>
   )
 }

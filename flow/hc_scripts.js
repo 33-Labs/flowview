@@ -12,3 +12,16 @@ export const getOwnedAccountInfo = async (address) => {
 
   return result
 }
+
+export const getHcManagerInfo = async (address) => {
+  const code = await (await fetch("/scripts/hc/get_hc_manager_info.cdc")).text()
+
+  const result = await fcl.query({
+    cadence: code,
+    args: (arg, t) => [
+      arg(address, t.Address)
+    ]
+  })
+
+  return result
+}

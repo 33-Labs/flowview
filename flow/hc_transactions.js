@@ -119,3 +119,60 @@ const doRemoveParentFromChild = async (parent) => {
 
   return transactionId
 }
+
+export const setupHcManager = async (
+  filter, filterPath,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doSetupHcManager(filter, filterPath)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doSetupHcManager = async (filter, filterPath) => {
+  const code = await (await fetch("/transactions/hc/setup_hc_manager.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(filter, t.Optional(t.Address)),
+      arg(filterPath, t.Optional(t.String)),
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+export const redeemAccount = async (
+  childAddress,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doRedeemAccount(childAddress)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doRedeemAccount = async (childAddress) => {
+  const code = await (await fetch("/transactions/hc/redeem_account.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(childAddress, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}

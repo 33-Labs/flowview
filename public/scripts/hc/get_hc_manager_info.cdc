@@ -1,43 +1,67 @@
 import HybridCustody from 0xHybridCustody
 import MetadataViews from 0xMetadataViews
 
-pub struct OwnedAccountInfo {
+pub struct ChildAccountInfo {
+  pub let address: Address
   pub let display: MetadataViews.Display?
-  pub let parentStatuses: {Address: Bool}
-  pub let parentAddresses: [Address]
-  pub let isOwnedAccountExists: Bool
 
   init(
-    display: MetadataViews.Display?, 
-    parentStatuses: {Address: Bool},
-    parentAddresses: [Address],
-    isOwnedAccountExists: Bool
+    address: Address,
+    display: MetadataViews.Display?
   ) {
+    self.address = address
     self.display = display
-    self.parentStatuses = parentStatuses
-    self.parentAddresses = parentAddresses
-    self.isOwnedAccountExists = isOwnedAccountExists
   }
 }
 
-pub fun main(child: Address): OwnedAccountInfo {
+pub struct ManagerInfo {
+  pub let childAccounts: [ChildAccountInfo]
+  pub let ownedAccounts: [Address]
+  pub let isManagerExists: Bool
+
+  init(
+    childAccounts: [ChildAccountInfo],
+    ownedAccounts: [Address],
+    isManagerExists: Bool
+  ) {
+    self.childAccounts = childAccounts
+    self.ownedAccounts = ownedAccounts
+    self.isManagerExists = isManagerExists
+  }
+}
+
+pub fun main(child: Address): ManagerInfo {
     let acct = getAuthAccount(child)
     let m = acct.borrow<&HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
+    
     if let manager = m {
-      let viewType = Type<MetadataViews.Display>()
-      let display = owned.resolveView(viewType) as! MetadataViews.Display?
-      return OwnedAccountInfo(
-        display: display,
-        parentStatuses: owned.getParentStatuses(),
-        parentAddresses: owned.getParentAddresses(),
-        isOwnedAccountExists: true
+      return ManagerInfo(
+        childAccounts: getChildAccounts(manager: manager),
+        ownedAccounts: getOwnedAccounts(manager: manager),
+        isManagerExists: true
       )
     }
 
-    return OwnedAccountInfo(
-      display: nil,
-      parentStatuses: {},
-      parentAddresses: [],
-      isOwnedAccountExists: false
+    return ManagerInfo(
+      childAccounts: [],
+      ownedAccounts: [],
+      isManagerExists: false
     )
+}
+
+pub fun getChildAccounts(manager: &HybridCustody.Manager): [ChildAccountInfo] {
+  let childAddresses = manager.getChildAddresses()
+  let children: [ChildAccountInfo] = []
+  for childAddress in childAddresses {
+    let display = manager.getChildAccountDisplay(address: childAddress)
+    let child = ChildAccountInfo(address: childAddress, display: display)
+    children.append(child)
+  }
+
+  return children
+}
+
+pub fun getOwnedAccounts(manager: &HybridCustody.Manager): [Address] {
+  let ownedAddresses = manager.getOwnedAddresses()
+  return ownedAddresses
 }
