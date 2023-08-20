@@ -87,7 +87,7 @@ export default function HybridCustodyOwnedAcct(props) {
           <div className="p-2 flex gap-x-2 justify-between w-full">
             <div className="flex flex-col gap-y-1">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                {`Owned Account`}
+                {`OwnedAccount`}
               </h1>
               {
                 ownedAccountInfo && ownedAccountInfo.owner ?

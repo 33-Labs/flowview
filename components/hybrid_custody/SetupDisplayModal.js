@@ -61,7 +61,7 @@ export default function SetupDisplayModal(props) {
                     <Dialog.Title as="h3" className="text-xl leading-6 font-bold text-gray-900 mb-4">
                       {
                         showSetupDisplay.mode == "OwnedAccount" ?
-                          "Setup Owned Account" : "Setup ChildAccount Display"
+                          "Setup OwnedAccount" : "Setup ChildAccount Display"
                       }
                     </Dialog.Title>
                     <div className='flex flex-col gap-y-4'>
