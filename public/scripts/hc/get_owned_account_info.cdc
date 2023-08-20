@@ -6,15 +6,18 @@ import CapabilityFilter from 0xCapabilityFilter
 pub struct OwnedAccountInfo {
   pub let display: MetadataViews.Display?
   pub let parents: [ParentInfo]
+  pub let owner: Address?
   pub let isOwnedAccountExists: Bool
 
   init(
     display: MetadataViews.Display?, 
     parents: [ParentInfo],
+    owner: Address?,
     isOwnedAccountExists: Bool
   ) {
     self.display = display
     self.parents = parents
+    self.owner = owner
     self.isOwnedAccountExists = isOwnedAccountExists
   }
 }
@@ -71,6 +74,7 @@ pub fun main(child: Address): OwnedAccountInfo {
       return OwnedAccountInfo(
         display: display,
         parents: parents,
+        owner: owned.getOwner(),
         isOwnedAccountExists: true
       )
     }
@@ -78,6 +82,7 @@ pub fun main(child: Address): OwnedAccountInfo {
     return OwnedAccountInfo(
       display: nil,
       parents: [],
+      owner: nil,
       isOwnedAccountExists: false
     )
 }

@@ -177,6 +177,34 @@ const doRedeemAccount = async (childAddress) => {
   return transactionId
 }
 
+export const acceptOwnership = async (
+  childAddress,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doAcceptOwnership(childAddress)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doAcceptOwnership = async (childAddress) => {
+  const code = await (await fetch("/transactions/hc/accept_ownership.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(childAddress, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
 export const setupChildAccountDisplay = async (
   childAddress, name, desc, thumbnail,
   setTransactionInProgress,
@@ -227,6 +255,34 @@ const doRemoveChildAccount = async (childAddress) => {
     cadence: code,
     args: (arg, t) => [
       arg(childAddress, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}
+
+export const transferOwnership = async (
+  ownerAddress,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doTransferOwnership(ownerAddress)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doTransferOwnership = async (ownerAddress) => {
+  const code = await (await fetch("/transactions/hc/transfer_ownership.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(ownerAddress, t.Address)
     ],
     proposer: fcl.currentUser,
     payer: fcl.currentUser,

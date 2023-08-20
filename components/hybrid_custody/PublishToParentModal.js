@@ -59,7 +59,7 @@ export default function PublishToParentModal(props) {
                 <div>
                   <div className="mt-3">
                     <Dialog.Title as="h3" className="text-xl leading-6 font-bold text-gray-900 mb-4">
-                      {"Setup Owned Account"}
+                      {"Publish To Parent"}
                     </Dialog.Title>
                     <div className='flex flex-col gap-y-4'>
                       <div>

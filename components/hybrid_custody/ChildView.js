@@ -39,7 +39,7 @@ export default function ChildView(props) {
             </button> */}
             <button
               type="button"
-              disabled={transactionInProgress}
+              disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
               className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
               onClick={async () => {
                 setShowSetupDisplay({ show: true, mode: "ChildAccount", childAddress: child.address })
@@ -49,7 +49,7 @@ export default function ChildView(props) {
             </button>
             <button
               type="button"
-              disabled={transactionInProgress}
+              disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
               className={`text-white disabled:bg-red-400 disabled:text-white bg-red-600 hover:bg-red-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
               onClick={async () => {
                 await removeChildAccount(child.address, setTransactionInProgress, setTransactionStatus)

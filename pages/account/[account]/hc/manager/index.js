@@ -55,7 +55,7 @@ export default function HybridCustodyManager(props) {
     return <Custom404 title={"Account may not exist"} />
   }
 
-  const showItems = () => {
+  const showChildAccounts = () => {
     if (!hcManagerInfo) {
       return (
         <div className="flex w-full mt-10 h-[200px] justify-center">
@@ -80,48 +80,103 @@ export default function HybridCustodyManager(props) {
     )
   }
 
+  const showOwnedAccounts = () => {
+    if (!hcManagerInfo) {
+      return (
+        <div className="flex w-full mt-10 h-[200px] justify-center">
+          <Spinner />
+        </div>
+      )
+    }
+
+    return (
+      <>
+        {hcManagerInfo && hcManagerInfo.ownedAccounts.length > 0 ?
+          hcManagerInfo.ownedAccounts.map((item, index) => {
+            return (
+              <div key={`owned-${index}`}>{item}</div>
+              // <ChildView key={`child-${index}`} child={item} account={account} user={user} />
+            )
+          }) :
+          <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
+            Nothing found
+          </div>
+        }
+      </>
+    )
+  }
+
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between w-full">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Children ${hcManagerInfo ? `(${hcManagerInfo.childAccounts.length})` : ""}`}
+              {`HybridCustody Manager`}
             </h1>
             <div className="flex gap-x-2 justify-end">
-            {
-                user && user.loggedIn && user.addr == account && hcManagerInfo && !hcManagerInfo.isManagerExists ?
-                <button
-                  className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
-                  disabled={transactionInProgress}
-                  onClick={async () => {
-                    setShowSetupHcManager(true)
-                  }}
-                >
-                  Setup Manager
-                </button>
-                : null
-            }
-            {
-                user && user.loggedIn && user.addr == account && hcManagerInfo && hcManagerInfo.isManagerExists ?
-                <button
-                  className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
-                  disabled={transactionInProgress}
-                  onClick={async () => {
-                    setShowRedeemAccount(true)
-                  }}
-                >
-                  Redeem Account
-                </button>
-                : null
-            }
+              {
+                hcManagerInfo && !hcManagerInfo.isManagerExists ?
+                  <button
+                    className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                    disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
+                    onClick={async () => {
+                      setShowSetupHcManager(true)
+                    }}
+                  >
+                    Setup Manager
+                  </button>
+                  : null
+              }
+              {
+                hcManagerInfo && hcManagerInfo.isManagerExists ?
+                  <button
+                    className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                    disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
+                    onClick={async () => {
+                      setShowRedeemAccount({ show: true, mode: "RedeemAccount" })
+                    }}
+                  >
+                    Redeem Account
+                  </button>
+                  : null
+              }
+              {
+                hcManagerInfo && hcManagerInfo.isManagerExists ?
+                  <button
+                    className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                    disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
+                    onClick={async () => {
+                      setShowRedeemAccount({ show: true, mode: "AcceptOwnership" })
+                    }}
+                  >
+                    Accept Ownership
+                  </button>
+                  : null
+              }
             </div>
           </div>
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">
             <div className="inline-block min-w-full">
-              <div className="flex flex-col gap-y-4">
-                {showItems()}
+              <div className="flex flex-col gap-y-8">
+                <div className="flex flex-col gap-y-4">
+                  <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                    {`ChildAccounts ${hcManagerInfo ? `(${hcManagerInfo.childAccounts.length})` : ""}`}
+                  </h1>
+                  <div className="flex flex-col gap-y-4">
+                    {showChildAccounts()}
+                  </div>
+                </div>
+                <div className="flex flex-col gap-y-4">
+                  <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                    {`OwnedAccounts ${hcManagerInfo ? `(${hcManagerInfo.ownedAccounts.length})` : ""}`}
+                  </h1>
+                  <div className="flex flex-col gap-y-4">
+                    {showOwnedAccounts()}
+                  </div>
+                </div>
               </div>
+
             </div>
           </div>
         </div>

@@ -9,11 +9,13 @@ import { isValidFlowAddress } from "../../../../../lib/utils"
 import Custom404 from "../../404"
 import { getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
 import { useRecoilState } from "recoil"
-import { showPublishToParentState, showSetupDisplayState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
+import { showPublishToParentState, showSetupDisplayState, showTransferOwnershipState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
 import SetupDisplayModal from "../../../../../components/hybrid_custody/SetupDisplayModal"
 import PublishToParentModal from "../../../../../components/hybrid_custody/PublishToParentModal"
 import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
 import ParentView from "../../../../../components/hybrid_custody/ParentView"
+import TransferOwnershipModal from "../../../../../components/hybrid_custody/TransferOwnerShipModal"
+import publicConfig from "../../../../../publicConfig"
 
 const ownedAccountInfoFetcher = async (funcName, address) => {
   return getOwnedAccountInfo(address)
@@ -24,6 +26,7 @@ export default function HybridCustodyOwnedAcct(props) {
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showSetupDisplay, setShowSetupDisplay] = useRecoilState(showSetupDisplayState)
   const [showPublishToParent, setShowPublishToParent] = useRecoilState(showPublishToParentState)
+  const [showTransferOwnership, setShowTransferOwnership] = useRecoilState(showTransferOwnershipState)
 
   const router = useRouter()
   const { account } = router.query
@@ -82,42 +85,76 @@ export default function HybridCustodyOwnedAcct(props) {
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
           <div className="p-2 flex gap-x-2 justify-between w-full">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {`Parents ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}
-            </h1>
-            <div className="flex gap-x-2 justify-end">
-            {
-                user && user.loggedIn && user.addr == account && ownedAccountInfo && !ownedAccountInfo.isOwnedAccountExists ?
-                <button
-                  className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
-                  disabled={transactionInProgress}
-                  onClick={async () => {
-                    setShowSetupDisplay({show: true, mode: "OwnedAccount"})
-                  }}
-                >
-                  Setup Owned Acct
-                </button>
-                : null
-            }
-            {
-                user && user.loggedIn && user.addr == account && ownedAccountInfo && ownedAccountInfo.isOwnedAccountExists ?
-                <button
-                  className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
-                  disabled={transactionInProgress}
-                  onClick={async () => {
-                    setShowPublishToParent(true)
-                  }}
-                >
-                  Publish To Parent
-                </button>
-                : null
-            }
+            <div className="flex flex-col gap-y-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                {`Owned Account`}
+              </h1>
+              {
+                ownedAccountInfo && ownedAccountInfo.owner ?
+                  <div className="text-sm">{`Owned by `}
+                    <a
+                      href={`${publicConfig.appURL}/account/${ownedAccountInfo.owner}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-600 text-sm font-medium cursor-pointer decoration-drizzle decoration-2 underline">
+                      {`${ownedAccountInfo.owner}`}
+                    </a>
+                  </div>
+                  : null}
+            </div>
+
+
+            <div className="flex gap-x-2 justify-end items-start">
+              {
+                ownedAccountInfo && !ownedAccountInfo.isOwnedAccountExists ?
+                  <button
+                    className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                    disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
+                    onClick={async () => {
+                      setShowSetupDisplay({ show: true, mode: "OwnedAccount" })
+                    }}
+                  >
+                    Setup Owned Acct
+                  </button>
+                  : null
+              }
+              {
+                ownedAccountInfo && ownedAccountInfo.isOwnedAccountExists ?
+                  <button
+                    className={`text-black disabled:bg-yellow-200 disabled:text-gray-500 bg-yellow-400 hover:bg-yellow-600 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                    disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
+                    onClick={async () => {
+                      setShowPublishToParent(true)
+                    }}
+                  >
+                    Publish To Parent
+                  </button>
+                  : null
+              }
+              {
+                ownedAccountInfo && ownedAccountInfo.isOwnedAccountExists ?
+                  <button
+                    className={`text-white disabled:bg-red-400 bg-red-600 hover:bg-red-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
+                    disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
+                    onClick={async () => {
+                      setShowTransferOwnership({ show: true, mode: "Simple" })
+                    }}
+                  >
+                    Transfer Ownership
+                  </button>
+                  : null
+              }
             </div>
           </div>
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">
             <div className="inline-block min-w-full">
               <div className="flex flex-col gap-y-4">
-                {showItems()}
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                  {`Parents ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}
+                </h1>
+                <div className="flex flex-col gap-y-4">
+                  {showItems()}
+                </div>
               </div>
             </div>
           </div>
@@ -125,6 +162,7 @@ export default function HybridCustodyOwnedAcct(props) {
       </Layout>
       <SetupDisplayModal />
       <PublishToParentModal />
+      <TransferOwnershipModal />
     </div>
   )
 }
