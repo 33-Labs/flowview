@@ -6,7 +6,7 @@ import * as fcl from "@onflow/fcl";
 import { isValidFlowAddress, isValidPositiveFlowDecimals, isValidPositiveNumber, isValidUrl } from '../../lib/utils'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
-import { transferOwnership } from '../../flow/hc_transactions';
+import { transferOwnership, transferOwnershipFromManager } from '../../flow/hc_transactions';
 
 export default function TransferOwnershipModal(props) {
   const router = useRouter()
@@ -108,7 +108,15 @@ export default function TransferOwnershipModal(props) {
                       setShowTransferOwnership(prev => ({
                         ...prev, show: false
                       }))
-                      await transferOwnership(ownerAddress, setTransactionInProgress, setTransactionStatus)
+                      if (showTransferOwnership.mode == "Simple") {
+                        await transferOwnership(ownerAddress, setTransactionInProgress, setTransactionStatus)
+                      } else if (showTransferOwnership.mode == "FromManager") {
+                        await transferOwnershipFromManager(
+                          showTransferOwnership.ownedAddress, 
+                          ownerAddress,
+                          setTransactionInProgress, setTransactionStatus
+                        )
+                      }
                       mutate(["ownedAccountInfoFetcher", account])
                     }}
                   >

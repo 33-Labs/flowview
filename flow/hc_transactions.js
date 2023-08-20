@@ -291,3 +291,33 @@ const doTransferOwnership = async (ownerAddress) => {
 
   return transactionId
 }
+
+export const transferOwnershipFromManager = async (
+  ownedAddress,
+  ownerAddress,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doTransferOwnershipFromManager(ownedAddress, ownerAddress)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doTransferOwnershipFromManager = async (ownedAddress, ownerAddress) => {
+  const code = await (await fetch("/transactions/hc/transfer_ownership_from_manager.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(ownedAddress, t.Address),
+      arg(ownerAddress, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}

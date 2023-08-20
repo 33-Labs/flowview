@@ -17,6 +17,8 @@ import ParentView from "../../../../../components/hybrid_custody/ParentView"
 import SetupHcManagerModal from "../../../../../components/hybrid_custody/SetupHcManagerModal"
 import RedeemAccountModal from "../../../../../components/hybrid_custody/RedeemAccountModal"
 import ChildView from "../../../../../components/hybrid_custody/ChildView"
+import OwnedView from "../../../../../components/hybrid_custody/OwnedView"
+import TransferOwnershipModal from "../../../../../components/hybrid_custody/TransferOwnerShipModal"
 
 const hcManagerInfoFetcher = async (funcName, address) => {
   return getHcManagerInfo(address)
@@ -94,8 +96,7 @@ export default function HybridCustodyManager(props) {
         {hcManagerInfo && hcManagerInfo.ownedAccounts.length > 0 ?
           hcManagerInfo.ownedAccounts.map((item, index) => {
             return (
-              <div key={`owned-${index}`}>{item}</div>
-              // <ChildView key={`child-${index}`} child={item} account={account} user={user} />
+              <OwnedView key={`child-${index}`} child={{address: item}} account={account} user={user} />
             )
           }) :
           <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">
@@ -184,6 +185,7 @@ export default function HybridCustodyManager(props) {
       <SetupHcManagerModal />
       <RedeemAccountModal />
       <SetupDisplayModal />
+      <TransferOwnershipModal />
     </div>
   )
 }
