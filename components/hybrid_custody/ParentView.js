@@ -36,7 +36,7 @@ export default function ParentView(props) {
           <div>
             <button
               type="button"
-              disabled={transactionInProgress || !parent.isClaimed}
+              disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account) || !parent.isClaimed}
               className={`text-white disabled:bg-red-400 disabled:text-white bg-red-600 hover:bg-red-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
               onClick={async () => {
                 await removeParentFromChild(parent.address, setTransactionInProgress, setTransactionStatus)

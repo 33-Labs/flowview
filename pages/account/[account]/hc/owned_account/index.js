@@ -16,6 +16,7 @@ import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
 import ParentView from "../../../../../components/hybrid_custody/ParentView"
 import TransferOwnershipModal from "../../../../../components/hybrid_custody/TransferOwnerShipModal"
 import publicConfig from "../../../../../publicConfig"
+import OwnedDisplayView from "../../../../../components/hybrid_custody/OwnedDisplayView"
 
 const ownedAccountInfoFetcher = async (funcName, address) => {
   return getOwnedAccountInfo(address)
@@ -149,7 +150,11 @@ export default function HybridCustodyOwnedAcct(props) {
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">
             <div className="inline-block min-w-full">
               <div className="flex flex-col gap-y-4">
-                <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                {
+                  ownedAccountInfo && ownedAccountInfo.display ?
+                    <OwnedDisplayView display={ownedAccountInfo.display} /> : null
+                }
+                <h1 className="mt-4 text-lg sm:text-xl font-bold text-gray-900">
                   {`Parents ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}
                 </h1>
                 <div className="flex flex-col gap-y-4">
