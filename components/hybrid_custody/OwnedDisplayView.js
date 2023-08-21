@@ -9,10 +9,10 @@ export default function OwnedDisplayView(props) {
     return (
       <div className="flex gap-x-3 justify-between">
         <div className="flex items-center gap-x-3">
-          <div className="w-16 rounded-full overflow-hidden aspect-square relative">
+          <div className="w-10 rounded-full overflow-hidden aspect-square relative shrink-0">
             <Image src={getImageSrcFromMetadataViewsFile(display.thumbnail)} alt="" fill sizes="5vw" />
           </div>
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col">
             <label className="text-medium font-semibold">
               {`${display.name}`}
             </label>

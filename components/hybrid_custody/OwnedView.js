@@ -28,18 +28,6 @@ export default function OwnedView(props) {
             </a>
           </div>
           <div className="flex gap-x-2 justify-between">
-            {/* <button
-              type="button"
-              disabled={transactionInProgress}
-              className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
-              onClick={async () => {
-                // TODO: REMOVE CHILD
-                mutate(["hcManagerInfoFetcher", account])
-              }}
-            >
-              {"Set Manager Cap Filter"}
-            </button> */}
-
             <button
               className={`text-white disabled:bg-red-400 bg-red-600 hover:bg-red-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
               disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
@@ -49,7 +37,6 @@ export default function OwnedView(props) {
             >
               Transfer Ownership
             </button>
-
 
             {/* <button
               type="button"
@@ -64,7 +51,7 @@ export default function OwnedView(props) {
         </div>
         {
           child.display ?
-            <OwnedDisplayView display={child.display} style={"Small"} type="Child" /> : null
+            <OwnedDisplayView display={child.display} style={"Small"} type="Owned" /> : null
         }
       </div>
     </div>
