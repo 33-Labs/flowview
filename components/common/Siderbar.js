@@ -13,8 +13,8 @@ export default function Sidebar(props) {
     { id: "2", label: `Staking`, link: { pathname: "/account/[account]/staking", query: { account: account } } },
     { id: "3", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
     { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
-    { id: "5", label: `Storefront`, link: { pathname: "/account/[account]/storefront", query: { account: account } } },
     { id: "6", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
+    { id: "5", label: `Storefront`, link: { pathname: "/account/[account]/storefront", query: { account: account } } },
     {
       id: "7", label: `Acct Linking`, subItems: [
         { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
