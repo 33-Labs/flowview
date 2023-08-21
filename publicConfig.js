@@ -61,6 +61,9 @@ if (!linkURL) throw "Missing NEXT_PUBLIC_LINK_URL"
 const nftStorefrontV2Address = process.env.NEXT_PUBLIC_NFTSTOREFRONTV2_ADDRESS
 if (!nftStorefrontV2Address) throw "Missing NEXT_PUBLIC_NFTSTOREFRONTV2_ADDRESS"
 
+const hybridCustodyAddress = process.env.NEXT_PUBLIC_HYBRIDCUSTODY_ADDRESS
+if (!hybridCustodyAddress) throw "Missing NEXT_PUBLIC_HYBRIDCUSTODY_ADDRESS"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -77,6 +80,7 @@ const publicConfig = {
   flowboxAddress,
   accountBookmarkAddress,
   nftStorefrontV2Address,
+  hybridCustodyAddress,
   flownsURL,
   findURL,
   bayouURL,
