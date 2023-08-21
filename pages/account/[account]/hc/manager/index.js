@@ -43,7 +43,6 @@ export default function HybridCustodyManager(props) {
   )
 
   useEffect(() => {
-    console.log(itemsData)
     if (itemsData) {
       setHcManagerInfo(itemsData)
     }

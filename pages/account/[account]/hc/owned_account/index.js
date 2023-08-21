@@ -42,7 +42,6 @@ export default function HybridCustodyOwnedAcct(props) {
   )
 
   useEffect(() => {
-    console.log(itemsData)
     if (itemsData) {
       setOwnedAccountInfo(itemsData)
     }

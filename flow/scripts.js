@@ -215,7 +215,6 @@ export const getStoredItems = async (address, paths) => {
   const filteredPaths = paths.filter((item) => 
     item !== "BnGNFTCollection" && item !== "RacingTimeCollection" && item !== "FuseCollectiveCollection" && item !== "ARTIFACTV2Collection"
   )
-  console.log(filteredPaths)
 
   const items = await fcl.query({
     cadence: code,

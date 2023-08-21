@@ -162,7 +162,6 @@ export default function SetupDisplayModal(props) {
                         setShowSetupDisplay(prevState => ({
                           ...prevState, show: false
                         }))
-                        console.log("Setup Display")
                         await setupChildAccountDisplay(showSetupDisplay.childAddress, name, desc, thumbnail, setTransactionInProgress, setTransactionStatus)
                         mutate(["hcManagerInfoFetcher", account])
                       } 
