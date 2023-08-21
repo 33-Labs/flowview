@@ -4,6 +4,7 @@ import { useRecoilState } from "recoil";
 import { showSetupDisplayState, transactionInProgressState, transactionStatusState } from "../../lib/atoms";
 import { removeChildAccount, removeChildFromChild, setupChildAccountDisplay } from "../../flow/hc_transactions";
 import { useSWRConfig } from "swr";
+import OwnedDisplayView from "./OwnedDisplayView";
 
 export default function ChildView(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
@@ -61,22 +62,8 @@ export default function ChildView(props) {
           </div>
         </div>
         {
-          child.display && child.display.name ?
-            <div className="flex gap-x-2 items-center">
-              <label className={`text-sm font-semibold text-black pl-2`}>
-                Name
-              </label>
-              <div className="text-gray-600 text-sm">{child.display.name}</div>
-            </div> : null
-        }
-        {
-          child.display && child.display.description ?
-            <div className="flex gap-x-2 items-center">
-              <label className={`text-sm font-semibold text-black pl-2`}>
-                Desc
-              </label>
-              <div className="text-gray-600 text-sm">{child.display.description}</div>
-            </div> : null
+          child.display ?
+            <OwnedDisplayView display={child.display} style={"Small"} type="Child" /> : null
         }
       </div>
     </div>

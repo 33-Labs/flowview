@@ -16,12 +16,12 @@ pub struct ChildAccountInfo {
 
 pub struct ManagerInfo {
   pub let childAccounts: [ChildAccountInfo]
-  pub let ownedAccounts: [Address]
+  pub let ownedAccounts: [ChildAccountInfo]
   pub let isManagerExists: Bool
 
   init(
     childAccounts: [ChildAccountInfo],
-    ownedAccounts: [Address],
+    ownedAccounts: [ChildAccountInfo],
     isManagerExists: Bool
   ) {
     self.childAccounts = childAccounts
@@ -61,7 +61,19 @@ pub fun getChildAccounts(manager: &HybridCustody.Manager): [ChildAccountInfo] {
   return children
 }
 
-pub fun getOwnedAccounts(manager: &HybridCustody.Manager): [Address] {
+pub fun getOwnedAccounts(manager: &HybridCustody.Manager): [ChildAccountInfo] {
   let ownedAddresses = manager.getOwnedAddresses()
-  return ownedAddresses
+  let children: [ChildAccountInfo] = []
+  for ownedAddress in ownedAddresses {
+    if let o = manager.borrowOwnedAccount(addr: ownedAddress) {
+      let d = o.resolveView(Type<MetadataViews.Display>()) as? MetadataViews.Display? 
+      if let display = d {
+        let child = ChildAccountInfo(address: ownedAddress, display: display)
+        children.append(child)
+      }
+    } else {
+      children.append(ChildAccountInfo(address: ownedAddress, display: nil))
+    }
+  }
+  return children
 }

@@ -152,7 +152,9 @@ export default function HybridCustodyOwnedAcct(props) {
               <div className="flex flex-col gap-y-4">
                 {
                   ownedAccountInfo && ownedAccountInfo.display ?
-                    <OwnedDisplayView display={ownedAccountInfo.display} /> : null
+                    <div className="flex flex-col max-w-[1094px] min-w-[1076px] gap-y-3 p-4 shadow-md rounded-2xl bg-white">
+                      <OwnedDisplayView display={ownedAccountInfo.display} />
+                    </div> : null
                 }
                 <h1 className="mt-4 text-lg sm:text-xl font-bold text-gray-900">
                   {`Parents ${ownedAccountInfo ? `(${ownedAccountInfo.parents.length})` : ""}`}

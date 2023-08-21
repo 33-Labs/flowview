@@ -96,7 +96,7 @@ export default function HybridCustodyManager(props) {
         {hcManagerInfo && hcManagerInfo.ownedAccounts.length > 0 ?
           hcManagerInfo.ownedAccounts.map((item, index) => {
             return (
-              <OwnedView key={`child-${index}`} child={{address: item}} account={account} user={user} />
+              <OwnedView key={`child-${index}`} child={item} account={account} user={user} />
             )
           }) :
           <div className="flex w-full mt-10 h-[70px] text-gray-400 text-base justify-center">

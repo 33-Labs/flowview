@@ -4,6 +4,7 @@ import { useRecoilState } from "recoil";
 import { showSetupDisplayState, showTransferOwnershipState, transactionInProgressState, transactionStatusState } from "../../lib/atoms";
 import { removeChildAccount, removeChildFromChild, setupChildAccountDisplay } from "../../flow/hc_transactions";
 import { useSWRConfig } from "swr";
+import OwnedDisplayView from "./OwnedDisplayView";
 
 export default function OwnedView(props) {
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
@@ -43,13 +44,13 @@ export default function OwnedView(props) {
               className={`text-white disabled:bg-red-400 bg-red-600 hover:bg-red-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
               disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
               onClick={async () => {
-                setShowTransferOwnership({ show: true, mode: "FromManager", ownedAddress: child.address})
+                setShowTransferOwnership({ show: true, mode: "FromManager", ownedAddress: child.address })
               }}
             >
               Transfer Ownership
             </button>
 
-            
+
             {/* <button
               type="button"
               disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
@@ -61,6 +62,10 @@ export default function OwnedView(props) {
             </button> */}
           </div>
         </div>
+        {
+          child.display ?
+            <OwnedDisplayView display={child.display} style={"Small"} type="Child" /> : null
+        }
       </div>
     </div>
   )
