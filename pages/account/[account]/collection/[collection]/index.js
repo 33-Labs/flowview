@@ -84,7 +84,7 @@ export default function CollectionDetail(props) {
 
   if (account && isValidFlowAddress(account)) {
     if (!collectionPath) {
-      return <Custom404 title={"Collection not found 1"} />
+      return <Custom404 title={"Collection not found"} />
     }
   } else {
     return <Custom404 title={"Account may not exist"} />

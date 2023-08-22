@@ -54,7 +54,7 @@ export default function NFT(props) {
   }
 
   if (metadataError) {
-    return <Custom404 title={metadataError} />
+    return <Custom404 title={metadataError} storagePath={collectionPath} />
   }
 
   const showToken = () => {
