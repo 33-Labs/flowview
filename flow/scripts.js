@@ -1,7 +1,9 @@
 import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
+import * as t from "@onflow/types"
 import { outdatedPathsMainnet } from "./outdated_paths/mainnet"
 import { outdatedPathsTestnet } from "./outdated_paths/testnet"
+import { cadenceValueToDict } from "../lib/utils"
 
 const outdatedPaths = (network) => {
   if (network == "mainnet") {
@@ -255,15 +257,20 @@ export const getStoredStruct = async (address, path) => {
 
   const code = await (await fetch("/scripts/storage/get_stored_struct.cdc")).text()
 
-  const resource = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-      arg(pathIdentifier, t.String),
-    ]
-  }) 
-
-  return resource
+  try {
+    const response = await fcl.send([
+      fcl.script(code),
+      fcl.args([
+        fcl.arg(address, t.Address),
+        fcl.arg(pathIdentifier, t.String)
+      ])
+    ])
+    const result = cadenceValueToDict(response.encodedData)
+    return result
+  } catch (e) {
+    console.log("getStoredResource Error", e)
+    return {}
+  }
 }
 
 
@@ -272,15 +279,20 @@ export const getStoredResource = async (address, path) => {
 
   const code = await (await fetch("/scripts/storage/get_stored_resource.cdc")).text()
 
-  const resource = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-      arg(pathIdentifier, t.String),
-    ]
-  }) 
-
-  return resource
+  try {
+    const response = await fcl.send([
+      fcl.script(code),
+      fcl.args([
+        fcl.arg(address, t.Address),
+        fcl.arg(pathIdentifier, t.String)
+      ])
+    ])
+    const result = cadenceValueToDict(response.encodedData)
+    return result
+  } catch (e) {
+    console.log("getStoredResource Error", e)
+    return {}
+  }
 }
 
 
