@@ -64,6 +64,9 @@ if (!nftStorefrontV2Address) throw "Missing NEXT_PUBLIC_NFTSTOREFRONTV2_ADDRESS"
 const hybridCustodyAddress = process.env.NEXT_PUBLIC_HYBRIDCUSTODY_ADDRESS
 if (!hybridCustodyAddress) throw "Missing NEXT_PUBLIC_HYBRIDCUSTODY_ADDRESS"
 
+const contractbrowserURL = process.env.NEXT_PUBLIC_CONTRACTBROWSER_URL
+if (!contractbrowserURL) throw "Missing NEXT_PUBLIC_CONTRACTBROWSER_URL"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -86,7 +89,8 @@ const publicConfig = {
   bayouURL,
   drizzleURL,
   incrementURL,
-  linkURL
+  linkURL,
+  contractbrowserURL
 }
 
 export default publicConfig

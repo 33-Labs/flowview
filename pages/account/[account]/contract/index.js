@@ -65,10 +65,10 @@ export default function Contract(props) {
                 </div>
                 <div className="flex gap-x-3 items-center">
                   {
-                    publicConfig.chainEnv == "mainnet" ?
+                    publicConfig.chainEnv == "mainnet" || publicConfig.chainEnv == "testnet" ?
                       <div className="cursor-pointer h-[28px] aspect-square shrink-0 relative"
                         onClick={(event) => {
-                          window.open(`https://contractbrowser.com/A.${account.replace("0x", "")}.${name}`)
+                          window.open(`${publicConfig.contractbrowserURL}/A.${account.replace("0x", "")}.${name}`)
                           event.stopPropagation()
                         }}>
                         <Image src={"/contractbrowser.png"} alt="" fill sizes="5vw" className="object-contain" />
