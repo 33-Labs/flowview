@@ -19,6 +19,7 @@ import RedeemAccountModal from "../../../../../components/hybrid_custody/RedeemA
 import ChildView from "../../../../../components/hybrid_custody/ChildView"
 import OwnedView from "../../../../../components/hybrid_custody/OwnedView"
 import TransferOwnershipModal from "../../../../../components/hybrid_custody/TransferOwnerShipModal"
+import SetManagerCapFilterModal from "../../../../../components/hybrid_custody/SetManagerCapFilterModal"
 
 const hcManagerInfoFetcher = async (funcName, address) => {
   return getHcManagerInfo(address)
@@ -176,7 +177,6 @@ export default function HybridCustodyManager(props) {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -184,6 +184,7 @@ export default function HybridCustodyManager(props) {
       <SetupHcManagerModal />
       <RedeemAccountModal />
       <SetupDisplayModal />
+      <SetManagerCapFilterModal />
       <TransferOwnershipModal />
     </div>
   )

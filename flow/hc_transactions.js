@@ -321,3 +321,33 @@ const doTransferOwnershipFromManager = async (ownedAddress, ownerAddress) => {
 
   return transactionId
 }
+
+export const setManagerCapabilityFilter = async (
+  childAddress,
+  filterAddress,
+  setTransactionInProgress,
+  setTransactionStatus
+) => {
+  const txFunc = async () => {
+    return await doSetManagerCapabilityFilter(childAddress, filterAddress)
+  }
+
+  return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
+}
+
+const doSetManagerCapabilityFilter = async (childAddress, filterAddress) => {
+  const code = await (await fetch("/transactions/hc/set_manager_capability_filter.cdc")).text()
+
+  const transactionId = fcl.mutate({
+    cadence: code,
+    args: (arg, t) => [
+      arg(childAddress, t.Address),
+      arg(filterAddress, t.Address)
+    ],
+    proposer: fcl.currentUser,
+    payer: fcl.currentUser,
+    limit: 9999
+  })
+
+  return transactionId
+}

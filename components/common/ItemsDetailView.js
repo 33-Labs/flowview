@@ -6,7 +6,7 @@ import {
   showAlertModalState,
   alertModalContentState
 } from "../../lib/atoms"
-import { classNames, getContract, getContractLink } from "../../lib/utils"
+import { classNames, formatTypeID } from "../../lib/utils"
 import { destroy, unlink } from "../../flow/transactions"
 import { useSWRConfig } from 'swr'
 import { useState } from "react"
@@ -69,24 +69,6 @@ const formatPath = (path, classes) => {
     <div className={`${classes} max-w-[830px] truncate text-ellipsis overflow-hidden shrink`}>
       {`/${domain}/`}<span className="font-bold">{`${itemPath}`}</span>
     </div>
-  )
-}
-
-const formatTypeID = (typeID) => {
-  // e.g. A.631e88ae7f1d7c20.NonFungibleToken .CollectionPublic
-  const contract = getContract(typeID)
-  const url = getContractLink(contract)
-  const rest = typeID.replace(contract, "")
-  return (
-    <label>
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline font-bold decoration-drizzle decoration-2">
-        {contract}
-      </a>{`${rest}`}
-    </label>
   )
 }
 
