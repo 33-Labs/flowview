@@ -35,7 +35,7 @@ export default function ChildView(props) {
               disabled={transactionInProgress || !(user && user.loggedIn && user.addr == account)}
               className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}
               onClick={async () => {
-                setShowSetManagerCapFilter({show: true, mode: "ChildAccount"})
+                setShowSetManagerCapFilter({show: true, mode: "ChildAccount", childAddress: child.address})
               }}
             >
               {"Set Manager Cap Filter"}

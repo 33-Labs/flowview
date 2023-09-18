@@ -60,12 +60,12 @@ export default function SetManagerCapFilterModal(props) {
                       {"Set Manager Capability Filter"}
                     </Dialog.Title>
                     <div className='flex flex-col gap-y-4'>
-                      {showSetManagerCapFilter.child ?
+                      {showSetManagerCapFilter.childAddress ?
                         <div>
                           <label htmlFor="factory" className="block text-sm font-medium leading-6 text-gray-900">
                             {`Child Address`}
                           </label>
-                          <div className="font-semibold text-base">{showSetManagerCapFilter.child}</div>
+                          <div className="font-semibold text-base">{showSetManagerCapFilter.childAddress}</div>
                         </div> : null
                       }
                       <div>
@@ -116,7 +116,6 @@ export default function SetManagerCapFilterModal(props) {
                         setShowSetManagerCapFilter(prevState => ({
                           ...prevState, show: false
                         }))
-                        console.log("SET FILTER")
                         await setManagerCapabilityFilter(showSetManagerCapFilter.child, filter, setTransactionInProgress, setTransactionStatus)
                         mutate(["hcManagerInfoFetcher", account])
                         return
