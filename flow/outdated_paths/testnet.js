@@ -51,7 +51,11 @@ export const outdatedPathsTestnet = {
     /storage/NFTLendingPlaceCollection: true,
     /storage/NFTLendingPlace2: true,
     /storage/NFTLendingPlaceCollectionLenderTicket: true,
-    /storage/EvolutionCollection: true
+    /storage/EvolutionCollection: true,
+    /storage/CryptoSealsDAOVault: true,
+    /storage/CryptoSealsDAOMinter: true,
+    /storage/CryptoSealsDAOAdmin: true,
+    /storage/ToucansCollection005: true
   }
   `,
   public: `
@@ -183,7 +187,10 @@ export const outdatedPathsTestnet = {
     /public/exampleNFTCollection002: true,
     /public/exampleNFTCollection003: true,
     /public/kittyItemsCollection001: true,
-    /public/kittyItemsMarketCollection001: true
+    /public/kittyItemsMarketCollection001: true,
+    /public/CryptoSealsDAOReceiver: true,
+    /public/CryptoSealsDAOMetadata: true,
+    /public/ToucansCollection005: true
   }
   `,
   private: `
