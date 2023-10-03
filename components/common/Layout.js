@@ -23,6 +23,7 @@ import { StarIcon as SolidStar } from "@heroicons/react/solid"
 import { getBookmark } from "../../flow/bookmark_scripts";
 import { removeAccountBookmark } from "../../flow/bookmark_transactions";
 import NoteEditorModal from "../bookmark/NoteEditorModal";
+import { QRCodeCanvas } from "qrcode.react";
 
 const accountBookmarkFetcher = async (funcName, owner, target) => {
   if (publicConfig.chainEnv == "emulator") {
@@ -137,54 +138,76 @@ export default function Layout({ children }) {
   return (
     <>
       <div className="flex flex-col gap-y-2">
-        <div className="px-5 mb-10">
+        <div className="px-5 mb-3 sm:mb-10">
           <SearchBar />
         </div>
 
-        <div className="px-5 flex flex-col gap-y-1">
-          <label className="text-lg sm:text-xl text-gray-500">Account</label>
-          <div className="flex gap-x-2 items-center">
-            <label className="text-2xl sm:text-3xl font-bold">{`${account}`}</label>
-            <DocumentDuplicateIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
-              onClick={async () => {
-                await navigator.clipboard.writeText(account)
-                setShowBasicNotification(true)
-                setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
-              }} />
-            {showStarIcon(bookmark)}
-          </div>
-          {
-            bookmark ?
+        <div className="flex flex-col-reverse gap-y-2 sm:flex-row sm:items-center sm:justify-between sm:gap-x-5">
+          <div className="flex flex-col gap-y-1">
+            <div className="px-5 flex flex-col gap-y-1">
+              <label className="text-lg sm:text-xl text-gray-500">Account</label>
               <div className="flex gap-x-2 items-center">
-                <label className={`font-semibold text-xs px-2 py-1 leading-4 rounded-full text-black bg-drizzle`}>
-                  Note
-                </label>
-                <div className="text-gray-600 text-sm">{bookmark.note}</div>
+                <label className="text-2xl sm:text-3xl font-bold">{`${account}`}</label>
+                <DocumentDuplicateIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(account)
+                    setShowBasicNotification(true)
+                    setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
+                  }} />
+                {showStarIcon(bookmark)}
+              </div>
+              {
+                bookmark ?
+                  <div className="flex gap-x-2 items-center">
+                    <label className={`font-semibold text-xs px-2 py-1 leading-4 rounded-full text-black bg-drizzle`}>
+                      Note
+                    </label>
+                    <div className="text-gray-600 text-sm">{bookmark.note}</div>
+                  </div>
+                  : null
+              }
+            </div>
+
+            {currentDefaultDomains && currentDefaultDomains.domains.length > 0 ?
+              <div className="mt-4 px-5 flex flex-col gap-y-1">
+                <label className="text-base sm:text-lg text-gray-500">Default Domains</label>
+                <div className="mt-1 flex gap-x-2">{
+                  currentDefaultDomains.domains.map((domain, index) => {
+                    return (
+                      <label key={`${domain.domain}_${index}`} className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
+                        <a href={domain.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {domain.domain}
+                        </a>
+                      </label>
+                    )
+                  })}
+                </div>
               </div>
               : null
-          }
+            }
+          </div>
+          <div className="pl-3 hidden sm:pr-3 sm:block">
+            <QRCodeCanvas
+              id="qr-address"
+              value={account}
+              size={160}
+              bgColor={"#ffffff"}
+              fgColor={"#00d588"}
+              level={"H"}
+              includeMargin={true}
+              imageSettings={{
+                src: "/favicon.ico",
+                height: 24,
+                width: 24,
+                excavate: true
+              }}
+            />
+          </div>
         </div>
 
-        {currentDefaultDomains && currentDefaultDomains.domains.length > 0 ?
-          <div className="mt-4 px-5 flex flex-col gap-y-1">
-            <label className="text-base sm:text-lg text-gray-500">Default Domains</label>
-            <div className="mt-1 flex gap-x-2">{
-              currentDefaultDomains.domains.map((domain, index) => {
-                return (
-                  <label key={`${domain.domain}_${index}`} className={`cursor-pointer font-bold text-sm px-3 py-2 leading-5 rounded-full text-emerald-800 bg-emerald-100`}>
-                    <a href={domain.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {domain.domain}
-                    </a>
-                  </label>
-                )
-              })}
-            </div>
-          </div>
-          : null
-        }
         <div className="mt-10 flex flex-row gap-x-2 sm:gap-x-4 items-start justify-start">
           <Sidebar />
           {children}
