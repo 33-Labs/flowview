@@ -35,7 +35,7 @@ export default function TokenList(props) {
               newToken.inSwitchboard = inSwitchboard(switchboard, token)
               return newToken
             }).map((token, index) => {
-              return <TokenView key={`ft-tokenview-${index}`} account={account} token={token} isCurrentUser={isCurrentUser} />
+              return <TokenView key={`ft-tokenview-${index}`} account={account} token={token} isCurrentUser={isCurrentUser} switchboard={switchboard} />
             })
           }
         </div> :
