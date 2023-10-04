@@ -23,7 +23,7 @@ export default function ChildView(props) {
       <div className="flex flex-col gap-y-2">
         <div className="flex gap-x-2 justify-between items-center">
           <div className="cursor-pointer px-2 text-xl font-bold text-black decoration-drizzle decoration-2 underline">
-            <a href={`${publicConfig.appURL}//account/${child.address}`}
+            <a href={`${publicConfig.appURL}/account/${child.address}`}
               target="_blank"
               rel="noopener noreferrer">
               {child.address}
