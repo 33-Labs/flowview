@@ -83,10 +83,10 @@ export default function Contract(props) {
                   </div>
                   <div className="cursor-pointer h-[28px] aspect-square shrink-0 relative"
                     onClick={(event) => {
-                      window.open(`${publicConfig.flowscanURL}/contract/A.${account.replace("0x", "")}.${name}/overview`)
+                      window.open(`${publicConfig.flowscanURL}/contract/A.${account.replace("0x", "")}.${name}`)
                       event.stopPropagation()
                     }}>
-                    <Image src={"/flowscan.svg"} alt="" fill sizes="5vw" className="object-contain" />
+                    <Image src={"/flowdiver.png"} alt="" fill sizes="5vw" className="object-contain" />
                   </div>
 
                 </div>

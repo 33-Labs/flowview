@@ -40,7 +40,7 @@ const NotificationContent = ({ txStatus }) => {
           <div className="flex gap-x-2">
             <p className="text-sm font-bold font-flow text-gray-900">Pending</p>
             <a
-              href={`${publicConfig.flowscanURL}/transaction/${txStatus.txid}`}
+              href={`${publicConfig.flowscanURL}/tx/${txStatus.txid}`}
               rel="noopener noreferrer"
               target="_blank" className="truncate font-medium font-flow text-sm underline decoration-drizzle decoration-2">
               {`${txStatus.txid}`}
@@ -62,7 +62,7 @@ const NotificationContent = ({ txStatus }) => {
           <div className="flex gap-x-2">
             <p className="text-sm font-bold font-flow text-gray-900">Success</p>
             <a
-              href={`${publicConfig.flowscanURL}/transaction/${txStatus.txid}`}
+              href={`${publicConfig.flowscanURL}/tx/${txStatus.txid}`}
               rel="noopener noreferrer"
               target="_blank" className="truncate font-medium font-flow text-sm underline decoration-drizzle decoration-2">
               {`${txStatus.txid}`}
@@ -86,7 +86,7 @@ const NotificationContent = ({ txStatus }) => {
             {
               txStatus.txid ? (
                 <a
-                  href={`${publicConfig.flowscanURL}/transaction/${txStatus.txid}`}
+                  href={`${publicConfig.flowscanURL}/tx/${txStatus.txid}`}
                   rel="noopener noreferrer"
                   target="_blank" className="truncate font-medium font-flow text-sm underline decoration-drizzle decoration-2">
                   {`${txStatus.txid}`}
