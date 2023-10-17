@@ -110,12 +110,12 @@ export default function HybridCustodyManager(props) {
   return (
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
-        <div className="min-w-[1076px] flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="p-2 flex gap-x-2 justify-between w-full">
+        <div className="flex w-full flex-col gap-y-3 overflow-auto">
+          <div className="sm:min-w-[1076px] p-2 flex gap-x-2 justify-between">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
               {`HybridCustody Manager`}
             </h1>
-            <div className="flex gap-x-2 justify-end">
+            <div className="hidden sm:flex gap-x-2 justify-end">
               {
                 hcManagerInfo && !hcManagerInfo.isManagerExists ?
                   <button
