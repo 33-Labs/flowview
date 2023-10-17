@@ -7,23 +7,28 @@ import Layout from "../../../../../components/common/Layout"
 import NFTListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
-import { basicNotificationContentState, nftCatalogState, showBasicNotificationState } from "../../../../../lib/atoms"
-import { collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
+import { basicNotificationContentState, nftCatalogState, showBasicNotificationState, showNftBulkTransferState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
+import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
+import NftBulkTransferModal from "../../../../../components/collection/NftBulkTransferModal"
 
 export default function CollectionDetail(props) {
   const router = useRouter()
   const { account: account, collection: collectionPath } = router.query
-
+  const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
+  const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
+  const [, setShowNftBulkTransfer] = useRecoilState(showNftBulkTransferState)
   const [nftCatalog, setNftCatalog] = useRecoilState(nftCatalogState)
   const [collection, setCollection] = useState(null)
   const [collectionData, setCollectionData] = useState(null)
   const [collectionError, setCollectionError] = useState(null)
   const [needRelink, setNeedRelink] = useState(false)
   const [collectionDisplay, setCollectionDisplay] = useState(null)
+  const [selectMode, setSelectMode] = useState("Detail")
+  const [selectedTokens, setSelectedTokens] = useState({})
 
   useEffect(() => {
     if (publicConfig.chainEnv === "emulator") {
@@ -107,7 +112,8 @@ export default function CollectionDetail(props) {
           {
             collection.tokenIDs.length > 0 ?
               <div className="h-screen">
-                <NFTListView collection={collection} setNeedRelink={setNeedRelink} setCollectionDisplay={setCollectionDisplay} />
+                <NFTListView collection={collection} setNeedRelink={setNeedRelink} setCollectionDisplay={setCollectionDisplay}
+                  selectMode={selectMode} selectedTokens={selectedTokens} setSelectedTokens={setSelectedTokens} />
               </div> :
               <div className="flex mt-10 h-[70px] text-gray-400 text-base justify-center">
                 Nothing found
@@ -265,6 +271,45 @@ export default function CollectionDetail(props) {
         </div>
         {getContractInfoView()}
         <div className="px-1 py-2 w-[1070px]">{description}</div>
+        <div className="mt-1 mb-2 flex gap-x-2">
+          <button
+            type="button"
+            disabled={transactionInProgress}
+            className={
+              classNames(
+                transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+                `px-3 py-1 text-sm rounded-2xl font-semibold shrink-0`
+              )
+            }
+            onClick={async () => {
+              if (selectMode == "Detail") {
+                setSelectMode("Select")
+              } else {
+                setSelectMode("Detail")
+              }
+            }}
+          >
+            {selectMode == "Detail" ? "Select" : "Cancel"}
+          </button>
+          {
+            selectMode == "Select" ?
+              <button
+                type="button"
+                disabled={transactionInProgress || Object.values(selectedTokens).filter((t) => t.isSelected).length == 0}
+                className={
+                  classNames(
+                    transactionInProgress || Object.values(selectedTokens).filter((t) => t.isSelected).length == 0 ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+                    `px-3 py-1 text-sm rounded-2xl font-semibold shrink-0`
+                  )
+                }
+                onClick={async () => {
+                  setShowNftBulkTransfer({show: true, mode: "NftBulkTransfer"})
+                }}
+              >
+                Bulk Transfer
+              </button>
+              : null}
+        </div>
       </div>
     )
   }
@@ -295,6 +340,7 @@ export default function CollectionDetail(props) {
           </div>
         </div>
       </Layout>
+      <NftBulkTransferModal />
     </div>
   )
 }

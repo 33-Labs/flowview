@@ -10,7 +10,8 @@ import Spinner from "./Spinner"
 export default function NFTListView(props) {
   const router = useRouter()
   const { account } = router.query
-  const { collection, setNeedRelink, setCollectionDisplay } = props
+  const { collection, setNeedRelink, setCollectionDisplay, 
+    selectMode, selectedTokens, setSelectedTokens } = props
 
   const [displayData, setDisplayData] = useState(null)
   const [displays, setDisplays] = useState(null)
@@ -106,21 +107,8 @@ export default function NFTListView(props) {
             {
               displays.map((display, index) => {
                 return (
-                  <button
-                  key={`${display.tokenID}_${index}`}
-                  onClick={() => {
-                    router.push({
-                      pathname: `${router.pathname}/[token_id]`,
-                      query: {
-                        account: account,
-                        collection: collection.path.replace("/storage/", ""),
-                        token_id: display.tokenID 
-                      }
-                    }, undefined, { shallow: true })
-                  }}
-                  >
-                    <NFTView display={display} />
-                  </button>
+                  <NFTView key={`${display.tokenID}_${index}`} display={display} account={account} collection={collection} 
+                    selectMode={selectMode} selectedTokens={selectedTokens} setSelectedTokens={setSelectedTokens} tokenId={display.tokenID} />
                 )
               })
             }
