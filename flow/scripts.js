@@ -105,7 +105,12 @@ export const getAddressOfDomain = async (domain) => {
 // --- Collections ---
 
 export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
-  const code = await (await fetch("/scripts/collection/get_nft_metadata_views.cdc")).text()
+  let code 
+  if (publicConfig.chainEnv == 'emulator') {
+    code = await (await fetch("/scripts/collection/get_nft_metadata_views_emulator.cdc")).text()
+  } else {
+    code = await (await fetch("/scripts/collection/get_nft_metadata_views.cdc")).text()
+  }
 
   const metadata = await fcl.query({
     cadence: code,

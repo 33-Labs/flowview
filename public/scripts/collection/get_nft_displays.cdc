@@ -60,10 +60,7 @@ pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt
       if let rarityView = MetadataViews.getRarity(resolver) {
         rarityDesc = rarityView.description
       }
-      var transferrable = true
-      if let soulboundView = resolver.resolveView(Type<FindViews.SoulBound>()) {
-        transferrable = false
-      }
+      let transferrable = !FindViews.checkSoulBound(resolver)
 
       var collectionDisplay: MetadataViews.NFTCollectionDisplay? = nil
       if (!collectionDisplayFetched) {

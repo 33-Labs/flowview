@@ -1,6 +1,5 @@
 import NonFungibleToken from 0xNonFungibleToken
 import MetadataViews from 0xMetadataViews
-import FindViews from 0xFindViews
 
 pub struct CollectionData {
   pub let storagePath: StoragePath
@@ -91,8 +90,6 @@ pub fun main(address: Address, storagePathID: String, tokenID: UInt64): {String:
   if let collectionDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
     res["collectionDisplay"] = collectionDisplay
   }
-
-  res["soulbound"] = FindViews.checkSoulBound(resolver)
 
   if let collectionData = MetadataViews.getNFTCollectionData(resolver) {
     let data = CollectionData(

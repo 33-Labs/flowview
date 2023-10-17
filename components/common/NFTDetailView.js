@@ -303,6 +303,7 @@ export default function NFTDetailView(props) {
     const collectionDisplay = metadata.collectionDisplay
     const serial = metadata.serial
     const rarity = metadata.rarity
+    const soulbound = metadata.soulbound
     let rarityColor = null
     if (rarity && rarity.description) {
       rarityColor = getRarityColor(rarity.description.toLowerCase())
@@ -364,6 +365,11 @@ export default function NFTDetailView(props) {
               {
                 serial ?
                   <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-yellow-100 text-yellow-800`}>{`Serial: #${serial.number}`}</label>
+                  : null
+              }
+              {
+                soulbound ?
+                  <label className={`font-bold text-xs px-2 py-1 leading-5 rounded-full bg-indigo-100 text-indigo-800`}>{`SoulBound`}</label>
                   : null
               }
             </div>

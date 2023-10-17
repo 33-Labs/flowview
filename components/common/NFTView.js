@@ -64,7 +64,7 @@ export default function NFTView(props) {
       <div className="flex gap-x-1 justify-center items-center">
         {
           display.transferrable == true ? null :
-            <div className={`w-4 h-4 text-center bg-indigo-200 text-indigo-600 rounded-full font-flow font-medium text-xs`}>
+            <div className={`w-4 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
               {"S"}
             </div>
         }
