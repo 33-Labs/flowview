@@ -12,7 +12,8 @@ import { bulkTransferNft } from '../../flow/nft_transactions';
 export default function NftBulkTransferModal(props) {
   const router = useRouter()
   const { mutate } = useSWRConfig()
-  const {account} = props
+  const { account: account, collection: collectionPath } = router.query
+  const { selectedTokens, setSelectedTokens, collection } = props
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
 
@@ -109,13 +110,16 @@ export default function NftBulkTransferModal(props) {
                         ...prev, show: false
                       }))
 
-                      if (setShowNftBulkTransfer.mode == "NftBulkTransfer") {
-                        await bulkTransferNft(recipient, setTransactionInProgress, setTransactionStatus)
-                        // TODO:
-                        // await redeemAccount(recipient, setTransactionInProgress, setTransactionStatus)
-                      } 
-                      // TODO:
-                      // mutate(["hcManagerInfoFetcher", account])
+                      if (showNftBulkTransfer.mode == "NftBulkTransfer") {
+                        const publicPath = `/public/${collection.publicPathIdentifier}`
+                        const storagePath = `/storage/${collection.storagePathIdentifier}`
+                        const tokenIds = Object.entries(selectedTokens).filter(([tokenId, properties]) => properties.isSelected).map(([tokenId, selected]) => tokenId)
+                        await bulkTransferNft(recipient, tokenIds,
+                          storagePath, publicPath,
+                          setTransactionInProgress, setTransactionStatus
+                        )
+                      }
+                      router.reload()
                     }}
                   >
                     {"Confirm"}

@@ -7,17 +7,17 @@ import Layout from "../../../../../components/common/Layout"
 import NFTListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
-import { basicNotificationContentState, nftCatalogState, showBasicNotificationState, showNftBulkTransferState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
-import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress, isValidStoragePath } from "../../../../../lib/utils"
+import { basicNotificationContentState, nftCatalogState, showBasicNotificationState, showNftBulkTransferState, transactionInProgressState } from "../../../../../lib/atoms"
+import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
 import NftBulkTransferModal from "../../../../../components/collection/NftBulkTransferModal"
+import * as fcl from "@onflow/fcl"
 
 export default function CollectionDetail(props) {
   const router = useRouter()
   const { account: account, collection: collectionPath } = router.query
-  const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
-  const [, setTransactionStatus] = useRecoilState(transactionStatusState)
+  const [transactionInProgress,] = useRecoilState(transactionInProgressState)
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
   const [, setShowNftBulkTransfer] = useRecoilState(showNftBulkTransferState)
@@ -29,6 +29,9 @@ export default function CollectionDetail(props) {
   const [collectionDisplay, setCollectionDisplay] = useState(null)
   const [selectMode, setSelectMode] = useState("Detail")
   const [selectedTokens, setSelectedTokens] = useState({})
+
+  const [user, setUser] = useState({ loggedIn: null })
+  useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   useEffect(() => {
     if (publicConfig.chainEnv === "emulator") {
@@ -247,6 +250,15 @@ export default function CollectionDetail(props) {
       linkSource = collectionDisplay
     }
 
+    const isCurrentUser = () => {
+      return user && user.loggedIn && user.addr == account
+    }
+
+    const disableBulkTransfer = () => {
+      return !isCurrentUser() || transactionInProgress || Object.values(selectedTokens).filter((t) => t.isSelected).length == 0 ||
+        !collection.publicPathIdentifier || !collection.storagePathIdentifier
+    }
+
     return (
       <div className="p-2 w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-auto">
         <div className="w-[1070px] flex gap-x-10 justify-between items-center">
@@ -274,10 +286,10 @@ export default function CollectionDetail(props) {
         <div className="mt-1 mb-2 flex gap-x-2">
           <button
             type="button"
-            disabled={transactionInProgress}
+            disabled={!isCurrentUser() || transactionInProgress}
             className={
               classNames(
-                transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+                !isCurrentUser() || transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
                 `px-3 py-1 text-sm rounded-2xl font-semibold shrink-0`
               )
             }
@@ -286,24 +298,25 @@ export default function CollectionDetail(props) {
                 setSelectMode("Select")
               } else {
                 setSelectMode("Detail")
+                setSelectedTokens({})
               }
             }}
           >
             {selectMode == "Detail" ? "Select" : "Cancel"}
           </button>
           {
-            selectMode == "Select" ?
+            isCurrentUser() && selectMode == "Select" ?
               <button
                 type="button"
-                disabled={transactionInProgress || Object.values(selectedTokens).filter((t) => t.isSelected).length == 0}
+                disabled={disableBulkTransfer()}
                 className={
                   classNames(
-                    transactionInProgress || Object.values(selectedTokens).filter((t) => t.isSelected).length == 0 ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+                    disableBulkTransfer() ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
                     `px-3 py-1 text-sm rounded-2xl font-semibold shrink-0`
                   )
                 }
                 onClick={async () => {
-                  setShowNftBulkTransfer({show: true, mode: "NftBulkTransfer"})
+                  setShowNftBulkTransfer({ show: true, mode: "NftBulkTransfer" })
                 }}
               >
                 Bulk Transfer
@@ -340,7 +353,7 @@ export default function CollectionDetail(props) {
           </div>
         </div>
       </Layout>
-      <NftBulkTransferModal />
+      <NftBulkTransferModal selectedTokens={selectedTokens} setSelectedTokens={setSelectedTokens} collection={collection} />
     </div>
   )
 }

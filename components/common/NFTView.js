@@ -11,7 +11,7 @@ export default function NFTView(props) {
   const isSelected = (selectMode == "Select" && selectedTokens && selectedTokens[tokenId] && selectedTokens[tokenId].isSelected == true) ? true : false
   const router = useRouter()
   const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
-  const maxSelection = 2
+  const maxSelection = 20
   return (
     <div className={
       classNames(
