@@ -24,6 +24,7 @@ import { getBookmark } from "../../flow/bookmark_scripts";
 import { removeAccountBookmark } from "../../flow/bookmark_transactions";
 import NoteEditorModal from "../bookmark/NoteEditorModal";
 import { QRCodeCanvas } from "qrcode.react";
+import Image from "next/image"
 
 const accountBookmarkFetcher = async (funcName, owner, target) => {
   if (publicConfig.chainEnv == "emulator") {
@@ -155,6 +156,13 @@ export default function Layout({ children }) {
                     setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
                   }} />
                 {showStarIcon(bookmark)}
+                <div className="cursor-pointer h-[20px] aspect-square shrink-0 relative"
+                    onClick={(event) => {
+                      window.open(`${publicConfig.flowscanURL}/account/${account}`)
+                      event.stopPropagation()
+                    }}>
+                    <Image src={"/flowdiver.png"} alt="" fill sizes="5vw" className="object-contain" />
+                  </div>
               </div>
               {
                 bookmark ?
