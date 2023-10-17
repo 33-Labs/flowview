@@ -7,6 +7,7 @@ import { isValidFlowAddress, isValidPositiveFlowDecimals, isValidPositiveNumber,
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
 import { acceptOwnership, redeemAccount } from '../../flow/hc_transactions';
+import { bulkTransferNft } from '../../flow/nft_transactions';
 
 export default function NftBulkTransferModal(props) {
   const router = useRouter()
@@ -68,14 +69,13 @@ export default function NftBulkTransferModal(props) {
                         <div className="mt-1 relative rounded-md shadow-sm">
                           <input
                             type="text"
-                            name="child"
+                            name="bulk_nft"
                             id="child"
                             className={`bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
                             focus:border-drizzle-dark
                           outline-0 focus:outline-2 focus:outline-drizzle-dark 
                           placeholder:text-gray-300`}
                             placeholder="0x"
-                            aria-describedby="price-currency"
                             onChange={(e) => {
                               setRecipientError(null)
                               setRecipient("")
@@ -110,6 +110,7 @@ export default function NftBulkTransferModal(props) {
                       }))
 
                       if (setShowNftBulkTransfer.mode == "NftBulkTransfer") {
+                        await bulkTransferNft(recipient, setTransactionInProgress, setTransactionStatus)
                         // TODO:
                         // await redeemAccount(recipient, setTransactionInProgress, setTransactionStatus)
                       } 

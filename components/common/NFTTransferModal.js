@@ -50,29 +50,44 @@ export default function NFTTransferModal(props) {
               <Dialog.Panel className="min-w-[320px] relative bg-white rounded-2xl p-4 text-left overflow-hidden shadow-xl transform transition-all sm:max-w-lg sm:w-full sm:p-6">
                 <div>
                   <div className="mt-3">
-                    <Dialog.Title as="h3" className="text-xl leading-6 font-bold text-gray-900">
-                      {"Recipient"}
+                    <Dialog.Title as="h3" className="text-xl leading-6 font-bold text-gray-900 mb-4">
+                      {"NFT Transfer"}
                     </Dialog.Title>
-                    <div className='flex flex-col gap-y-2'>
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        required
-                        className={`mt-4 bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
-                        focus:border-drizzle-dark
-                      outline-0 focus:outline-2 focus:outline-drizzle-dark 
-                      placeholder:text-gray-300`}
-                      defaultValue={recipient}
-                        onChange={(event) => {
-                          if (recipientError) { setRecipientError(null) }
-                          setRecipient(event.target.value)
-                        }}
-                      />
-                      {
-                        recipientError ?
-                        <label className='text-base text-red-600'>{recipientError}</label> : null
-                      }
+                    <div className='flex flex-col gap-y-4'>
+                      <div>
+                        <label htmlFor="factory" className="block text-sm font-medium leading-6 text-gray-900">
+                          {`Recipient`}
+                        </label>
+                        <div className="mt-1 relative rounded-md shadow-sm">
+                          <input
+                            type="text"
+                            name="name"
+                            id="name"
+                            className={`bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
+                            focus:border-drizzle-dark
+                          outline-0 focus:outline-2 focus:outline-drizzle-dark 
+                          placeholder:text-gray-300`}
+                            placeholder='0x'
+                            onChange={(event) => {
+                              setRecipientError(null)
+                              setRecipient("")
+                              if (e.target.value === "") {
+                                return
+                              }
+
+                              if (!isValidFlowAddress(e.target.value)) {
+                                setRecipientError("Invalid address")
+                                return
+                              }
+                              setRecipient(e.target.value)
+                            }}
+                          />
+                        </div>
+                        {
+                          recipientError ?
+                            <label className='text-base text-red-600'>{recipientError}</label> : null
+                        }
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -90,11 +105,11 @@ export default function NFTTransferModal(props) {
                       setShowNftTransfer(false)
                       const res = await transferNft(recipient, tokenId,
                         collectionStoragePath, collectionPublicPath,
-                        setTransactionInProgress, 
+                        setTransactionInProgress,
                         setTransactionStatus
                       )
                       if (res && res.status === 4) {
-                        const {account, collection} = router.query
+                        const { account, collection } = router.query
                         router.push(`/account/${account}/collection/${collection}`)
                       }
                     }}
