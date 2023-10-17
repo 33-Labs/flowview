@@ -2,14 +2,17 @@ import publicConfig from "../publicConfig"
 import * as fcl from "@onflow/fcl"
 import * as t from "@onflow/types"
 import { outdatedPathsMainnet } from "./outdated_paths/mainnet"
-import { outdatedPathsTestnet } from "./outdated_paths/testnet"
+import { outdatedPathsEmulator, outdatedPathsTestnet } from "./outdated_paths/testnet"
 import { cadenceValueToDict } from "../lib/utils"
 
 const outdatedPaths = (network) => {
   if (network == "mainnet") {
     return outdatedPathsMainnet
+  } 
+  if (network == "testnet") {
+    return outdatedPathsTestnet
   }
-  return outdatedPathsTestnet
+  return outdatedPathsEmulator
 }
 
 // --- Utils ---
@@ -18,12 +21,12 @@ const splitList = (list, chunkSize) => {
   const groups = []
   let currentGroup = []
   for (let i = 0; i < list.length; i++) {
-      const collectionID = list[i]
-      if (currentGroup.length >= chunkSize) {
-        groups.push([...currentGroup])
-        currentGroup = []
-      }
-      currentGroup.push(collectionID)
+    const collectionID = list[i]
+    if (currentGroup.length >= chunkSize) {
+      groups.push([...currentGroup])
+      currentGroup = []
+    }
+    currentGroup.push(collectionID)
   }
   groups.push([...currentGroup])
   return groups
@@ -39,7 +42,7 @@ export const getAccountInfo = async (address) => {
     args: (arg, t) => [
       arg(address, t.Address)
     ]
-  }) 
+  })
 
   return result
 }
@@ -47,7 +50,7 @@ export const getAccountInfo = async (address) => {
 // --- Keys ---
 
 export const getKeys = async (address) => {
-  const accountInfo = await fcl.send([ fcl.getAccount(fcl.sansPrefix(address)) ])
+  const accountInfo = await fcl.send([fcl.getAccount(fcl.sansPrefix(address))])
   return accountInfo.account.keys.sort((a, b) => a.keyIndex - b.keyIndex)
 }
 
@@ -79,7 +82,7 @@ export const getDefaultDomainsOfAddress = async (address) => {
     args: (arg, t) => [
       arg(address, t.Address)
     ]
-  }) 
+  })
 
   return domains
 }
@@ -97,7 +100,7 @@ export const getAddressOfDomain = async (domain) => {
       arg(name, t.String),
       arg(root, t.String),
     ]
-  }) 
+  })
 
   return address
 }
@@ -105,7 +108,7 @@ export const getAddressOfDomain = async (domain) => {
 // --- Collections ---
 
 export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
-  let code 
+  let code
   if (publicConfig.chainEnv == 'emulator') {
     code = await (await fetch("/scripts/collection/get_nft_metadata_views_emulator.cdc")).text()
   } else {
@@ -119,7 +122,7 @@ export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
       arg(storagePathID, t.String),
       arg(tokenID, t.UInt64)
     ]
-  }) 
+  })
 
   return metadata
 }
@@ -143,21 +146,21 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
   })
 
   console.log(displays)
-  return displays  
+  return displays
 }
 
 export const bulkGetNftViews = async (address, collection, limit, offset) => {
   const totalTokenIDs = collection.tokenIDs
   const tokenIDs = totalTokenIDs.slice(offset, offset + limit)
 
-  const groups = splitList(tokenIDs, 20) 
+  const groups = splitList(tokenIDs, 20)
   const promises = groups.map((group) => {
     return getNftViews(address, collection.path.replace("/storage/", ""), group)
-  }) 
+  })
   const displayGroups = await Promise.all(promises)
   const displays = displayGroups.reduce((acc, current) => {
     return Object.assign(acc, current)
-  }, {}) 
+  }, {})
 
   return displays
 }
@@ -174,21 +177,21 @@ export const bulkGetNftCatalog = async () => {
   const itemGroups = await Promise.all(promises)
   const items = itemGroups.reduce((acc, current) => {
     return Object.assign(acc, current)
-  }, {}) 
-  return items 
+  }, {})
+  return items
 }
 
 export const getNftCatalogByCollectionIDs = async (collectionIDs) => {
-  const code = await (await fetch("/scripts/collection/get_nft_catalog_by_collection_ids.cdc")).text() 
+  const code = await (await fetch("/scripts/collection/get_nft_catalog_by_collection_ids.cdc")).text()
 
   const catalogs = await fcl.query({
     cadence: code,
     args: (arg, t) => [
       arg(collectionIDs, t.Array(t.String))
     ]
-  }) 
+  })
 
-  return catalogs  
+  return catalogs
 }
 
 const getCollectionIdentifiers = async () => {
@@ -211,9 +214,9 @@ const getCatalogTypeData = async () => {
 
   const typeData = await fcl.query({
     cadence: code
-  }) 
+  })
 
-  return typeData 
+  return typeData
 }
 
 // --- Storage Items ---
@@ -234,7 +237,7 @@ export const bulkGetStoredItems = async (address) => {
 
 export const getStoredItems = async (address, paths) => {
   const code = await (await fetch("/scripts/storage/get_stored_items.cdc")).text()
-  const filteredPaths = paths.filter((item) => 
+  const filteredPaths = paths.filter((item) =>
     item !== "BnGNFTCollection" && item !== "RacingTimeCollection" && item !== "FuseCollectiveCollection" && item !== "ARTIFACTV2Collection"
   )
 
@@ -244,7 +247,7 @@ export const getStoredItems = async (address, paths) => {
       arg(address, t.Address),
       arg(filteredPaths, t.Array(t.String))
     ]
-  }) 
+  })
 
   return items
 }
@@ -258,7 +261,7 @@ const getStoragePaths = async (address) => {
     args: (arg, t) => [
       arg(address, t.Address)
     ]
-  }) 
+  })
 
   return paths
 }
@@ -325,7 +328,7 @@ export const bulkGetPublicItems = async (address) => {
 
 export const getPublicItems = async (address, paths) => {
   const pathMap = paths.reduce((acc, path) => {
-    const p = {key: `/${path.domain}/${path.identifier}`, value: true}
+    const p = { key: `/${path.domain}/${path.identifier}`, value: true }
     acc.push(p)
     return acc
   }, [])
@@ -335,10 +338,10 @@ export const getPublicItems = async (address, paths) => {
   const items = await fcl.query({
     cadence: code,
     args: (arg, t) => [
-        arg(address, t.Address),
-        arg(pathMap, t.Dictionary({key: t.String, value: t.Bool}))
-      ]
-  }) 
+      arg(address, t.Address),
+      arg(pathMap, t.Dictionary({ key: t.String, value: t.Bool }))
+    ]
+  })
 
   return items
 }
@@ -346,7 +349,7 @@ export const getPublicItems = async (address, paths) => {
 // A workaround method
 export const getPublicItem = async (address, paths) => {
   const pathMap = paths.reduce((acc, path) => {
-    const p = {key: `/${path.domain}/${path.identifier}`, value: true}
+    const p = { key: `/${path.domain}/${path.identifier}`, value: true }
     acc.push(p)
     return acc
   }, [])
@@ -356,10 +359,10 @@ export const getPublicItem = async (address, paths) => {
   const items = await fcl.query({
     cadence: code,
     args: (arg, t) => [
-        arg(address, t.Address),
-        arg(pathMap, t.Dictionary({key: t.String, value: t.Bool}))
-      ]
-  }) 
+      arg(address, t.Address),
+      arg(pathMap, t.Dictionary({ key: t.String, value: t.Bool }))
+    ]
+  })
 
   return items
 }
@@ -371,9 +374,9 @@ export const getBasicPublicItems = async (address) => {
   const items = await fcl.query({
     cadence: code,
     args: (arg, t) => [
-        arg(address, t.Address)
-      ]
-  }) 
+      arg(address, t.Address)
+    ]
+  })
 
   return items
 }
@@ -387,7 +390,7 @@ export const getPublicPaths = async (address) => {
     args: (arg, t) => [
       arg(address, t.Address)
     ]
-  }) 
+  })
 
   return paths
 }
@@ -410,7 +413,7 @@ export const bulkGetPrivateItems = async (address) => {
 
 export const getPrivateItems = async (address, paths) => {
   const pathMap = paths.reduce((acc, path) => {
-    const p = {key: `/${path.domain}/${path.identifier}`, value: true}
+    const p = { key: `/${path.domain}/${path.identifier}`, value: true }
     acc.push(p)
     return acc
   }, [])
@@ -420,10 +423,10 @@ export const getPrivateItems = async (address, paths) => {
   const items = await fcl.query({
     cadence: code,
     args: (arg, t) => [
-        arg(address, t.Address),
-        arg(pathMap, t.Dictionary({key: t.String, value: t.Bool}))
-      ]
-  }) 
+      arg(address, t.Address),
+      arg(pathMap, t.Dictionary({ key: t.String, value: t.Bool }))
+    ]
+  })
 
   return items
 }
@@ -437,7 +440,7 @@ export const getPrivatePaths = async (address) => {
     args: (arg, t) => [
       arg(address, t.Address)
     ]
-  }) 
+  })
 
   return paths
 }

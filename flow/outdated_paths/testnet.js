@@ -1,3 +1,9 @@
+export const outdatedPathsEmulator = {
+  storage: `let outdatedPaths: {StoragePath: Bool} = {}`,
+  public: `let outdatedPaths: {PublicPath: Bool} = {}`,
+  private: `let outdatedPaths: {PrivatePath: Bool} = {}`
+}
+
 export const outdatedPathsTestnet = {
   storage: `
   let outdatedPaths: {StoragePath: Bool} = {
