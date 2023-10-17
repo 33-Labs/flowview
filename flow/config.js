@@ -23,5 +23,6 @@ config({
   "0xHybridCustody": publicConfig.hybridCustodyAddress,
   "0xCapabilityFactory": publicConfig.hybridCustodyAddress,
   "0xCapabilityFilter": publicConfig.hybridCustodyAddress,
-  "0xCapabilityDelegator": publicConfig.hybridCustodyAddress
+  "0xCapabilityDelegator": publicConfig.hybridCustodyAddress,
+  "0xFindViews": publicConfig.findViewAddress
 })

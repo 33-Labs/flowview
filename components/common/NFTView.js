@@ -12,6 +12,7 @@ export default function NFTView(props) {
   const router = useRouter()
   const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
   const maxSelection = 20
+  console.log(display)
   return (
     <div className={
       classNames(
@@ -25,10 +26,15 @@ export default function NFTView(props) {
             query: {
               account: account,
               collection: collection.path.replace("/storage/", ""),
-              token_id: display.tokenID 
+              token_id: display.tokenID
             }
           }, undefined, { shallow: true })
         } else {
+          if (display.transferrable == false) {
+              setShowBasicNotification(true)
+              setBasicNotificationContent({ type: "exclamation", title: `This NFT is not transferrable`, detail: null })
+              return
+          }
           let tokens = Object.assign({}, selectedTokens)
           if (!tokens[tokenId] || tokens[tokenId].isSelected == false) {
             if (Object.values(selectedTokens).filter((t) => t.isSelected == true).length >= maxSelection) {
@@ -55,9 +61,17 @@ export default function NFTView(props) {
       <label className="px-3 max-h-12 break-words overflow-hidden text-ellipsis font-flow font-semibold text-xs text-black">
         {`${display.name}`}
       </label>
-      <label className="px-3 font-flow font-medium text-xs text-gray-400">
-        {`#${display.tokenID}`}
-      </label>
+      <div className="flex gap-x-1 justify-center items-center">
+        {
+          display.transferrable == true ? null :
+            <div className={`w-4 h-4 text-center bg-indigo-200 text-indigo-600 rounded-full font-flow font-medium text-xs`}>
+              {"S"}
+            </div>
+        }
+        <label className="font-flow font-medium text-xs text-gray-400">
+          {`#${display.tokenID}`}
+        </label>
+      </div>
     </div>
   )
 }

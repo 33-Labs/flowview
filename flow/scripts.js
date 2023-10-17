@@ -121,7 +121,12 @@ export const getNftMetadataViews = async (address, storagePathID, tokenID) => {
 
 export const getNftViews = async (address, storagePathID, tokenIDs) => {
   const ids = tokenIDs.map((id) => `${id}`)
-  const code = await (await fetch("/scripts/collection/get_nft_displays.cdc")).text()
+  let code
+  if (publicConfig.chainEnv == "emulator") {
+    code = await (await fetch("/scripts/collection/get_nft_displays_emulator.cdc")).text()
+  } else {
+    code = await (await fetch("/scripts/collection/get_nft_displays.cdc")).text()
+  }
 
   const displays = await fcl.query({
     cadence: code,
@@ -130,8 +135,9 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
       arg(storagePathID, t.String),
       arg(ids, t.Array(t.UInt64))
     ]
-  }) 
+  })
 
+  console.log(displays)
   return displays  
 }
 

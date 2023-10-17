@@ -67,6 +67,9 @@ if (!hybridCustodyAddress) throw "Missing NEXT_PUBLIC_HYBRIDCUSTODY_ADDRESS"
 const contractbrowserURL = process.env.NEXT_PUBLIC_CONTRACTBROWSER_URL
 if (!contractbrowserURL) throw "Missing NEXT_PUBLIC_CONTRACTBROWSER_URL"
 
+const findViewAddress = process.env.NEXT_PUBLIC_FINDVIEW_ADDRESS
+if (!findViewAddress) throw "Missing NEXT_PUBLIC_FINDVIEW_ADDRESS"
+
 const publicConfig = {
   chainEnv,
   accessNodeAPI,
@@ -90,7 +93,8 @@ const publicConfig = {
   drizzleURL,
   incrementURL,
   linkURL,
-  contractbrowserURL
+  contractbrowserURL,
+  findViewAddress
 }
 
 export default publicConfig

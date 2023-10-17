@@ -1,6 +1,5 @@
 import NonFungibleToken from 0xNonFungibleToken
 import MetadataViews from 0xMetadataViews
-import FindViews from 0xFindViews
 
 pub struct ViewInfo {
   pub let name: String
@@ -60,10 +59,6 @@ pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt
       if let rarityView = MetadataViews.getRarity(resolver) {
         rarityDesc = rarityView.description
       }
-      var transferrable = true
-      if let soulboundView = resolver.resolveView(Type<FindViews.SoulBound>()) {
-        transferrable = false
-      }
 
       var collectionDisplay: MetadataViews.NFTCollectionDisplay? = nil
       if (!collectionDisplayFetched) {
@@ -78,7 +73,7 @@ pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt
         description: display.description,
         thumbnail: display.thumbnail,
         rarity: rarityDesc,
-        transferrable: transferrable,
+        transferrable: true,
         collectionDisplay: collectionDisplay
       )
     } else {
