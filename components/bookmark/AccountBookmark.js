@@ -6,12 +6,16 @@ import {
   transactionStatusState,
   showNoteEditorState,
   accountBookmarkState,
-  transactionInProgressState
+  transactionInProgressState,
+  showBasicNotificationState,
+  basicNotificationContentState
 } from "../../lib/atoms"
 import { removeAccountBookmark } from "../../flow/bookmark_transactions";
-import { PencilAltIcon } from "@heroicons/react/outline";
+import { DocumentDuplicateIcon, PencilAltIcon } from "@heroicons/react/outline";
 
 export default function AccountBookmark(props) {
+  const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
+  const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showNoteEditor, setShowNoteEditor] = useRecoilState(showNoteEditorState)
@@ -36,14 +40,23 @@ export default function AccountBookmark(props) {
             }, undefined, { shallow: true })
           }}
         >{bookmark.address}</div>
-        <SolidStar className="text-yellow-400 w-6 h-6 cursor-pointer" 
-        onClick={async () => {
-          if (transactionInProgress) {
-            return
-          }
-          await removeAccountBookmark(bookmark.address, setTransactionInProgress, setTransactionStatus)
-          mutate(["accountBookmarksFetcher", user.addr])
-        }}/>
+        <div className="flex gap-x-1 items-center justify-center">
+          <DocumentDuplicateIcon className="cursor-pointer text-gray-700 hover:text-drizzle w-5 h-5"
+            onClick={async () => {
+              await navigator.clipboard.writeText(bookmark.address)
+              setShowBasicNotification(true)
+              setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
+            }} />
+          <SolidStar className="text-yellow-400 w-6 h-6 cursor-pointer"
+            onClick={async () => {
+              if (transactionInProgress) {
+                return
+              }
+              await removeAccountBookmark(bookmark.address, setTransactionInProgress, setTransactionStatus)
+              mutate(["accountBookmarksFetcher", user.addr])
+            }} />
+        </div>
+
       </div>
       <div className="flex gap-x-2 items-center justify-between">
         <div>{bookmark.note}</div>
