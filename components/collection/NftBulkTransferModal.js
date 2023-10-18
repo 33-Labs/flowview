@@ -60,7 +60,7 @@ export default function NftBulkTransferModal(props) {
                   <div className="mt-3">
                     <Dialog.Title as="h3" className="text-xl leading-6 font-bold text-gray-900 mb-4">
                       {showNftBulkTransfer.mode == "NftBulkTransfer" ?
-                        "NFT Bulk Transfer" : "Unknown"}
+                        "NFT Bulk Transfer" : "Set Recipient"}
                     </Dialog.Title>
                     <div className='flex flex-col gap-y-4'>
                       <div>
@@ -118,8 +118,16 @@ export default function NftBulkTransferModal(props) {
                           storagePath, publicPath,
                           setTransactionInProgress, setTransactionStatus
                         )
+                        router.reload()
+                      } else if (showNftBulkTransfer.mode == "SetRecipient") {
+                        let tokens = Object.assign({}, selectedTokens)
+                        for (const [tokenId, properties] of Object.entries(tokens)) {
+                          if (properties.isSelected && !properties.recipient) {
+                            properties.recipient = recipient
+                          }
+                        }
+                        setSelectedTokens(tokens)
                       }
-                      router.reload()
                     }}
                   >
                     {"Confirm"}

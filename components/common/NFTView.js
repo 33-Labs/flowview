@@ -12,7 +12,6 @@ export default function NFTView(props) {
   const router = useRouter()
   const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
   const maxSelection = 20
-  console.log(display)
   return (
     <div className={
       classNames(
@@ -41,10 +40,10 @@ export default function NFTView(props) {
               setShowBasicNotification(true)
               setBasicNotificationContent({ type: "exclamation", title: `You can select ${maxSelection} NFTs at most`, detail: null })
             } else {
-              tokens[tokenId] = { isSelected: true, selectedAt: new Date().getTime(), display: display }
+              tokens[tokenId] = { isSelected: true, selectedAt: new Date().getTime(), display: display, recipient: null }
             }
           } else {
-            tokens[tokenId] = { isSelected: false, selectedAt: 0, display: display }
+            tokens[tokenId] = { isSelected: false, selectedAt: 0, display: display, recipient: null }
           }
           setSelectedTokens(tokens)
         }
@@ -61,6 +60,7 @@ export default function NFTView(props) {
       <label className="px-3 max-h-12 break-words overflow-hidden text-ellipsis font-flow font-semibold text-xs text-black">
         {`${display.name}`}
       </label>
+      <div className="flex flex-col items-center justify-center">
       <div className="flex gap-x-1 justify-center items-center">
         {
           display.transferrable == true ? null :
@@ -71,6 +71,14 @@ export default function NFTView(props) {
         <label className="font-flow font-medium text-xs text-gray-400">
           {`#${display.tokenID}`}
         </label>
+      </div>
+      {
+        selectMode == "Select" && selectedTokens[tokenId] && selectedTokens[tokenId].isSelected && selectedTokens[tokenId].recipient ?
+        <div className={`px-1 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
+          {selectedTokens[tokenId].recipient}
+        </div>
+        : null
+      }
       </div>
     </div>
   )
