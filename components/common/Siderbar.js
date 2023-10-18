@@ -18,7 +18,7 @@ export default function Sidebar(props) {
     {
       id: "7", label: `Acct Linking`, subItems: [
         { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
-        { id: "7-1", isSubItem: true, label: "HC Manager", smLabel: "HC Manager", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
+        { id: "7-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
       ]
     },
     {
@@ -41,7 +41,7 @@ export default function Sidebar(props) {
       {
         id: "6", label: `Acct Linking`, subItems: [
           { id: "6-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
-          { id: "6-1", isSubItem: true, label: "HC Manager", smLabel: "HC Manager", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
+          { id: "6-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
         ]
       },
       {
@@ -64,7 +64,7 @@ export default function Sidebar(props) {
       // {
       //   id: "6", label: `Acct Linking`, subItems: [
       //     { id: "6-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
-      //     { id: "6-1", isSubItem: true, label: "HC Manager", smLabel: "HC Manager", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
+      //     { id: "6-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
       //   ]
       // },
       {
