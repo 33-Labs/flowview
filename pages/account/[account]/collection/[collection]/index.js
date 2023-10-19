@@ -8,7 +8,7 @@ import NFTListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
 import { basicNotificationContentState, nftCatalogState, showBasicNotificationState, showNftBulkTransferPreviewState, showNftBulkTransferState, transactionInProgressState } from "../../../../../lib/atoms"
-import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../../../../lib/utils"
+import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getFlowverseLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
 import NftBulkTransferModal from "../../../../../components/collection/NftBulkTransferModal"
@@ -154,17 +154,6 @@ export default function CollectionDetail(props) {
           </div>
         }
         {
-          linkSource.uuid ?
-            <a
-              href={getContractLink(linkSource.uuid)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1 rounded-full h-[24px] aspect-square bg-drizzle text-black"
-            >
-              <CodeIcon className="aspect-square text-black" />
-            </a> : null
-        }
-        {
           linkSource.collectionIdentifier ?
             <a
               href={`${publicConfig.nftCatalogURL}/${collection.collectionIdentifier}`}
@@ -289,7 +278,27 @@ export default function CollectionDetail(props) {
         </div>
         {getContractInfoView()}
         <div className="px-1 py-2 w-[1070px]">{description}</div>
-        <div className="mt-1 mb-2 flex gap-x-2 items-center">
+        <div className="mt-2 mb-4 flex gap-x-2 items-center">
+          <a href={getFlowverseLink(collection.contractName)}
+            target="_blank"
+            rel="noopener noreferrer">
+            <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+              <Image src="/flowverse.png" alt="" width={20} height={20} />&nbsp;Trade on Flowverse
+            </div>
+          </a>
+          {
+            linkSource && linkSource.uuid ?
+              <a href={getContractLink(linkSource.uuid)}
+                target="_blank"
+                rel="noopener noreferrer">
+                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+                  <Image src="/contractbrowser.png" alt="" width={20} height={20} />&nbsp;Browse Code on ContractBrowser
+                </div>
+              </a> : null
+          }
+        </div>
+        <div className="bg-gray-200 w-full h-[1px]"></div>
+        <div className="mt-4 mb-2 flex gap-x-2 items-center">
           <button
             type="button"
             disabled={!isCurrentUser() || transactionInProgress}
@@ -328,7 +337,7 @@ export default function CollectionDetail(props) {
                 Set Recipient
               </button>
               : null
-            }
+          }
           {
             isCurrentUser() && selectMode == "Select" ?
               <button
@@ -344,7 +353,7 @@ export default function CollectionDetail(props) {
                   for (const [tokenId, properties] of Object.entries(selectedTokens)) {
                     if (properties.isSelected && !properties.recipient) {
                       setShowBasicNotification(true)
-                      setBasicNotificationContent({ type: "exclamation", title: "Recipient not set", detail: "The recipient is not set for some selected NFTs."})
+                      setBasicNotificationContent({ type: "exclamation", title: "Recipient not set", detail: "The recipient is not set for some selected NFTs." })
                       return
                     }
                   }
@@ -354,15 +363,15 @@ export default function CollectionDetail(props) {
                 Bulk Transfer
               </button>
               : null
-            }
-                    <a
-          href="https://youtu.be/vf6JPmsO6NY?si=9A6tGTp4TTmMMg1d"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-flow text-sm whitespace-pre underline decoration-drizzle decoration-1 text-drizzle"
-        >
-          How do I transfer NFTs in bulk?
-        </a>
+          }
+          <a
+            href="https://youtu.be/vf6JPmsO6NY?si=9A6tGTp4TTmMMg1d"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-flow text-sm whitespace-pre underline decoration-drizzle decoration-1 text-drizzle"
+          >
+            How do I transfer NFTs in bulk?
+          </a>
         </div>
       </div>
     )

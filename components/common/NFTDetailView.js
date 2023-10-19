@@ -3,7 +3,7 @@ import Decimal from "decimal.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useRecoilState } from "recoil"
-import { getImageSrcFromMetadataViewsFile, getRarityColor, getResourceType, isValidFlowAddress } from "../../lib/utils"
+import { getFlowverseLink, getImageSrcFromMetadataViewsFile, getRarityColor, getResourceType, isValidFlowAddress } from "../../lib/utils"
 import NFTTransferModal from "./NFTTransferModal"
 import {
   basicNotificationContentState,
@@ -286,13 +286,13 @@ export default function NFTDetailView(props) {
   }
 
   const getCollectionStoragePath = (metadata) => {
-    const { domain, identifier }= metadata.collectionData.storagePath
+    const { domain, identifier } = metadata.collectionData.storagePath
     const collectionStoragePath = `/${domain}/${identifier}`
     return collectionStoragePath
   }
 
   const getCollectionPublicPath = (metadata) => {
-    const { domain, identifier }= metadata.collectionData.publicPath
+    const { domain, identifier } = metadata.collectionData.publicPath
     const path = `/${domain}/${identifier}`
     return path
   }
@@ -325,6 +325,19 @@ export default function NFTDetailView(props) {
             <div className="w-full flex gap-x-4 justify-between items-center">
               <label className="font-bold text-black text-3xl">{display.name}</label>
               <div className="flex gap-x-2 justify-between items-center">
+                {
+                  contractName ?
+                    <a
+                      href={getFlowverseLink(contractName)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="h-[32px] aspect-square shrink-0 relative">
+                        <Image src={"/flowverse.png"} alt="" fill sizes="5vw" className="object-contain" />
+                      </div>
+                    </a> : null
+                }
+
                 {
                   user && user.loggedIn && user.addr === account && !listingInfo ?
                     <CurrencyDollarIcon className="shrink-0 w-[32px] h-[32px] p-2 rounded-full text-gray-700 bg-drizzle hover:bg-drizzle-dark"
