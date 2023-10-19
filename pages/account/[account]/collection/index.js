@@ -10,6 +10,7 @@ import CollectionView from "../../../../components/common/CollectionView"
 import { useRecoilState } from "recoil"
 import { currentStoredItemsState, nftCatalogState } from "../../../../lib/atoms"
 import { Switch } from "@headlessui/react"
+import Image from "next/image"
 
 export default function Collection(props) {
   const router = useRouter()
@@ -111,7 +112,7 @@ export default function Collection(props) {
     <div className="container mx-auto max-w-7xl min-w-[380px] px-2">
       <Layout>
         <div className="flex w-full flex-col gap-y-3 overflow-auto">
-          <div className="sm:min-w-[540px] p-2 flex gap-x-2 justify-between">
+          <div className="sm:min-w-[540px] p-2 flex flex-wrap gap-y-1 gap-x-3 justify-between">
             <div className="flex flex-col gap-y-2 sm:flex-row sm:gap-x-2 sm:items-center justify-center">
               <h1 className="shrink-0 text-xl sm:text-2xl font-bold text-gray-900">
                 {`Collections ${filteredCollections ? `(${filteredCollections.length})` : ""}`}
@@ -140,6 +141,24 @@ export default function Collection(props) {
                 </Switch>
               </div>
             </div>
+            <div className="hidden sm:flex sm:gap-x-1 sm:items-center px-1 overflow-hidden">
+            {/* <label className={`item-start hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+              <a href={`${publicConfig.drizzleURL}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Create raffle
+              </a>
+            </label> */}
+            <a href={`http://nft.flowverse.co/marketplace`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2">
+                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+                  <Image src="/flowverse.png" alt="" width={20} height={20} />&nbsp;Trade on Flowverse
+                </div>
+              </a>
+              </div>
           </div>
           <div className="px-2 py-2 overflow-x-auto max-h-screen w-full">
             <div className="inline-block min-w-full">

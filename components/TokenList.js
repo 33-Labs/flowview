@@ -1,9 +1,6 @@
-import Image from 'next/image'
-import { getContractLink } from '../lib/utils'
 import publicConfig from "../publicConfig"
 import { useRecoilState } from "recoil"
 import { transactionInProgressState, transactionStatusState } from '../lib/atoms'
-import { addNewVault, removeVault } from '../flow/switchboard_transactions'
 import { useSWRConfig } from 'swr'
 import TokenView from './fungible_token/TokenView'
 
