@@ -101,7 +101,7 @@ export default function Layout({ children }) {
       return null
     }
     if (!bookmark) {
-      return <StarIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
+      return <StarIcon className="cursor-pointer text-gray-700 hover:text-drizzle w-6 h-6"
         onClick={async () => {
           if (transactionInProgress) {
             return
@@ -122,7 +122,7 @@ export default function Layout({ children }) {
       />
     }
 
-    return <SolidStar className="text-yellow-400 w-6 h-6"
+    return <SolidStar className="cursor-pointer text-yellow-400 w-6 h-6"
       onClick={async () => {
         if (transactionInProgress) {
           return
@@ -149,7 +149,7 @@ export default function Layout({ children }) {
               <label className="text-lg sm:text-xl text-gray-500">Account</label>
               <div className="flex gap-x-2 items-center">
                 <label className="text-2xl sm:text-3xl font-bold">{`${account}`}</label>
-                <DocumentDuplicateIcon className="text-gray-700 hover:text-drizzle w-6 h-6"
+                <DocumentDuplicateIcon className="cursor-pointer text-gray-700 hover:text-drizzle w-6 h-6"
                   onClick={async () => {
                     await navigator.clipboard.writeText(account)
                     setShowBasicNotification(true)

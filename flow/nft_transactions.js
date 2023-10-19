@@ -38,22 +38,18 @@ const doTransferNft = async (address, tokenId, collectionStoragePath, collection
 }
 
 export const bulkTransferNft = async (
-  address, tokenIds, collectionStoragePath, collectionPublicPath,
+  recipients, tokenIds, collectionStoragePath, collectionPublicPath,
   setTransactionInProgress,
   setTransactionStatus
 ) => {
-  if (!isValidFlowAddress(address)) {
-    return
-  }
-
   const txFunc = async () => {
-    return await doBulkTransferNft(address, tokenIds, collectionStoragePath, collectionPublicPath)
+    return await doBulkTransferNft(recipients, tokenIds, collectionStoragePath, collectionPublicPath)
   }
 
   return await txHandler(txFunc, setTransactionInProgress, setTransactionStatus)
 }
 
-const doBulkTransferNft = async (address, tokenIds, collectionStoragePath, collectionPublicPath) => {
+const doBulkTransferNft = async (recipients, tokenIds, collectionStoragePath, collectionPublicPath) => {
   const rawCode = await (await fetch("/transactions/collection/bulk_transfer_nft.cdc")).text()
   const code = rawCode.replace("__NFT_STORAGE_PATH__", collectionStoragePath)
     .replace("__NFT_PUBLIC_PATH__", collectionPublicPath)
@@ -61,7 +57,7 @@ const doBulkTransferNft = async (address, tokenIds, collectionStoragePath, colle
   const transactionId = fcl.mutate({
     cadence: code,
     args: (arg, t) => [
-      arg(address, t.Address),
+      arg(recipients, t.Array(t.Address)),
       arg(tokenIds, t.Array(t.UInt64))
     ],
     proposer: fcl.currentUser,

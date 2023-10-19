@@ -1,24 +1,26 @@
 import NonFungibleToken from 0xNonFungibleToken
 
-transaction(address: Address, tokenIds: [UInt64]) {
+transaction(recipients: [Address], tokenIds: [UInt64]) {
 
     let senderCollection: &NonFungibleToken.Collection
-    let receiverCollection: Capability<&{NonFungibleToken.CollectionPublic}>
 
     prepare(account: AuthAccount) {
+        assert(recipients.length == tokenIds.length, message: "invalid input")
         self.senderCollection = account.borrow<&NonFungibleToken.Collection>(from: __NFT_STORAGE_PATH__)!
-
-        let receiverAccount = getAccount(address)
-        self.receiverCollection = receiverAccount.getCapability<&{NonFungibleToken.CollectionPublic}>(__NFT_PUBLIC_PATH__)
     }
 
     execute {
-        for tokenId in tokenIds {
+        for index, tokenId in tokenIds {
+            let recipient = recipients[index]!
+            let recipientAccount = getAccount(recipient)
+            let recipientCollection = recipientAccount.getCapability<&{NonFungibleToken.CollectionPublic}>(__NFT_PUBLIC_PATH__).borrow()
+                ?? panic("Could not borrow capability from recipient")
+
             let nft <- self.senderCollection.withdraw(withdrawID: tokenId)
             if(nft == nil){
                 panic("NFT not found!")
             }
-            self.receiverCollection.borrow()!.deposit(token: <-nft)
+            recipientCollection.deposit(token: <-nft)
         }
     }
 }

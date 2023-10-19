@@ -145,7 +145,6 @@ export const getNftViews = async (address, storagePathID, tokenIDs) => {
     ]
   })
 
-  console.log(displays)
   return displays
 }
 
