@@ -289,7 +289,7 @@ export default function CollectionDetail(props) {
         </div>
         {getContractInfoView()}
         <div className="px-1 py-2 w-[1070px]">{description}</div>
-        <div className="mt-1 mb-2 flex gap-x-2">
+        <div className="mt-1 mb-2 flex gap-x-2 items-center">
           <button
             type="button"
             disabled={!isCurrentUser() || transactionInProgress}
@@ -355,6 +355,14 @@ export default function CollectionDetail(props) {
               </button>
               : null
             }
+                    <a
+          href="https://youtu.be/vf6JPmsO6NY?si=9A6tGTp4TTmMMg1d"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-flow text-sm whitespace-pre underline decoration-drizzle decoration-1 text-drizzle"
+        >
+          How do I transfer NFTs in bulk?
+        </a>
         </div>
       </div>
     )
