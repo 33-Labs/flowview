@@ -279,13 +279,16 @@ export default function CollectionDetail(props) {
         {getContractInfoView()}
         <div className="px-1 py-2 w-[1070px]">{description}</div>
         <div className="mt-2 mb-4 flex gap-x-2 items-center">
-          <a href={getFlowverseLink(collection.contractName)}
-            target="_blank"
-            rel="noopener noreferrer">
-            <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
-              <Image src="/flowverse.png" alt="" width={20} height={20} />&nbsp;Trade on Flowverse
-            </div>
-          </a>
+          {
+            collection && collection.contractName ?
+              <a href={getFlowverseLink(collection.contractName)}
+                target="_blank"
+                rel="noopener noreferrer">
+                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+                  <Image src="/flowverse.png" alt="" width={20} height={20} />&nbsp;Trade on Flowverse
+                </div>
+              </a> : null
+          }
           {
             linkSource && linkSource.uuid ?
               <a href={getContractLink(linkSource.uuid)}
