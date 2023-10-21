@@ -8,7 +8,7 @@ import NFTListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
 import { basicNotificationContentState, nftCatalogState, showBasicNotificationState, showNftBulkTransferPreviewState, showNftBulkTransferState, transactionInProgressState } from "../../../../../lib/atoms"
-import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getFlowverseLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../../../../lib/utils"
+import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getFlowverseLink, getFlowtyLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
 import NftBulkTransferModal from "../../../../../components/collection/NftBulkTransferModal"
@@ -279,6 +279,17 @@ export default function CollectionDetail(props) {
         {getContractInfoView()}
         <div className="px-1 py-2 w-[1070px]">{description}</div>
         <div className="mt-2 mb-4 flex gap-x-2 items-center">
+        {
+            collection && collection.contractName && collection.contractAddress ?
+              <a href={getFlowtyLink(collection.contractAddress, collection.contractName)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0">
+                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+                  <Image className="rounded-full" src="/flowty.jpg" alt="" width={20} height={20} />&nbsp;Trade on Flowty
+                </div>
+              </a> : null
+          }
           {
             collection && collection.contractName ?
               <a href={getFlowverseLink(collection.contractName)}

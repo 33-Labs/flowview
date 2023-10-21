@@ -60,7 +60,7 @@ export default function Collection(props) {
   useEffect(() => {
     if (nftCatalog && collections && collections.length > 0 && !collections[0].addedCatalogInfo) {
       const newCollections = collectionsWithCatalogInfo(collections, nftCatalog)
-      setCollections(newCollections) 
+      setCollections(newCollections)
     }
   }, [nftCatalog, collections])
 
@@ -141,8 +141,8 @@ export default function Collection(props) {
                 </Switch>
               </div>
             </div>
-            <div className="hidden sm:flex sm:gap-x-1 sm:items-center px-1 overflow-hidden">
-            {/* <label className={`item-start hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
+            <div className="hidden sm:flex sm:gap-x-2 sm:items-center px-1 overflow-hidden">
+              {/* <label className={`item-start hidden sm:block cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
               <a href={`${publicConfig.drizzleURL}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -150,7 +150,15 @@ export default function Collection(props) {
                 Create raffle
               </a>
             </label> */}
-            <a href={`http://nft.flowverse.co/marketplace`}
+              <a href={`https://www.flowty.io/marketplace`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2">
+                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+                  <Image className="rounded-full" src="/flowty.jpg" alt="" width={20} height={20} />&nbsp;Trade on Flowty
+                </div>
+              </a>
+              <a href={`http://nft.flowverse.co/marketplace`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="py-2">
@@ -158,7 +166,7 @@ export default function Collection(props) {
                   <Image src="/flowverse.png" alt="" width={20} height={20} />&nbsp;Trade on Flowverse
                 </div>
               </a>
-              </div>
+            </div>
           </div>
           <div className="px-2 py-2 overflow-x-auto max-h-screen w-full">
             <div className="inline-block min-w-full">
