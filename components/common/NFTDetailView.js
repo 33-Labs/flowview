@@ -3,7 +3,7 @@ import Decimal from "decimal.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useRecoilState } from "recoil"
-import { getFlowverseLink, getImageSrcFromMetadataViewsFile, getRarityColor, getResourceType, isValidFlowAddress } from "../../lib/utils"
+import { getFlowtyLink, getFlowverseLink, getImageSrcFromMetadataViewsFile, getRarityColor, getResourceType, isValidFlowAddress } from "../../lib/utils"
 import NFTTransferModal from "./NFTTransferModal"
 import {
   basicNotificationContentState,
@@ -325,6 +325,19 @@ export default function NFTDetailView(props) {
             <div className="w-full flex gap-x-4 justify-between items-center">
               <label className="font-bold text-black text-3xl">{display.name}</label>
               <div className="flex gap-x-2 justify-between items-center">
+                {
+                  contractAddress && contractName ?
+                    <a
+                      href={getFlowtyLink(contractAddress, contractName)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <div className="h-[32px] aspect-square shrink-0 relative">
+                        <Image src={"/flowty.jpg"} alt="" fill sizes="5vw" className="object-contain rounded-full" />
+                      </div>
+                    </a> : null
+                }
+
                 {
                   contractName ?
                     <a
