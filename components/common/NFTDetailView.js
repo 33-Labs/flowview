@@ -3,7 +3,7 @@ import Decimal from "decimal.js"
 import Image from "next/image"
 import { useRouter } from "next/router"
 import { useRecoilState } from "recoil"
-import { getFlowtyLink, getFlowverseLink, getImageSrcFromMetadataViewsFile, getRarityColor, getResourceType, isValidFlowAddress } from "../../lib/utils"
+import { getCollectionStoragePath, getFlowtyLink, getFlowverseLink, getImageSrcFromMetadataViewsFile, getRarityColor, getResourceType, isValidFlowAddress } from "../../lib/utils"
 import NFTTransferModal from "./NFTTransferModal"
 import {
   basicNotificationContentState,
@@ -283,12 +283,6 @@ export default function NFTDetailView(props) {
         </button>
       </div>
     )
-  }
-
-  const getCollectionStoragePath = (metadata) => {
-    const { domain, identifier } = metadata.collectionData.storagePath
-    const collectionStoragePath = `/${domain}/${identifier}`
-    return collectionStoragePath
   }
 
   const getCollectionPublicPath = (metadata) => {

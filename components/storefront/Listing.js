@@ -5,10 +5,10 @@ import {
   transactionStatusState,
   transactionInProgressState
 } from "../../lib/atoms"
-import { removeItem } from "../../flow/storefront_transactions"
+import { buyItem, removeItem } from "../../flow/storefront_transactions"
 import { useSWRConfig } from "swr"
 import Image from "next/image"
-import { getImageSrcFromMetadataViewsFile, getRarityColor } from "../../lib/utils"
+import { getCollectionStoragePath, getContractInfoFromTypeId, getImageSrcFromMetadataViewsFile, getRarityColor } from "../../lib/utils"
 import { list } from "postcss"
 
 const getPaymentTokenSymbol = (listing) => {
@@ -73,6 +73,57 @@ export default function Listing(props) {
     )
   }
 
+  const getContractInfo = (listing) => {
+    if (!listing || !listing.details || !listing.details.nftType) {
+      return null
+    }
+
+    let typeId = listing.details.nftType.typeID
+    return getContractInfoFromTypeId(typeId)
+  }
+
+  const getButton = () => {
+    if (user && user.loggedIn && user.addr == account) {
+      return (<button
+      className={`mb-1 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-2 py-1 text-sm h-9 rounded-2xl font-semibold shrink-0`}
+      disabled={transactionInProgress}
+      onClick={async (event) => {
+        event.stopPropagation()
+        await removeItem(listing.listingResourceId, setTransactionInProgress, setTransactionStatus)
+        mutate(["listingsFetcher", account])
+      }}
+    >
+      Remove
+    </button>)
+    }
+
+    const collectionStoragePath = getCollectionStoragePath(listing)
+    const contractInfo = getContractInfo(listing)
+    if (!contractInfo) {
+      return null
+    }
+
+    const {contractName, contractAddress} = contractInfo
+
+    return (
+      <button
+      className={`mb-1 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm h-9 rounded-2xl font-semibold shrink-0`}
+      disabled={transactionInProgress}
+      onClick={async (event) => {
+        event.stopPropagation()
+        await buyItem(
+          contractName, contractAddress, collectionStoragePath,
+          listing.listingResourceId, account, setTransactionInProgress, setTransactionStatus
+        )
+        mutate(["listingsFetcher", account])
+      }}
+    >
+      Buy Now
+    </button>
+
+    )
+  }
+
   return (
     <div className={`h-80 w-36 bg-white rounded-2xl flex flex-col gap-y-1 pb-2 justify-between items-center shrink-0 overflow-hidden shadow-md ring-1 ring-black ring-opacity-5`}
       onClick={() => {
@@ -91,22 +142,7 @@ export default function Listing(props) {
         <label className="mt-2 mb-2 px-2 break-words overflow-hidden text-ellipsis font-flow font-semibold text-sm text-black">
           {`${new Decimal(listing.details.salePrice).toString()} ${symbol}`}
         </label>
-        {
-          loggedIn ?
-            <button
-              className={`mb-1 text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark px-2 py-1 text-sm h-9 rounded-2xl font-semibold shrink-0`}
-              disabled={transactionInProgress}
-              onClick={async (event) => {
-                event.stopPropagation()
-                await removeItem(listing.listingResourceId, setTransactionInProgress, setTransactionStatus)
-                mutate(["listingsFetcher", account])
-              }}
-            >
-              Remove
-            </button>
-            : null
-            
-        }
+        {getButton()}
       </div>
 
     </div>
