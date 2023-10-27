@@ -1,6 +1,6 @@
 import NFTStorefrontV2 from 0x4eb8a10cb9f87357
 import NonFungibleToken from 0x1d7e57aa55817448
-import HWGarageCardV2 from 0xd0bcefdf1e67ea85
+import MetadataViews from 0x1d7e57aa55817448
 import FTRegistry from 0x097bafa4e0b48eef
 
 pub struct FTInfo {
@@ -11,6 +11,22 @@ pub struct FTInfo {
         self.symbol = symbol
         self.icon = icon
     }
+}
+
+pub struct CollectionData {
+  pub let storagePath: StoragePath
+  pub let publicPath: PublicPath
+  pub let providerPath: PrivatePath
+
+  init(
+    storagePath: StoragePath,
+    publicPath: PublicPath,
+    providerPath: PrivatePath
+  ) {
+    self.storagePath = storagePath
+    self.publicPath = publicPath
+    self.providerPath = providerPath
+  }
 }
 
 pub struct Listings {
@@ -31,6 +47,10 @@ pub struct Item {
     pub let isExpired: Bool
     pub let nft: &NonFungibleToken.NFT?
     pub let paymentTokenInfo: FTInfo?
+    pub let conformMetadataViews: Bool
+    pub let collectionData: AnyStruct?
+    pub let display: AnyStruct?
+    pub let rarity: AnyStruct?
 
     init(
         listingResourceId: UInt64,
@@ -39,7 +59,11 @@ pub struct Item {
         isPurchased: Bool,
         isExpired: Bool,
         nft: &NonFungibleToken.NFT?, 
-        paymentTokenInfo: FTInfo?
+        paymentTokenInfo: FTInfo?,
+        conformMetadataViews: Bool,
+        collectionData: AnyStruct?,
+        display: AnyStruct?,
+        rarity: AnyStruct?
     ) {
         self.listingResourceId = listingResourceId
         self.details = details
@@ -48,6 +72,10 @@ pub struct Item {
         self.isExpired = isExpired
         self.nft = nft
         self.paymentTokenInfo = paymentTokenInfo
+        self.conformMetadataViews = conformMetadataViews
+        self.collectionData = collectionData
+        self.display = display
+        self.rarity = rarity
     }
 }
 
@@ -79,7 +107,11 @@ pub fun main(account: Address): Listings {
                 isPurchased: isPurchased,
                 isExpired: isExpired,
                 nft: nil,
-                paymentTokenInfo: nil
+                paymentTokenInfo: nil,
+                conformMetadataViews: false,
+                collectionData: nil,
+                display: nil,
+                rarity: nil
             )
             invalidItems.append(item)
             continue
@@ -88,6 +120,23 @@ pub fun main(account: Address): Listings {
         let nft = listing.borrowNFT()
         if (nft == nil) {
             continue
+        }
+
+        let conformMetadataViews = nft!.getType().isSubtype(of: Type<@AnyResource{MetadataViews.Resolver}>())
+        if !conformMetadataViews {
+            continue
+        }
+
+        let display: AnyStruct? = nft!.resolveView(Type<MetadataViews.Display>())
+        let rarity: AnyStruct? = nft!.resolveView(Type<MetadataViews.Rarity>())
+        let nftCollectionData: MetadataViews.NFTCollectionData? = nft!.resolveView(Type<MetadataViews.NFTCollectionData>()) as! MetadataViews.NFTCollectionData?
+        var collectionData: CollectionData? = nil
+        if let data = nftCollectionData {
+            collectionData = CollectionData(
+                storagePath: data.storagePath,
+                publicPath: data.publicPath,
+                providerPath: data.providerPath
+            )
         }
 
         var ftInfo: FTInfo? = nil
@@ -103,7 +152,11 @@ pub fun main(account: Address): Listings {
             isPurchased: isPurchased,
             isExpired: isExpired,
             nft: nft, 
-            paymentTokenInfo: ftInfo
+            paymentTokenInfo: ftInfo,
+            conformMetadataViews: conformMetadataViews,
+            collectionData: collectionData,
+            display: display,
+            rarity: rarity
         )
         validItems.append(item)
     }

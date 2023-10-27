@@ -30,9 +30,9 @@ export default function NFTView(props) {
           }, undefined, { shallow: true })
         } else {
           if (display.transferrable == false) {
-              setShowBasicNotification(true)
-              setBasicNotificationContent({ type: "exclamation", title: `This NFT is not transferrable`, detail: null })
-              return
+            setShowBasicNotification(true)
+            setBasicNotificationContent({ type: "exclamation", title: `This NFT is not transferrable`, detail: null })
+            return
           }
           let tokens = Object.assign({}, selectedTokens)
           if (!tokens[tokenId] || tokens[tokenId].isSelected == false) {
@@ -61,24 +61,24 @@ export default function NFTView(props) {
         {`${display.name}`}
       </label>
       <div className="flex flex-col items-center justify-center">
-      <div className="flex gap-x-1 justify-center items-center">
-        {
-          display.transferrable == true ? null :
-            <div className={`w-4 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
-              {"S"}
-            </div>
-        }
-        <label className="font-flow font-medium text-xs text-gray-400">
-          {`#${display.tokenID}`}
-        </label>
-      </div>
-      {
-        selectMode == "Select" && selectedTokens[tokenId] && selectedTokens[tokenId].isSelected && selectedTokens[tokenId].recipient ?
-        <div className={`px-1 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
-          {selectedTokens[tokenId].recipient}
+        <div className="flex gap-x-1 justify-center items-center">
+          {
+            display.transferrable == true ? null :
+              <div className={`w-4 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
+                {"S"}
+              </div>
+          }
+          <label className="font-flow font-medium text-xs text-gray-400">
+            {`#${display.tokenID}`}
+          </label>
         </div>
-        : null
-      }
+        {
+          selectMode == "Select" && selectedTokens[tokenId] && selectedTokens[tokenId].isSelected && selectedTokens[tokenId].recipient ?
+            <div className={`px-1 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
+              {selectedTokens[tokenId].recipient}
+            </div>
+            : null
+        }
       </div>
     </div>
   )
