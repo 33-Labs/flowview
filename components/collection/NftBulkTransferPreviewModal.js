@@ -63,7 +63,7 @@ export default function NftBulkTransferPreviewModal(props) {
                         </div> : null
                     }
                   </div>
-                  <label className="px-3 max-h-12 break-words overflow-hidden text-ellipsis font-flow font-semibold text-xs text-black">
+                  <label className="px-3 max-h-12 break-words text-center overflow-hidden font-flow font-semibold text-xs text-black">
                     {`${display.name}`}
                   </label>
                   <div className="flex flex-col items-center justify-center">

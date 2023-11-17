@@ -48,7 +48,7 @@ export default function Listing(props) {
               </div> : null
           }
         </div>
-        <label className="px-3 py-1 max-h-[50px] break-words overflow-auto text-ellipsis font-flow font-semibold text-xs text-black">
+        <label className="px-3 py-1 max-h-[50px] text-center break-words overflow-auto font-flow font-semibold text-xs text-black">
           {`${display.name}`}
         </label>
       </>
@@ -139,7 +139,7 @@ export default function Listing(props) {
       <div className="flex flex-col gap-y-1">
         <div className="bg-gray-200 w-full h-[1px]"></div>
         {getCustomIdView(listing)}
-        <label className="mt-2 mb-2 px-2 break-words overflow-hidden text-ellipsis font-flow font-semibold text-sm text-black">
+        <label className="mt-2 mb-2 px-2 text-center break-words overflow-hidden font-flow font-semibold text-sm text-black">
           {`${new Decimal(listing.details.salePrice).toString()} ${symbol}`}
         </label>
         {getButton()}
