@@ -1,6 +1,8 @@
 export const outdatedPathsMainnet = {
   storage: `
   let outdatedPaths: {StoragePath: Bool} = {
+    /storage/FantastecNFTCollection: true,
+    /storage/FantastecNFTMinter: true,
     /storage/jambbLaunchCollectiblesCollection: true,
     /storage/jambbLaunchCollectiblesMinter: true,
     /storage/RacingTimeCollection: true,
@@ -26,6 +28,7 @@ export const outdatedPathsMainnet = {
   `,
   public: `
   let outdatedPaths: {PublicPath: Bool} = {
+    /public/FantastecNFTCollection: true,
     /public/jambbLaunchCollectiblesCollection: true,
     /public/RacingTimeCollection: true,
     /public/MusicBlockCollection: true,
