@@ -7,13 +7,14 @@ import Layout from "../../../../../components/common/Layout"
 import NFTListView from "../../../../../components/common/NFTListView"
 import Spinner from "../../../../../components/common/Spinner"
 import { bulkGetNftCatalog, getStoredItems } from "../../../../../flow/scripts"
-import { basicNotificationContentState, nftCatalogState, showBasicNotificationState, showNftBulkTransferPreviewState, showNftBulkTransferState, transactionInProgressState } from "../../../../../lib/atoms"
+import { basicNotificationContentState, nftCatalogState, showBasicNotificationState, showBulkTransferFormState, showNftBulkTransferPreviewState, showNftBulkTransferState, transactionInProgressState } from "../../../../../lib/atoms"
 import { classNames, collectionsWithCatalogInfo, collectionsWithDisplayInfo, collectionsWithExtraData, getContractLink, getFlowverseLink, getFlowtyLink, getImageSrcFromMetadataViewsFile, isValidFlowAddress } from "../../../../../lib/utils"
 import publicConfig from "../../../../../publicConfig"
 import Custom404 from "../../404"
 import NftBulkTransferModal from "../../../../../components/collection/NftBulkTransferModal"
 import * as fcl from "@onflow/fcl"
 import NftBulkTransferPreviewModal from "../../../../../components/collection/NftBulkTransferPreviewModal"
+import BulkTransferFormModal from "../../../../../components/collection/BulkTransferFormModal"
 
 export default function CollectionDetail(props) {
   const router = useRouter()
@@ -22,6 +23,7 @@ export default function CollectionDetail(props) {
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
   const [, setShowNftBulkTransfer] = useRecoilState(showNftBulkTransferState)
+  const [, setShowBulkTransferForm] = useRecoilState(showBulkTransferFormState)
   const [, setShowNftBulkTransferPreview] = useRecoilState(showNftBulkTransferPreviewState)
   const [nftCatalog, setNftCatalog] = useRecoilState(nftCatalogState)
   const [collection, setCollection] = useState(null)
@@ -325,6 +327,25 @@ export default function CollectionDetail(props) {
               )
             }
             onClick={async () => {
+              console.log("Input pairs")
+              // setShowNftBulkTransfer({ show: true, mode: "SetRecipient" })
+              setShowBulkTransferForm({ show: true, mode: "NFT"})
+              console.log("Input pairs2")
+            }}
+          >
+            Pairs
+          </button>
+          <div className="bg-gray-200 h-6 w-[1px]"></div>
+          <button
+            type="button"
+            disabled={!isCurrentUser() || transactionInProgress}
+            className={
+              classNames(
+                !isCurrentUser() || transactionInProgress ? "bg-drizzle-light text-gray-500" : "text-black bg-drizzle hover:bg-drizzle-dark",
+                `px-3 py-1 text-sm rounded-2xl font-semibold shrink-0`
+              )
+            }
+            onClick={async () => {
               if (selectMode == "Detail") {
                 setSelectMode("Select")
               } else {
@@ -421,6 +442,7 @@ export default function CollectionDetail(props) {
       </Layout>
       <NftBulkTransferModal selectedTokens={selectedTokens} setSelectedTokens={setSelectedTokens} collection={collection} />
       <NftBulkTransferPreviewModal selectedTokens={selectedTokens} setSelectedTokens={setSelectedTokens} collection={collection} />
+      <BulkTransferFormModal selectedTokens={selectedTokens} setSelectedTokens={setSelectedTokens} collection={collection} />
     </div>
   )
 }
