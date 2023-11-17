@@ -333,7 +333,7 @@ export default function CollectionDetail(props) {
               console.log("Input pairs2")
             }}
           >
-            Pairs
+            Bulk Transfer(Pairs)
           </button>
           <div className="bg-gray-200 h-6 w-[1px]"></div>
           <button

@@ -15,7 +15,6 @@ export default function BulkTransferFormModal(props) {
   const router = useRouter()
   const { mutate } = useSWRConfig()
   const { account: account, collection: collectionPath } = router.query
-  console.log("collectionPath", collectionPath)
   const { selectedTokens, setSelectedTokens, collection } = props
   const [transactionInProgress, setTransactionInProgress] = useRecoilState(transactionInProgressState)
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
@@ -42,11 +41,8 @@ export default function BulkTransferFormModal(props) {
     for (var i = 0; i < rawRecords.length; i++) {
       let rawRecord = rawRecords[i]
       const [tokenId, address] = rawRecord.split(",")
-      console.log(tokenId)
-      console.log(address)
       try {
         const id = new Decimal(tokenId)
-        console.log("id decimap places", id.decimalPlaces())
         if (!id.isPositive() || id.decimalPlaces() > 0) { throw "invalid tokenId" }
 
         if (!isValidFlowAddress(address)) {
@@ -122,11 +118,6 @@ export default function BulkTransferFormModal(props) {
                             }
                             disabled={transactionInProgress}
                             onChange={(event) => {
-                              // if (validRecords.length > 0 || unpreparedRecords.length > 0 || invalidRecords.length > 0) {
-                                // setValidRecords([])
-                                // setInvalidRecords([])
-                              // }
-                              // setShowNotification(false)
                               setRawRecordsStr(event.target.value)
                             }}
                           />
@@ -148,9 +139,8 @@ export default function BulkTransferFormModal(props) {
 
                       if (showBulkTransferForm.mode == "NFT") {
                         const [records, invalidRecords] = filterRecords(rawRecordsStr.trim())
-                        console.log(invalidRecords)
                         if (invalidRecords.length > 0) {
-                          setRecordsError(`Some records are invalid`)
+                          setRecordsError(`Invalid record(s)`)
                           return
                         }
 
@@ -186,7 +176,6 @@ export default function BulkTransferFormModal(props) {
                           selected[tokenId] = properties
                         }
 
-                        console.log("selectedTokens", selected)
                         setSelectedTokens(selected)
                         setShowBulkTransferForm(prev => ({
                           ...prev, show: false
