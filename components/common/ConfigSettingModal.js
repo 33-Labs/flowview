@@ -3,10 +3,9 @@ import { Dialog, Transition } from '@headlessui/react'
 import { useRecoilState } from "recoil"
 import { showConfigSettingState, transactionStatusState, transactionInProgressState } from '../../lib/atoms'
 import * as fcl from "@onflow/fcl";
-import { isValidFlowAddress, isValidUrl } from '../../lib/utils'
+import { isValidFlowAddress } from '../../lib/utils'
 import { useRouter } from 'next/router'
 import { useSWRConfig } from 'swr'
-import { publishToHybridCustody, setupOwnedAccount, setupOwnedAccountAndPublishToHybridCustody } from '../../flow/hc_transactions';
 
 export default function ConfigSettingModal(props) {
   const router = useRouter()
@@ -70,13 +69,13 @@ export default function ConfigSettingModal(props) {
                 <div>
                   <div className="mt-3">
                     <Dialog.Title as="h3" className="text-xl leading-6 font-bold text-gray-900 mb-4">
-                      {"Flow Configs"}
+                      {"Contract Addresses"}
                     </Dialog.Title>
                     <div className='flex flex-col gap-y-4'>
                       <div>
                         <div>
                           <label htmlFor="hybridCustody" className="block text-sm font-medium leading-6 text-gray-900">
-                            HybridCustody Contracts Address
+                            HybridCustody Contracts
                           </label>
                           <label className='text-xs text-black'>Include HybridCustody, CapabilityFactory and CapabilityFilter</label>
                         </div>
@@ -113,7 +112,7 @@ export default function ConfigSettingModal(props) {
                         }
                       </div>
 
-                      <div>
+                      {/* <div>
                         <div>
                           <label htmlFor="hybridCustody" className="block text-sm font-medium leading-6 text-gray-900">
                             NFTStorefrontV2 Contract Address
@@ -150,7 +149,7 @@ export default function ConfigSettingModal(props) {
                           nftStorefrontV2Error ?
                             <label className='text-base text-red-600 mt-1'>{nftStorefrontV2Error}</label> : null
                         }
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
@@ -175,7 +174,6 @@ export default function ConfigSettingModal(props) {
                         .put("0xCapabilityFactory", hybridCustody)
                         .put("0xCapabilityFilter", hybridCustody)
                         .put("0xCapabilityDelegator", hybridCustody)
-                        .put("0xNFTStorefrontV2", nftStorefrontV2)
 
                       showConfigSetting.callback()
                       setShowConfigSetting({show: false, callback: null})

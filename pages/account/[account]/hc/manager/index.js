@@ -21,6 +21,7 @@ import OwnedView from "../../../../../components/hybrid_custody/OwnedView"
 import TransferOwnershipModal from "../../../../../components/hybrid_custody/TransferOwnerShipModal"
 import SetManagerCapFilterModal from "../../../../../components/hybrid_custody/SetManagerCapFilterModal"
 import { CogIcon } from "@heroicons/react/outline"
+import publicConfig from "../../../../../publicConfig"
 
 const hcManagerInfoFetcher = async (funcName, address) => {
   return getHcManagerInfo(address)
@@ -49,14 +50,16 @@ export default function HybridCustodyManager(props) {
   console.log(itemsError)
 
   useEffect(() => {
-    const hc = localStorage.getItem("0xHybridCustody")
-    if (hc && hc != "") {
-      fcl.config()
-        .put("0xHybridCustody", hc)
-        .put("0xCapabilityFactory", hc)
-        .put("0xCapabilityFilter", hc)
-        .put("0xCapabilityDelegator", hc)
-      setHybridCustody(hc)
+    if (publicConfig.chainEnv == "emulator") {
+      const hc = localStorage.getItem("0xHybridCustody")
+      if (hc && hc != "") {
+        fcl.config()
+          .put("0xHybridCustody", hc)
+          .put("0xCapabilityFactory", hc)
+          .put("0xCapabilityFilter", hc)
+          .put("0xCapabilityDelegator", hc)
+        setHybridCustody(hc)
+      }
     } else {
       fcl.config().get("0xHybridCustody", null).then((value) => {
         if (value && value != "") {
@@ -180,7 +183,6 @@ export default function HybridCustodyManager(props) {
               }
             </div>
           </div>
-
 
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">
             <div className="inline-block min-w-full">

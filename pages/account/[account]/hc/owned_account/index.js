@@ -45,14 +45,16 @@ export default function HybridCustodyOwnedAcct(props) {
   )
 
   useEffect(() => {
-    const hc = localStorage.getItem("0xHybridCustody")
-    if (hc && hc != "") {
-      fcl.config()
-        .put("0xHybridCustody", hc)
-        .put("0xCapabilityFactory", hc)
-        .put("0xCapabilityFilter", hc)
-        .put("0xCapabilityDelegator", hc)
-      setHybridCustody(hc)
+    if (publicConfig.chainEnv == "emulator") {
+      const hc = localStorage.getItem("0xHybridCustody")
+      if (hc && hc != "") {
+        fcl.config()
+          .put("0xHybridCustody", hc)
+          .put("0xCapabilityFactory", hc)
+          .put("0xCapabilityFilter", hc)
+          .put("0xCapabilityDelegator", hc)
+        setHybridCustody(hc)
+      }
     } else {
       fcl.config().get("0xHybridCustody", null).then((value) => {
         if (value && value != "") {
