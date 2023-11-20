@@ -3,20 +3,22 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 
 import * as fcl from "@onflow/fcl"
-import config from "../flow/config.js"
 import publicConfig from "../publicConfig.js"
+import config from "../flow/config.js"
 import { useEffect, useState } from "react"
 
 import { useRecoilState } from "recoil"
 import {
   showBasicNotificationState,
   basicNotificationContentState,
+  showConfigSettingState,
 } from "../lib/atoms.js"
-import { LogoutIcon, StarIcon } from "@heroicons/react/outline"
+import { CogIcon, LogoutIcon, StarIcon } from "@heroicons/react/outline"
 
 export default function NavigationBar() {
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
   const [, setBasicNotificationContent] = useRecoilState(basicNotificationContentState)
+  const [, setShowConfigSetting] = useRecoilState(showConfigSettingState)
 
   const router = useRouter()
   const [user, setUser] = useState({ loggedIn: null })
@@ -45,7 +47,7 @@ export default function NavigationBar() {
 
   const AuthedState = () => {
     return (
-      <div className="shrink truncate flex gap-x-2 items-center">
+      <div className="shrink truncate flex gap-x-1 items-center">
         <button
           className="cursor-pointer shrink truncate font-flow text-base
           text-black shadow-sm
@@ -89,7 +91,7 @@ export default function NavigationBar() {
       <div>
         <button
           type="button"
-          className="h-12 px-6 text-base rounded-2xl font-flow font-semibold shadow-sm text-black bg-drizzle hover:bg-drizzle-dark"
+          className="h-9 px-4 text-base rounded-2xl font-flow font-semibold shadow-sm text-black bg-drizzle hover:bg-drizzle-dark"
           onClick={fcl.logIn}
         >
           <label className="hidden sm:block">Connect Wallet</label>
@@ -121,10 +123,27 @@ export default function NavigationBar() {
         </label>
       </div>
 
-      {user && user.loggedIn
-        ? <AuthedState />
-        : <UnauthenticatedState />
-      }
+      <div className="flex gap-x-1 items-center">
+        {user && user.loggedIn
+          ? <AuthedState />
+          : <UnauthenticatedState />
+        }
+
+        {publicConfig.chainEnv == "emulator" ?
+          <button
+            type="button"
+            className="w-9 h-9 bg-drizzle rounded-full p-2"
+            onClick={() => {
+              setShowConfigSetting({
+                show: true, callback: () => {
+                  router.reload()
+                }
+              })
+            }}>
+            <CogIcon className="h-5 w-5 text-black" />
+          </button> : null
+        }
+      </div>
     </div>
   )
 }

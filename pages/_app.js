@@ -7,6 +7,7 @@ import Footer from '../components/Footer'
 import TransactionNotification from '../components/common/TransactionNotification'
 import BasicNotification from '../components/common/BasicNotification'
 import { Analytics } from '@vercel/analytics/react'
+import ConfigSettingModal from '../components/common/ConfigSettingModal'
 
 function MyApp({ Component, pageProps }) {
   return (
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }) {
           <Component {...pageProps} />
           <Analytics />
           <Footer />
+          <ConfigSettingModal />
           <TransactionNotification />
           <BasicNotification />
         </RecoilRoot>

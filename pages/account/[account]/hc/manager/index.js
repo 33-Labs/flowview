@@ -9,7 +9,7 @@ import { isValidFlowAddress } from "../../../../../lib/utils"
 import Custom404 from "../../404"
 import { getHcManagerInfo, getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
 import { useRecoilState } from "recoil"
-import { showRedeemAccountState, showSetupHcManagerState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
+import { showConfigSettingState, showRedeemAccountState, showSetupHcManagerState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
 import SetupDisplayModal from "../../../../../components/hybrid_custody/SetupDisplayModal"
 import PublishToParentModal from "../../../../../components/hybrid_custody/PublishToParentModal"
 import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
@@ -20,6 +20,7 @@ import ChildView from "../../../../../components/hybrid_custody/ChildView"
 import OwnedView from "../../../../../components/hybrid_custody/OwnedView"
 import TransferOwnershipModal from "../../../../../components/hybrid_custody/TransferOwnerShipModal"
 import SetManagerCapFilterModal from "../../../../../components/hybrid_custody/SetManagerCapFilterModal"
+import { CogIcon } from "@heroicons/react/outline"
 
 const hcManagerInfoFetcher = async (funcName, address) => {
   return getHcManagerInfo(address)
@@ -30,18 +31,40 @@ export default function HybridCustodyManager(props) {
   const [, setTransactionStatus] = useRecoilState(transactionStatusState)
   const [showSetupHcManager, setShowSetupHcManager] = useRecoilState(showSetupHcManagerState)
   const [showRedeemAccount, setShowRedeemAccount] = useRecoilState(showRedeemAccountState)
+  const [, setShowConfigSetting] = useRecoilState(showConfigSettingState)
 
   const router = useRouter()
   const { account } = router.query
 
   const [hcManagerInfo, setHcManagerInfo] = useState(null)
   const [user, setUser] = useState({ loggedIn: null })
+  const [hybridCustody, setHybridCustody] = useState(null)
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: itemsData, error: itemsError } = useSWR(
-    account && isValidFlowAddress(account) ? ["hcManagerInfoFetcher", account] : null, hcManagerInfoFetcher
+    account && hybridCustody && isValidFlowAddress(account) ? ["hcManagerInfoFetcher", account] : null, hcManagerInfoFetcher
   )
+
+  console.log(itemsError)
+
+  useEffect(() => {
+    const hc = localStorage.getItem("0xHybridCustody")
+    if (hc && hc != "") {
+      fcl.config()
+        .put("0xHybridCustody", hc)
+        .put("0xCapabilityFactory", hc)
+        .put("0xCapabilityFilter", hc)
+        .put("0xCapabilityDelegator", hc)
+      setHybridCustody(hc)
+    } else {
+      fcl.config().get("0xHybridCustody", null).then((value) => {
+        if (value && value != "") {
+          setHybridCustody(value)
+        }
+      })
+    }
+  }, [])
 
   useEffect(() => {
     if (itemsData) {
@@ -157,26 +180,47 @@ export default function HybridCustodyManager(props) {
               }
             </div>
           </div>
+
+
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">
             <div className="inline-block min-w-full">
-              <div className="flex flex-col gap-y-8">
-                <div className="flex flex-col gap-y-4">
-                  <h1 className="text-lg sm:text-xl font-bold text-gray-900">
-                    {`ChildAccounts ${hcManagerInfo ? `(${hcManagerInfo.childAccounts.length})` : ""}`}
-                  </h1>
-                  <div className="flex flex-col gap-y-4">
-                    {showChildAccounts()}
+              {
+                hybridCustody && hybridCustody != "" ?
+                  <div className="flex flex-col gap-y-8">
+                    <div className="flex flex-col gap-y-4">
+                      <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                        {`ChildAccounts ${hcManagerInfo ? `(${hcManagerInfo.childAccounts.length})` : ""}`}
+                      </h1>
+                      <div className="flex flex-col gap-y-4">
+                        {showChildAccounts()}
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-y-4">
+                      <h1 className="text-lg sm:text-xl font-bold text-gray-900">
+                        {`OwnedAccounts ${hcManagerInfo ? `(${hcManagerInfo.ownedAccounts.length})` : ""}`}
+                      </h1>
+                      <div className="flex flex-col gap-y-4">
+                        {showOwnedAccounts()}
+                      </div>
+                    </div>
+                  </div> :
+                  <div className="flex items-center gap-x-1">
+                    <label>
+                      The HybridCustody Contracts Address is not set. Please set it here:
+                    </label>
+                    <button
+                      className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark w-9 h-9 p-2 text-sm rounded-full font-semibold shrink-0`}
+                      disabled={transactionInProgress}
+                      onClick={async () => {
+                        setShowConfigSetting({show: true, callback: () => {
+                          router.reload()
+                        }})
+                      }}
+                    >
+                      <CogIcon className="h-5 w-5 text-black" />
+                    </button>
                   </div>
-                </div>
-                <div className="flex flex-col gap-y-4">
-                  <h1 className="text-lg sm:text-xl font-bold text-gray-900">
-                    {`OwnedAccounts ${hcManagerInfo ? `(${hcManagerInfo.ownedAccounts.length})` : ""}`}
-                  </h1>
-                  <div className="flex flex-col gap-y-4">
-                    {showOwnedAccounts()}
-                  </div>
-                </div>
-              </div>
+              }
             </div>
           </div>
         </div>

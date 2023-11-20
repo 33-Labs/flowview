@@ -9,7 +9,7 @@ import { isValidFlowAddress } from "../../../../../lib/utils"
 import Custom404 from "../../404"
 import { getOwnedAccountInfo } from "../../../../../flow/hc_scripts"
 import { useRecoilState } from "recoil"
-import { showPublishToParentState, showSetupDisplayState, showTransferOwnershipState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
+import { showConfigSettingState, showPublishToParentState, showSetupDisplayState, showTransferOwnershipState, transactionInProgressState, transactionStatusState } from "../../../../../lib/atoms"
 import SetupDisplayModal from "../../../../../components/hybrid_custody/SetupDisplayModal"
 import PublishToParentModal from "../../../../../components/hybrid_custody/PublishToParentModal"
 import { setupOwnedAccount } from "../../../../../flow/hc_transactions"
@@ -17,6 +17,7 @@ import ParentView from "../../../../../components/hybrid_custody/ParentView"
 import TransferOwnershipModal from "../../../../../components/hybrid_custody/TransferOwnerShipModal"
 import publicConfig from "../../../../../publicConfig"
 import OwnedDisplayView from "../../../../../components/hybrid_custody/OwnedDisplayView"
+import { CogIcon } from "@heroicons/react/outline"
 
 const ownedAccountInfoFetcher = async (funcName, address) => {
   return getOwnedAccountInfo(address)
@@ -28,18 +29,38 @@ export default function HybridCustodyOwnedAcct(props) {
   const [showSetupDisplay, setShowSetupDisplay] = useRecoilState(showSetupDisplayState)
   const [showPublishToParent, setShowPublishToParent] = useRecoilState(showPublishToParentState)
   const [showTransferOwnership, setShowTransferOwnership] = useRecoilState(showTransferOwnershipState)
+  const [, setShowConfigSetting] = useRecoilState(showConfigSettingState)
 
   const router = useRouter()
   const { account } = router.query
 
   const [ownedAccountInfo, setOwnedAccountInfo] = useState(null)
   const [user, setUser] = useState({ loggedIn: null })
+  const [hybridCustody, setHybridCustody] = useState(null)
 
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
 
   const { data: itemsData, error: itemsError } = useSWR(
     account && isValidFlowAddress(account) ? ["ownedAccountInfoFetcher", account] : null, ownedAccountInfoFetcher
   )
+
+  useEffect(() => {
+    const hc = localStorage.getItem("0xHybridCustody")
+    if (hc && hc != "") {
+      fcl.config()
+        .put("0xHybridCustody", hc)
+        .put("0xCapabilityFactory", hc)
+        .put("0xCapabilityFilter", hc)
+        .put("0xCapabilityDelegator", hc)
+      setHybridCustody(hc)
+    } else {
+      fcl.config().get("0xHybridCustody", null).then((value) => {
+        if (value && value != "") {
+          setHybridCustody(value)
+        }
+      })
+    }
+  }, [])
 
   useEffect(() => {
     if (itemsData) {
@@ -147,6 +168,8 @@ export default function HybridCustodyOwnedAcct(props) {
           </div>
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">
             <div className="inline-block min-w-full">
+              {
+                hybridCustody && hybridCustody != "" ?
               <div className="flex flex-col gap-y-4">
                 {
                   ownedAccountInfo && ownedAccountInfo.display ?
@@ -161,6 +184,24 @@ export default function HybridCustodyOwnedAcct(props) {
                   {showItems()}
                 </div>
               </div>
+              : 
+              <div className="flex items-center gap-x-1">
+              <label>
+                The HybridCustody Contracts Address is not set. Please set it here:
+              </label>
+              <button
+                className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark w-9 h-9 p-2 text-sm rounded-full font-semibold shrink-0`}
+                disabled={transactionInProgress}
+                onClick={async () => {
+                  setShowConfigSetting({show: true, callback: () => {
+                    router.reload()
+                  }})
+                }}
+              >
+                <CogIcon className="h-5 w-5 text-black" />
+              </button>
+            </div>
+}
             </div>
           </div>
         </div>
