@@ -1,6 +1,6 @@
 import { SearchIcon } from "@heroicons/react/outline";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { isValidFlowAddress, maybeDomain } from "../../lib/utils";
 import { useRecoilState } from "recoil"
 import {
@@ -8,6 +8,7 @@ import {
 } from "../../lib/atoms"
 import { getAddressOfDomain } from "../../flow/scripts";
 import publicConfig from "../../publicConfig";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export default function SearchBar(props) {
   const router = useRouter()
@@ -18,6 +19,14 @@ export default function SearchBar(props) {
   const [isValidInput, setIsValidInput] = useState(true)
   const [inputValue, setInputValue] = useState("")
 
+  const inputRef = useRef(null);
+
+  useHotkeys('ctrl+shift+/', () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, {}, [inputRef]);
+
   return (
     <div className={`${classes}`}>
       <div className="mt-1 relative">
@@ -25,6 +34,7 @@ export default function SearchBar(props) {
           <SearchIcon className="h-5 w-5 text-gray-300" aria-hidden="true" />
         </div>
         <input
+          ref={inputRef}
           type="text"
           name="search"
           id="search"

@@ -2,10 +2,24 @@ import { useRouter } from "next/router"
 import { useMemo } from "react"
 import { classNames } from "../../lib/utils"
 import publicConfig from "../../publicConfig"
+import { useHotkeys } from "react-hotkeys-hook"
 
 export default function Sidebar(props) {
   const router = useRouter()
   const { account } = router.query
+
+  useHotkeys('ctrl+shift+c', () => {
+    router.push({ pathname: "/account/[account]/collection", query: { account: account } }, undefined, { shallow: true, scroll: false })
+  })
+  useHotkeys('ctrl+shift+f', () => {
+    router.push({ pathname: "/account/[account]/fungible_token", query: { account: account } }, undefined, { shallow: true, scroll: false })
+  })
+  useHotkeys('ctrl+shift+s', () => {
+    router.push({ pathname: "/account/[account]/storefront", query: { account: account } }, undefined, { shallow: true, scroll: false })
+  })
+  useHotkeys('ctrl+shift+k', () => {
+    router.push({ pathname: "/account/[account]/key", query: { account: account } }, undefined, { shallow: true, scroll: false })
+  })
 
   let menuItems = [
     { id: "0", label: `Basic`, link: { pathname: "/account/[account]", query: { account: account } } },

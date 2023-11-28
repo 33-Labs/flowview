@@ -1,6 +1,17 @@
 import Image from "next/image"
+import { useHotkeys } from "react-hotkeys-hook"
 
 export default function Footer() {
+  useHotkeys('ctrl+shift+t', () => {
+    window.open("https://testnet.flowview.app", "_blank")
+  })
+  useHotkeys('ctrl+shift+m', () => {
+    window.open("https://flowview.app", "_blank")
+  })
+  useHotkeys('ctrl+shift+e', () => {
+    window.open("https://emulator.flowview.app", "_blank")
+  })
+
   return (
     <footer className="m-auto mt-60 max-w-[920px] flex flex-1 justify-center items-center py-8 border-t border-solid box-border">
       <div className="flex flex-col gap-y-2 items-center">

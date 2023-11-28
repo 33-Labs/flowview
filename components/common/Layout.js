@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as fcl from "@onflow/fcl"
 import { getDefaultDomainsOfAddress } from "../../flow/scripts";
 import { isValidFlowAddress } from "../../lib/utils";
@@ -25,6 +25,7 @@ import { removeAccountBookmark } from "../../flow/bookmark_transactions";
 import NoteEditorModal from "../bookmark/NoteEditorModal";
 import { QRCodeCanvas } from "qrcode.react";
 import Image from "next/image"
+import { useHotkeys } from "react-hotkeys-hook";
 
 const accountBookmarkFetcher = async (funcName, owner, target) => {
   if (publicConfig.chainEnv == "emulator") {
@@ -62,6 +63,20 @@ export default function Layout({ children }) {
     setBookmark(bookmarkData)
   }, [bookmarkData])
 
+  const bookmarkRef = useRef(null);
+  useHotkeys('ctrl+shift+b', () => {
+    if (bookmarkRef.current) {
+      handleStarIconClick()
+    }
+  }, {}, [bookmarkRef]);
+
+  const copyAddressRef = useRef(null);
+  useHotkeys('ctrl+shift+a', () => {
+    if (copyAddressRef.current) {
+      handleCopyAddressClick();
+    }
+  }, {}, [copyAddressRef]);
+
   useEffect(() => {
     if (!(account && isValidFlowAddress(account))) {
       return
@@ -96,44 +111,51 @@ export default function Layout({ children }) {
     }
   }, [currentDefaultDomains, account])
 
+  const handleCopyAddressClick = async () => {
+    await navigator.clipboard.writeText(account)
+    setShowBasicNotification(true)
+    setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
+  }
+
+  const handleStarIconClick = async () => {
+    if (transactionInProgress) {
+      return
+    }
+
+    if (bookmark) {
+      await removeAccountBookmark(account, setTransactionInProgress, setTransactionStatus)
+      if (user && user.loggedIn && account) {
+        mutate(["accountBookmarkFetcher", user.addr, account])
+      }
+    } else {
+      if (!user || !user.loggedIn) {
+        setShowBasicNotification(true)
+        setBasicNotificationContent({ type: "information", title: "Please connect your wallet first", detail: null })
+        return
+      }
+
+      setAccountBookmark({
+        address: account,
+        note: ""
+      })
+      setShowNoteEditor(true)
+    }
+  }
+
   const showStarIcon = (bookmark) => {
     if (publicConfig.chainEnv == "emulator") {
       return null
     }
     if (!bookmark) {
       return <StarIcon className="cursor-pointer text-gray-700 hover:text-drizzle w-6 h-6"
-        onClick={async () => {
-          if (transactionInProgress) {
-            return
-          }
-
-          if (!user || !user.loggedIn) {
-            setShowBasicNotification(true)
-            setBasicNotificationContent({ type: "information", title: "Please connect your wallet first", detail: null })
-            return
-          }
-
-          setAccountBookmark({
-            address: account,
-            note: ""
-          })
-          setShowNoteEditor(true)
-        }}
+        onClick={handleStarIconClick}
       />
     }
 
     return <SolidStar className="cursor-pointer text-yellow-400 w-6 h-6"
-      onClick={async () => {
-        if (transactionInProgress) {
-          return
-        }
-        await removeAccountBookmark(account, setTransactionInProgress, setTransactionStatus)
-        if (user && user.loggedIn && account) {
-          mutate(["accountBookmarkFetcher", user.addr, account])
-        }
-      }}
+      ref={bookmarkRef}
+      onClick={handleStarIconClick}
     />
-
   }
 
   return (
@@ -150,19 +172,16 @@ export default function Layout({ children }) {
               <div className="flex gap-x-2 items-center">
                 <label className="text-2xl sm:text-3xl font-bold">{`${account}`}</label>
                 <DocumentDuplicateIcon className="cursor-pointer text-gray-700 hover:text-drizzle w-6 h-6"
-                  onClick={async () => {
-                    await navigator.clipboard.writeText(account)
-                    setShowBasicNotification(true)
-                    setBasicNotificationContent({ type: "information", title: "Copied!", detail: null })
-                  }} />
+                  ref={copyAddressRef}
+                  onClick={handleCopyAddressClick} />
                 {showStarIcon(bookmark)}
                 <div className="cursor-pointer h-[20px] aspect-square shrink-0 relative"
-                    onClick={(event) => {
-                      window.open(`${publicConfig.flowscanURL}/account/${account}`)
-                      event.stopPropagation()
-                    }}>
-                    <Image src={"/flowdiver.png"} alt="" fill sizes="5vw" className="object-contain" />
-                  </div>
+                  onClick={(event) => {
+                    window.open(`${publicConfig.flowscanURL}/account/${account}`)
+                    event.stopPropagation()
+                  }}>
+                  <Image src={"/flowdiver.png"} alt="" fill sizes="5vw" className="object-contain" />
+                </div>
               </div>
               {
                 bookmark ?
