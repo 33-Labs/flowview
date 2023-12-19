@@ -181,6 +181,21 @@ export default function HybridCustodyManager(props) {
                   </button>
                   : null
               }
+              {
+                <button
+                  className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark w-9 h-9 p-2 text-sm rounded-full font-semibold shrink-0`}
+                  disabled={transactionInProgress}
+                  onClick={async () => {
+                    setShowConfigSetting({
+                      show: true, callback: () => {
+                        router.reload()
+                      }
+                    })
+                  }}
+                >
+                  <CogIcon className="h-5 w-5 text-black" />
+                </button>
+              }
             </div>
           </div>
 
@@ -214,9 +229,11 @@ export default function HybridCustodyManager(props) {
                       className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark w-9 h-9 p-2 text-sm rounded-full font-semibold shrink-0`}
                       disabled={transactionInProgress}
                       onClick={async () => {
-                        setShowConfigSetting({show: true, callback: () => {
-                          router.reload()
-                        }})
+                        setShowConfigSetting({
+                          show: true, callback: () => {
+                            router.reload()
+                          }
+                        })
                       }}
                     >
                       <CogIcon className="h-5 w-5 text-black" />

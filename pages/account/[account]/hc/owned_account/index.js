@@ -166,6 +166,21 @@ export default function HybridCustodyOwnedAcct(props) {
                   </button>
                   : null
               }
+                            {
+                <button
+                  className={`text-black disabled:bg-drizzle-light disabled:text-gray-500 bg-drizzle hover:bg-drizzle-dark w-9 h-9 p-2 text-sm rounded-full font-semibold shrink-0`}
+                  disabled={transactionInProgress}
+                  onClick={async () => {
+                    setShowConfigSetting({
+                      show: true, callback: () => {
+                        router.reload()
+                      }
+                    })
+                  }}
+                >
+                  <CogIcon className="h-5 w-5 text-black" />
+                </button>
+              }
             </div>
           </div>
           <div className="px-2 py-2 overflow-x-auto h-screen w-full">
