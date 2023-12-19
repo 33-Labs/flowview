@@ -68,7 +68,7 @@ export default function NFTTransferModal(props) {
                           outline-0 focus:outline-2 focus:outline-drizzle-dark 
                           placeholder:text-gray-300`}
                             placeholder='0x'
-                            onChange={(event) => {
+                            onChange={(e) => {
                               setRecipientError(null)
                               setRecipient("")
                               if (e.target.value === "") {
