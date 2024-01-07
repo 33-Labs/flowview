@@ -327,10 +327,7 @@ export default function CollectionDetail(props) {
               )
             }
             onClick={async () => {
-              console.log("Input pairs")
-              // setShowNftBulkTransfer({ show: true, mode: "SetRecipient" })
               setShowBulkTransferForm({ show: true, mode: "NFT"})
-              console.log("Input pairs2")
             }}
           >
             Bulk Transfer(Pairs)
