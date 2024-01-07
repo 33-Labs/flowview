@@ -248,8 +248,7 @@ export default function CollectionDetail(props) {
     }
 
     const disableBulkTransfer = () => {
-      return !isCurrentUser() || transactionInProgress || Object.values(selectedTokens).filter((t) => t.isSelected).length == 0 ||
-        !collection.publicPathIdentifier || !collection.storagePathIdentifier
+      return !isCurrentUser() || transactionInProgress || Object.values(selectedTokens).filter((t) => t.isSelected).length == 0
     }
 
     const haveUnsetRecipient = () => {

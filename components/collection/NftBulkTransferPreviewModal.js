@@ -20,6 +20,9 @@ export default function NftBulkTransferPreviewModal(props) {
 
   const [showNftBulkTransferPreview, setShowNftBulkTransferPreview] = useRecoilState(showNftBulkTransferPreviewState)
 
+  const [storagePath, setStoragePath] = useState("")
+  const [publicPath, setPublicPath] = useState("")
+
   useEffect(() => fcl.currentUser.subscribe(setUser), [])
   const [user, setUser] = useState({ loggedIn: null })
 
@@ -38,56 +41,133 @@ export default function NftBulkTransferPreviewModal(props) {
     return previewList
   }
 
+  const withValidPaths = () => {
+    return collection && (collection.publicPathIdentifier || publicPath) && (collection.storagePathIdentifier || storagePath)
+  }
+
   const getPreviewView = () => {
     const previewList = getPreviewList()
     return (
-      <div className='flex gap-x-3 p-4 overflow-auto'>
+      <div className='flex flex-col gap-y-3 '>
         {
-          previewList.map((token, index) => {
-            const display = token.display
-            const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
-            return (
-              <div key={`preview-${index}`} className='flex flex-col justify-between items-center gap-y-3 w-36'>
-                <div className={`w-36 text-center bg-green-100 text-green-800 rounded-xl font-flow font-medium text-xs`}>
-                  {`#${index + 1}`}
-                </div>
-                <div className={
-                  `ring-1 ring-drizzle w-36 h-60 bg-white rounded-2xl flex flex-col gap-y-1 pb-2 justify-between items-center shrink-0 overflow-hidden shadow-md`
-                }>
-                  <div className="flex justify-center w-full rounded-t-2xl aspect-square bg-drizzle-ultralight relative overflow-hidden">
-                    <Image className={"object-contain"} src={display.imageSrc || "/token_placeholder.png"} fill alt="" priority sizes="5vw" />
-                    {
-                      display.rarity ?
-                        <div className={`absolute top-2 px-2 ${rarityColor} rounded-full font-flow font-medium text-xs`}>
-                          {`${display.rarity}`.toUpperCase()}
-                        </div> : null
-                    }
-                  </div>
-                  <label className="px-3 max-h-12 break-words text-center overflow-hidden font-flow font-semibold text-xs text-black">
-                    {`${display.name}`}
-                  </label>
-                  <div className="flex flex-col items-center justify-center">
-                    <div className="flex gap-x-1 justify-center items-center">
-                      {
-                        display.transferrable == true ? null :
-                          <div className={`w-4 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
-                            {"S"}
-                          </div>
+          collection && !collection.publicPathIdentifier ?
+            <div className='flex flex-col gap-y-4'>
+              <div>
+                <label htmlFor="factory" className="block text-sm font-medium leading-6 text-gray-900">
+                  {`Public Path`}
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="bulk_nft"
+                    id="child"
+                    className={`pl-16 bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
+                            focus:border-drizzle-dark
+                          outline-0 focus:outline-2 focus:outline-drizzle-dark 
+                          placeholder:text-gray-300`}
+                    onChange={(e) => {
+                      setPublicPath("")
+                      if (e.target.value === "") {
+                        return
                       }
-                      <label className="font-flow font-medium text-xs text-gray-400">
-                        {`#${display.tokenID}`}
-                      </label>
-                    </div>
 
+                      setPublicPath(e.target.value)
+                    }}
+                  />
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span className="text-gray-500 sm:text-sm" id="price-currency">
+                      /public/
+                    </span>
                   </div>
-                </div>
-                <div className={`px-1 text-center bg-indigo-100 text-indigo-800 rounded-xl font-flow font-medium text-sm`}>
-                  {token.recipient}
                 </div>
               </div>
-            )
-          })
+            </div> : null
         }
+        {
+          collection && !collection.storagePathIdentifier ?
+            <div className='flex flex-col gap-y-4'>
+              <div>
+                <label htmlFor="factory" className="block text-sm font-medium leading-6 text-gray-900">
+                  {`Storage Path`}
+                </label>
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    name="bulk_nft"
+                    id="child"
+                    className={`pl-[74px] bg-white block w-full font-flow text-base rounded-lg px-3 py-2 border
+                            focus:border-drizzle-dark
+                          outline-0 focus:outline-2 focus:outline-drizzle-dark 
+                          placeholder:text-gray-300`}
+                    onChange={(e) => {
+                      setStoragePath("")
+                      if (e.target.value === "") {
+                        return
+                      }
+
+                      setStoragePath(e.target.value)
+                    }}
+                  />
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <span className="text-gray-500 sm:text-sm" id="price-currency">
+                      /storage/
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div> : null
+        }
+        <div>
+
+        </div>
+        <div className='flex gap-x-3 p-4 overflow-auto'>
+          {
+            previewList.map((token, index) => {
+              const display = token.display
+              const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
+              return (
+                <div key={`preview-${index}`} className='flex flex-col justify-between items-center gap-y-3 w-36'>
+                  <div className={`w-36 text-center bg-green-100 text-green-800 rounded-xl font-flow font-medium text-xs`}>
+                    {`#${index + 1}`}
+                  </div>
+                  <div className={
+                    `ring-1 ring-drizzle w-36 h-60 bg-white rounded-2xl flex flex-col gap-y-1 pb-2 justify-between items-center shrink-0 overflow-hidden shadow-md`
+                  }>
+                    <div className="flex justify-center w-full rounded-t-2xl aspect-square bg-drizzle-ultralight relative overflow-hidden">
+                      <Image className={"object-contain"} src={display.imageSrc || "/token_placeholder.png"} fill alt="" priority sizes="5vw" />
+                      {
+                        display.rarity ?
+                          <div className={`absolute top-2 px-2 ${rarityColor} rounded-full font-flow font-medium text-xs`}>
+                            {`${display.rarity}`.toUpperCase()}
+                          </div> : null
+                      }
+                    </div>
+                    <label className="px-3 max-h-12 break-words text-center overflow-hidden font-flow font-semibold text-xs text-black">
+                      {`${display.name}`}
+                    </label>
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="flex gap-x-1 justify-center items-center">
+                        {
+                          display.transferrable == true ? null :
+                            <div className={`w-4 h-4 text-center bg-indigo-100 text-indigo-800 rounded-full font-flow font-medium text-xs`}>
+                              {"S"}
+                            </div>
+                        }
+                        <label className="font-flow font-medium text-xs text-gray-400">
+                          {`#${display.tokenID}`}
+                        </label>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div className={`px-1 text-center bg-indigo-100 text-indigo-800 rounded-xl font-flow font-medium text-sm`}>
+                    {token.recipient}
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
       </div>
     )
   }
@@ -134,20 +214,26 @@ export default function NftBulkTransferPreviewModal(props) {
                 <div className="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
                   <button
                     type="button"
-                    disabled={transactionInProgress}
+                    disabled={!withValidPaths() || transactionInProgress}
                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-drizzle text-base font-medium text-black hover:bg-drizzle-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle sm:col-start-2 sm:text-sm disabled:bg-drizzle-light disabled:text-gray-500"
                     onClick={async () => {
                       setShowNftBulkTransferPreview(prev => ({
                         ...prev, show: false
                       }))
 
-                      const publicPath = `/public/${collection.publicPathIdentifier}`
-                      const storagePath = `/storage/${collection.storagePathIdentifier}`
+                      var publicPathStr = `/public/${collection.publicPathIdentifier}`
+                      var storagePathStr = `/storage/${collection.storagePathIdentifier}`
+                      if (!collection.publicPathIdentifier) {
+                        publicPathStr = `/public/${publicPath}`
+                      }
+                      if (!collection.storagePathIdentifier) {
+                        storagePathStr = `/storage/${storagePath}`
+                      }
                       const list = getPreviewList()
                       const tokenIds = list.map((token) => token.tokenId)
                       const recipients = list.map((token) => token.recipient)
                       await bulkTransferNft(recipients, tokenIds,
-                        storagePath, publicPath,
+                        storagePathStr, publicPathStr,
                         setTransactionInProgress, setTransactionStatus
                       )
                       router.reload()

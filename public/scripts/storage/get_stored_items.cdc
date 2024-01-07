@@ -12,6 +12,16 @@ pub struct CollectionDisplay {
   }
 }
 
+pub struct CollectionData {
+    pub let publicPath: PublicPath
+    pub let storagePath: StoragePath
+
+    init(publicPath: PublicPath, storagePath: StoragePath) {
+      self.publicPath = publicPath
+      self.storagePath = storagePath
+    }
+}
+
 pub struct Item {
   pub let address: Address
   pub let path: String
@@ -19,12 +29,13 @@ pub struct Item {
   pub let isResource: Bool
   pub let isNFTCollection: Bool
   pub let display: CollectionDisplay?
+  pub let collectionData: CollectionData?
   pub let tokenIDs: [UInt64]
   pub let isVault: Bool
   pub let balance: UFix64?
 
   init(address: Address, path: String, type: Type, isResource: Bool, 
-    isNFTCollection: Bool, display: CollectionDisplay?,
+    isNFTCollection: Bool, display: CollectionDisplay?, collectionData: CollectionData?,
     tokenIDs: [UInt64], isVault: Bool, balance: UFix64?) {
       self.address = address
       self.path = path
@@ -32,6 +43,7 @@ pub struct Item {
       self.isResource = isResource
       self.isNFTCollection = isNFTCollection
       self.display = display
+      self.collectionData = collectionData
       self.tokenIDs = tokenIDs
       self.isVault = isVault
       self.balance = balance
@@ -56,6 +68,7 @@ pub fun main(address: Address, pathIdentifiers: [String]): [Item] {
 
       var tokenIDs: [UInt64] = []
       var collectionDisplay: CollectionDisplay? = nil
+      var collectionData: CollectionData? = nil
       if isNFTCollection && conformedMetadataViews {
         if let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path) {
           tokenIDs = collectionRef.getIDs()
@@ -72,6 +85,12 @@ pub fun main(address: Address, pathIdentifiers: [String]): [Item] {
                 name: display.name,
                 squareImage: display.squareImage
               )
+            } 
+            if let data = MetadataViews.getNFTCollectionData(resolver) {
+                collectionData = CollectionData(
+                  publicPath: data.publicPath,
+                  storagePath: data.storagePath
+                )
             }
           }
         }
@@ -96,6 +115,7 @@ pub fun main(address: Address, pathIdentifiers: [String]): [Item] {
         isResource: isResource,
         isNFTCollection: isNFTCollection,
         display: collectionDisplay,
+        collectionData: collectionData,
         tokenIDs: tokenIDs,
         isVault: isVault,
         balance: balance
