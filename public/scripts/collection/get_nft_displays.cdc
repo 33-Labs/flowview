@@ -1,6 +1,7 @@
 import NonFungibleToken from 0xNonFungibleToken
 import MetadataViews from 0xMetadataViews
 import FindViews from 0xFindViews
+import Flowmap from 0xFlowmap
 
 pub struct ViewInfo {
   pub let name: String
@@ -9,14 +10,16 @@ pub struct ViewInfo {
   pub let rarity: String?
   pub let transferrable: Bool
   pub let collectionDisplay: MetadataViews.NFTCollectionDisplay?
+  pub let inscription: String
 
-  init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, transferrable: Bool, collectionDisplay: MetadataViews.NFTCollectionDisplay?) {
+  init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, transferrable: Bool, collectionDisplay: MetadataViews.NFTCollectionDisplay?, inscription: String) {
     self.name = name
     self.description = description
     self.thumbnail = thumbnail
     self.rarity = rarity
     self.transferrable = transferrable
     self.collectionDisplay = collectionDisplay
+    self.inscription = inscription
   }
 }
 
@@ -40,13 +43,23 @@ pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt
   let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
   if !conformedMetadataViews {
     for tokenID in tokenIDs {
+      var inscription = ""
+      if storagePathID == "flowmapCollection" {
+        let collectionRef = account.borrow<&{Flowmap.CollectionPublic}>(from: path)
+        if let c = collectionRef {
+          if let nft = c.borrowFlowmap(id: tokenID) {
+            inscription = nft.inscription
+          }
+        }
+      }
       res[tokenID] = ViewInfo(
         name: storagePathID,
         description: "",
         thumbnail: MetadataViews.HTTPFile(url: ""),
         rarity: nil,
         transferrable: true,
-        collectionDisplay: nil
+        collectionDisplay: nil,
+        inscription: inscription
       )
     }
     return res
@@ -76,7 +89,8 @@ pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt
         thumbnail: display.thumbnail,
         rarity: rarityDesc,
         transferrable: transferrable,
-        collectionDisplay: collectionDisplay
+        collectionDisplay: collectionDisplay,
+        inscription: ""
       )
     } else {
       res[tokenID] = ViewInfo(
@@ -85,7 +99,8 @@ pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt
         thumbnail: MetadataViews.HTTPFile(url: ""),
         rarity: nil,
         transferrable: true,
-        collectionDisplay: nil
+        collectionDisplay: nil,
+        inscription: ""
       )
     }
   }

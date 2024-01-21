@@ -1,8 +1,9 @@
 import Image from "next/image"
-import { classNames, getRarityColor } from "../../lib/utils"
+import { classNames, flowmapDisplayName, flowmapToName, getRarityColor } from "../../lib/utils"
 import { useRouter } from "next/router"
 import { basicNotificationContentState, showBasicNotificationState } from "../../lib/atoms"
 import { useRecoilState } from "recoil"
+import { useEffect, useState } from "react"
 
 export default function NFTView(props) {
   const [, setShowBasicNotification] = useRecoilState(showBasicNotificationState)
@@ -12,6 +13,15 @@ export default function NFTView(props) {
   const router = useRouter()
   const rarityColor = getRarityColor(display.rarity ? display.rarity.toLowerCase() : null)
   const maxSelection = 20
+  const [imageSrc, setImageSrc] = useState("/token_placeholder.png")
+  useEffect(() => {
+    if (collection && collection.path == "/storage/flowmapCollection") {
+      setImageSrc("/flowmap.gif")
+    } else {
+      setImageSrc(display.imageSrc)
+    }
+  }, [])
+
   return (
     <div className={
       classNames(
@@ -49,7 +59,7 @@ export default function NFTView(props) {
         }
       }}>
       <div className="flex justify-center w-full rounded-t-2xl aspect-square bg-drizzle-ultralight relative overflow-hidden">
-        <Image className={"object-contain"} src={display.imageSrc || "/token_placeholder.png"} fill alt="" priority sizes="5vw" />
+        <Image className={"object-contain"} src={imageSrc} fill alt="" priority sizes="5vw" />
         {
           display.rarity ?
             <div className={`absolute top-2 px-2 ${rarityColor} rounded-full font-flow font-medium text-xs`}>
@@ -58,7 +68,7 @@ export default function NFTView(props) {
         }
       </div>
       <label className="px-3 max-h-12 break-words text-center overflow-auto font-flow font-semibold text-xs text-black">
-        {`${display.name}`}
+        {`${display.name == 'flowmapCollection' ? flowmapDisplayName(display.inscription) : display.name}`}
       </label>
       <div className="flex flex-col items-center justify-center">
         <div className="flex gap-x-1 justify-center items-center">

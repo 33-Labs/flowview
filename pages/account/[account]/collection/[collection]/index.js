@@ -243,6 +243,11 @@ export default function CollectionDetail(props) {
       linkSource = collectionDisplay
     }
 
+    // NOTE: Special case for flowmap
+    if (collection && collection.path == '/storage/flowmapCollection') {
+      imageSrc = '/flowmap.gif'
+    }
+
     const isCurrentUser = () => {
       return user && user.loggedIn && user.addr == account
     }

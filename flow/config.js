@@ -43,7 +43,8 @@ if (publicConfig.chainEnv == "emulator") {
     "0xCapabilityFactory": "0x294e44e1ec6993c6",
     "0xCapabilityFilter": "0x294e44e1ec6993c6",
     "0xCapabilityDelegator": "0x294e44e1ec6993c6",
-    "0xFindViews": "0x35717efbbce11c74" 
+    "0xFindViews": "0x35717efbbce11c74",
+    "0xFlowmap": "0x72ed11a540a52efc"
   })
 } else {
   config({
@@ -68,6 +69,7 @@ if (publicConfig.chainEnv == "emulator") {
     "0xCapabilityFactory": "0xd8a7e05a7ac670c0",
     "0xCapabilityFilter": "0xd8a7e05a7ac670c0",
     "0xCapabilityDelegator": "0xd8a7e05a7ac670c0",
-    "0xFindViews": "0x097bafa4e0b48eef" 
+    "0xFindViews": "0x097bafa4e0b48eef",
+    "0xFlowmap": "0x483f0fe77f0d59fb"
   })
 }
