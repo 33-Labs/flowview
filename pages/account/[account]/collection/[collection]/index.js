@@ -286,17 +286,6 @@ export default function CollectionDetail(props) {
         <div className="px-1 py-2 w-[1070px]">{description}</div>
         <div className="mt-2 mb-4 flex gap-x-2 items-center">
         {
-            collection && collection.contractName && collection.contractAddress ?
-              <a href={getFlowtyLink(collection.contractAddress, collection.contractName)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0">
-                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
-                  <Image className="rounded-full" src="/flowty.jpg" alt="" width={20} height={20} />&nbsp;Trade on Flowty
-                </div>
-              </a> : null
-          }
-          {
             collection && collection.contractName ?
               <a href={getFlowverseLink(collection.contractName)}
                 target="_blank"
@@ -304,6 +293,17 @@ export default function CollectionDetail(props) {
                 className="shrink-0">
                 <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
                   <Image src="/flowverse.png" alt="" width={20} height={20} />&nbsp;Trade on Flowverse
+                </div>
+              </a> : null
+        }
+        {
+            collection && collection.contractName && collection.contractAddress ?
+              <a href={getFlowtyLink(collection.contractAddress, collection.contractName)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0">
+                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+                  <Image className="rounded-full" src="/flowty.jpg" alt="" width={20} height={20} />&nbsp;Trade on Flowty
                 </div>
               </a> : null
           }

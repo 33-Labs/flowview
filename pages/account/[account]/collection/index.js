@@ -150,20 +150,20 @@ export default function Collection(props) {
                 Create raffle
               </a>
             </label> */}
-              <a href={`https://www.flowty.io/marketplace`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-2">
-                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
-                  <Image className="rounded-full" src="/flowty.jpg" alt="" width={20} height={20} />&nbsp;Trade on Flowty
-                </div>
-              </a>
               <a href={`http://nft.flowverse.co/marketplace`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="py-2">
                 <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
                   <Image src="/flowverse.png" alt="" width={20} height={20} />&nbsp;Trade on Flowverse
+                </div>
+              </a>
+              <a href={`https://www.flowty.io/marketplace`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="py-2">
+                <div className="flex items-center rounded-full ring-1 ring-drizzle px-2 py-1 text-xs sm:text-sm text-black">
+                  <Image className="rounded-full" src="/flowty.jpg" alt="" width={20} height={20} />&nbsp;Trade on Flowty
                 </div>
               </a>
             </div>
