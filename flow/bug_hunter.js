@@ -4,8 +4,8 @@ import { getPublicPaths } from "./scripts"
 
 export const getStoragePaths = async (address) => {
   const code = `
-  pub fun main(address: Address): [String] {
-    let account = getAuthAccount(address)
+  access(all) fun main(address: Address): [String] {
+    let account = getAuthAccount<auth(Storage, Capabilities) &Account>(address)
     let paths: [String] = []
     account.forEachStored(fun (path: StoragePath, type: Type): Bool {
         paths.append(path.toString())
@@ -13,22 +13,20 @@ export const getStoragePaths = async (address) => {
     })
     return paths
   }
-  `
+  `;
 
   const paths = await fcl.query({
     cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-    ]
-  }) 
+    args: (arg, t) => [arg(address, t.Address)],
+  });
 
-  return paths
-}
+  return paths;
+};
 
 export const getPrivatePaths = async (address) => {
   const code = `
-  pub fun main(address: Address): [String] {
-    let account = getAuthAccount(address)
+  access(all) fun main(address: Address): [String] {
+    let account = getAuthAccount<auth(Storage, Capabilities) &Account>(address)
     let paths: [String] = []
     account.forEachPrivate(fun (path: PrivatePath, type: Type): Bool {
         paths.append(path.toString())
@@ -36,24 +34,22 @@ export const getPrivatePaths = async (address) => {
     })
     return paths
   }
-  `
+  `;
 
   const paths = await fcl.query({
     cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-    ]
-  }) 
+    args: (arg, t) => [arg(address, t.Address)],
+  });
 
-  return paths
-}
+  return paths;
+};
 
 export const getTypeOfPrivatePath = async (address, path) => {
-  const pathIdentifier = path.replace("/private/", "")
+  const pathIdentifier = path.replace("/private/", "");
 
   const code = `
-  pub fun main(address: Address, pathIdentifier: String): String? {
-    let account = getAuthAccount(address)
+  access(all) fun main(address: Address, pathIdentifier: String): String? {
+    let account = getAuthAccount<auth(Storage, Capabilities) &Account>(address)
     let path: PrivatePath = PrivatePath(identifier: pathIdentifier)!
     let target = account.getLinkTarget(path)
     var targetPath: String? = nil
@@ -62,40 +58,34 @@ export const getTypeOfPrivatePath = async (address, path) => {
     }
     return targetPath
   }
-  `
+  `;
 
   const type = await fcl.query({
     cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-      arg(pathIdentifier, t.String)
-    ]
-  }) 
+    args: (arg, t) => [arg(address, t.Address), arg(pathIdentifier, t.String)],
+  });
 
-  return type
-}
+  return type;
+};
 
 export const getTypeOfStoragePath = async (address, path) => {
-  const pathIdentifier = path.replace("/storage/", "")
+  const pathIdentifier = path.replace("/storage/", "");
 
   const code = `
-  pub fun main(address: Address, pathIdentifier: String): Type? {
-    let account = getAuthAccount(address)
+  access(all) fun main(address: Address, pathIdentifier: String): Type? {
+    let account = getAuthAccount<auth(Storage, Capabilities) &Account>(address)
     let path: StoragePath = StoragePath(identifier: pathIdentifier)!
     return account.type(at: path)
   }
-  `
+  `;
 
   const type = await fcl.query({
     cadence: code,
-    args: (arg, t) => [
-      arg(address, t.Address),
-      arg(pathIdentifier, t.String)
-    ]
-  }) 
+    args: (arg, t) => [arg(address, t.Address), arg(pathIdentifier, t.String)],
+  });
 
-  return type
-}
+  return type;
+};
 
 // export const hunt2 = async (address) => {
 //   const paths = await getStoragePaths(address)
