@@ -1,46 +1,48 @@
-pub contract FlowviewAccountBookmark {
+access(all) contract FlowviewAccountBookmark {
 
-  pub let AccountBookmarkCollectionStoragePath: StoragePath
-  pub let AccountBookmarkCollectionPublicPath: PublicPath
-  pub let AccountBookmarkCollectionPrivatePath: PrivatePath
+  access(all) entitlement Manage
 
-  pub event AccountBookmarkAdded(owner: Address, address: Address, note: String)
-  pub event AccountBookmarkRemoved(owner: Address, address: Address)
+  access(all) let AccountBookmarkCollectionStoragePath: StoragePath
+  access(all) let AccountBookmarkCollectionPublicPath: PublicPath
+  access(all) let AccountBookmarkCollectionPrivatePath: PrivatePath
 
-  pub event ContractInitialized()
+  access(all) event AccountBookmarkAdded(owner: Address, address: Address, note: String)
+  access(all) event AccountBookmarkRemoved(owner: Address, address: Address)
 
-  pub resource interface AccountBookmarkPublic {
-    pub let address: Address
-    pub var note: String
+  access(all) event ContractInitialized()
+
+  access(all) resource interface AccountBookmarkPublic {
+    access(all) let address: Address
+    access(all) var note: String
   }
 
-  pub resource AccountBookmark: AccountBookmarkPublic {
-    pub let address: Address
-    pub var note: String
+  access(all) resource AccountBookmark: AccountBookmarkPublic {
+    access(all) let address: Address
+    access(all) var note: String
 
     init(address: Address, note: String) {
       self.address = address
       self.note = note
     }
 
-    pub fun setNote(note: String) {
+    access(Manage) fun setNote(note: String) {
       self.note = note
     }
   }
 
-  pub resource interface CollectionPublic {
-    pub fun borrowPublicAccountBookmark(address: Address): &AccountBookmark{AccountBookmarkPublic}?
-    pub fun getAccountBookmarks(): &{Address: AccountBookmark{AccountBookmarkPublic}}
+  access(all) resource interface CollectionPublic {
+    access(all) view fun borrowPublicAccountBookmark(address: Address): &AccountBookmark?
+    access(all) view fun getAccountBookmarks(): &{Address: AccountBookmark}
   }
 
-  pub resource AccountBookmarkCollection: CollectionPublic {
-    pub let bookmarks: @{Address: AccountBookmark}
+  access(all) resource AccountBookmarkCollection: CollectionPublic {
+    access(all) let bookmarks: @{Address: AccountBookmark}
 
     init() {
       self.bookmarks <- {}
     }
 
-    pub fun addAccountBookmark(address: Address, note: String) {
+    access(Manage) fun addAccountBookmark(address: Address, note: String) {
       pre {
         self.bookmarks[address] == nil: "Account bookmark already exists"
       }
@@ -48,29 +50,25 @@ pub contract FlowviewAccountBookmark {
       emit AccountBookmarkAdded(owner: self.owner!.address, address: address, note: note)
     }
 
-    pub fun removeAccountBookmark(address: Address) {
+    access(Manage) fun removeAccountBookmark(address: Address) {
       destroy self.bookmarks.remove(key: address)
       emit AccountBookmarkRemoved(owner: self.owner!.address, address: address)
     }
 
-    pub fun borrowPublicAccountBookmark(address: Address): &AccountBookmark{AccountBookmarkPublic}? {
-      return &self.bookmarks[address] as &AccountBookmark{AccountBookmarkPublic}?
+    access(all) view fun borrowPublicAccountBookmark(address: Address): &AccountBookmark? {
+      return &self.bookmarks[address]
     }
 
-    pub fun borrowAccountBookmark(address: Address): &AccountBookmark? {
-      return &self.bookmarks[address] as &AccountBookmark?
+    access(Manage) fun borrowAccountBookmark(address: Address): auth(Manage) &AccountBookmark? {
+      return &self.bookmarks[address]
     }
 
-    pub fun getAccountBookmarks(): &{Address: AccountBookmark{AccountBookmarkPublic}} {
-      return &self.bookmarks as &{Address: AccountBookmark{AccountBookmarkPublic}}
-    }
-
-    destroy() {
-      destroy self.bookmarks
+    access(all) view fun getAccountBookmarks(): &{Address: AccountBookmark} {
+      return &self.bookmarks
     }
   }
 
-  pub fun createEmptyCollection(): @AccountBookmarkCollection {
+  access(all) fun createEmptyCollection(): @AccountBookmarkCollection {
     return <-create AccountBookmarkCollection()
   }
 
