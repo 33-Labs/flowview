@@ -1,5 +1,5 @@
 transaction(keyIndex: Int) {
-  prepare(signer: AuthAccount) {
+  prepare(signer: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
     signer.keys.revoke(keyIndex: keyIndex)
   }
 }

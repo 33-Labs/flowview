@@ -16,7 +16,7 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, days: UInt64) {
     var saleCuts: [NFTStorefrontV2.SaleCut]
     var marketplacesCapability: [Capability<&AnyResource{FungibleToken.Receiver}>]
 
-    prepare(acct: AuthAccount) {
+    prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
         if acct.borrow<&NFTStorefrontV2.Storefront>(from: NFTStorefrontV2.StorefrontStoragePath) == nil {
             let storefront <- NFTStorefrontV2.createStorefront() as! @NFTStorefrontV2.Storefront
             acct.save(<-storefront, to: NFTStorefrontV2.StorefrontStoragePath)

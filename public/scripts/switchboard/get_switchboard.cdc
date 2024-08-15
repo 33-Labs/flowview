@@ -1,19 +1,26 @@
-import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
-import FungibleToken from 0xFungibleToken
+import "FungibleTokenSwitchboard"
+import "FungibleToken"
 
-pub struct SwitchboardInfo {
-  pub let vaultTypes: [Type]
+access(all) struct SwitchboardInfo {
+  access(all) let vaultTypes: [Type]
 
   init(vaultTypes: [Type]) {
     self.vaultTypes = vaultTypes
   }
 }
 
-pub fun main(address: Address): SwitchboardInfo? {
-  let account = getAuthAccount(address)
-  if let board = account.borrow<&FungibleTokenSwitchboard.Switchboard>(from: FungibleTokenSwitchboard.StoragePath) {
-    let types = board.getVaultTypes()
-    return SwitchboardInfo(vaultTypes: types)
+access(all) fun main(address: Address): SwitchboardInfo? {
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
+  if let board = account.storage.borrow<&FungibleTokenSwitchboard.Switchboard>(from: FungibleTokenSwitchboard.StoragePath) {
+    let types = board.getSupportedVaultTypes()
+    let supportedTypes: [Type] = []
+    types.forEachKey(fun (key: Type): Bool {
+      if types[key] == true {
+        supportedTypes.append(key)
+      }
+      return true
+    })
+    return SwitchboardInfo(vaultTypes: supportedTypes)
   }
   return nil
 }

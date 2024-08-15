@@ -1,41 +1,42 @@
 #allowAccountLinking
 
-import MetadataViews from 0xMetadataViews
-
-import HybridCustody from 0xHybridCustody
+import "ViewResolver"
+import "MetadataViews"
+import "HybridCustody"
 
 /// This transaction configures an OwnedAccount in the signer if needed and configures its Capabilities per
 /// HybridCustody's intended design. If Display values are specified (as recommended), they will be set on the
 /// signer's OwnedAccount.
 ///
 transaction(name: String?, desc: String?, thumbnailURL: String?) {
-    prepare(acct: AuthAccount) {
-        var acctCap = acct.getCapability<&AuthAccount>(HybridCustody.LinkedAccountPrivatePath)
-        if !acctCap.check() {
-            acctCap = acct.linkAccount(HybridCustody.LinkedAccountPrivatePath)!
-        }
+    prepare(acct: auth(Storage, Capabilities) &Account) {
+        let acctCap = acct.capabilities.account.issue<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>()
 
-        if acct.borrow<&HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath) == nil {
+        if acct.storage.borrow<&HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath) == nil {
             let ownedAccount <- HybridCustody.createOwnedAccount(acct: acctCap)
-            acct.save(<-ownedAccount, to: HybridCustody.OwnedAccountStoragePath)
+            acct.storage.save(<-ownedAccount, to: HybridCustody.OwnedAccountStoragePath)
         }
 
-        let owned = acct.borrow<&HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
+        let owned = acct.storage.borrow<auth(HybridCustody.Owner) &HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
             ?? panic("owned account not found")
         
         // Set the display metadata for the OwnedAccount
         if name != nil && desc != nil && thumbnailURL != nil {
             let thumbnail = MetadataViews.HTTPFile(url: thumbnailURL!)
-            let display = MetadataViews.Display(name: name!, description: desc!, thumbnail: thumbnail!)
+            let display = MetadataViews.Display(name: name!, description: desc!, thumbnail: thumbnail)
             owned.setDisplay(display)
         }
 
         // check that paths are all configured properly
-        acct.unlink(HybridCustody.OwnedAccountPrivatePath)
-        acct.link<&HybridCustody.OwnedAccount{HybridCustody.BorrowableAccount, HybridCustody.OwnedAccountPublic, MetadataViews.Resolver}>(HybridCustody.OwnedAccountPrivatePath, target: HybridCustody.OwnedAccountStoragePath)
+        for c in acct.capabilities.storage.getControllers(forPath: HybridCustody.OwnedAccountStoragePath) {
+            c.delete()
+        }
 
-        acct.unlink(HybridCustody.OwnedAccountPublicPath)
-        acct.link<&HybridCustody.OwnedAccount{HybridCustody.OwnedAccountPublic, MetadataViews.Resolver}>(HybridCustody.OwnedAccountPublicPath, target: HybridCustody.OwnedAccountStoragePath)
+        acct.capabilities.storage.issue<&{HybridCustody.BorrowableAccount, HybridCustody.OwnedAccountPublic, ViewResolver.Resolver}>(HybridCustody.OwnedAccountStoragePath)
+        acct.capabilities.publish(
+            acct.capabilities.storage.issue<&{HybridCustody.OwnedAccountPublic, ViewResolver.Resolver}>(HybridCustody.OwnedAccountStoragePath),
+            at: HybridCustody.OwnedAccountPublicPath
+        )
     }
 }
  

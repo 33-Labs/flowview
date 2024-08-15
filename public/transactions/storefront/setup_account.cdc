@@ -3,7 +3,7 @@ import NFTStorefrontV2 from 0xNFTStorefrontV2
 // This transaction installs the Storefront ressource in an account.
 
 transaction {
-    prepare(acct: AuthAccount) {
+    prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
 
         // If the account doesn't already have a Storefront
         if acct.borrow<&NFTStorefrontV2.Storefront>(from: NFTStorefrontV2.StorefrontStoragePath) == nil {

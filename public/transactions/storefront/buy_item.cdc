@@ -19,7 +19,7 @@ transaction(listingResourceID: UInt64, storefrontAddress: Address, commissionRec
     let listing: &NFTStorefrontV2.Listing{NFTStorefrontV2.ListingPublic}
     var commissionRecipientCap: Capability<&{FungibleToken.Receiver}>?
 
-    prepare(acct: AuthAccount) {
+    prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
         self.commissionRecipientCap = nil
         // Access the storefront public resource of the seller to purchase the listing.
         self.storefront = getAccount(storefrontAddress)

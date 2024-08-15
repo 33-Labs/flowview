@@ -1,4 +1,9 @@
-pub fun main(address: Address): [String] {
+access(all) fun main(address: Address): [String] {
   let account = getAccount(address)
-  return account.contracts.names
+  let names = account.contracts.names
+  let retNames: [String] = []
+  for name in names {
+    retNames.append(name)
+  }
+  return retNames
 }

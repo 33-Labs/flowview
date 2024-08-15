@@ -38,3 +38,5 @@ next-env.d.ts
 *.private.json
 
 *.bak
+
+imports

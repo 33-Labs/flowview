@@ -1,15 +1,15 @@
-import NonFungibleToken from 0xNonFungibleToken
+import "NonFungibleToken"
 
 transaction(address: Address, tokenId: UInt64) {
 
-    let senderCollection: &NonFungibleToken.Collection
+    let senderCollection: auth(NonFungibleToken.Withdraw) &{NonFungibleToken.Collection}
     let receiverCollection: Capability<&{NonFungibleToken.CollectionPublic}>
 
-    prepare(account: AuthAccount) {
-        self.senderCollection = account.borrow<&NonFungibleToken.Collection>(from: __NFT_STORAGE_PATH__)!
+    prepare(account: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
+        self.senderCollection = account.storage.borrow<auth(NonFungibleToken.Withdraw) &{NonFungibleToken.Collection}>(from: __NFT_STORAGE_PATH__)!
 
         let receiverAccount = getAccount(address)
-        self.receiverCollection = receiverAccount.getCapability<&{NonFungibleToken.CollectionPublic}>(__NFT_PUBLIC_PATH__)
+        self.receiverCollection = receiverAccount.capabilities.get<&{NonFungibleToken.Collection}>(__NFT_PUBLIC_PATH__)
     }
 
     execute {

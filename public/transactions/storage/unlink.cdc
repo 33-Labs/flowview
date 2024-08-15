@@ -1,5 +1,5 @@
 transaction() {
-  prepare(signer: AuthAccount) {
-    signer.unlink(__PATH__)
+  prepare(signer: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
+    signer.capabilities.unpublish(__PATH__)
   }
 }

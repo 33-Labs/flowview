@@ -3,9 +3,9 @@ import FlowIDTableStaking from 0x8624b52f9ddcd04a
 import FlowEpoch from 0x8624b52f9ddcd04a
 import FlowStakingCollection from 0x8d0e87b65159ae63
 
-pub struct EpochInfo {
-  pub let currentEpochCounter: UInt64
-  pub let currentEpochPhase: UInt8
+access(all) struct EpochInfo {
+  access(all) let currentEpochCounter: UInt64
+  access(all) let currentEpochPhase: UInt8
 
   init(
       currentEpochCounter: UInt64,
@@ -16,18 +16,18 @@ pub struct EpochInfo {
   }
 }
 
-pub struct Result {
-  pub let stakingInfo: StakingInfo?
+access(all) struct Result {
+  access(all) let stakingInfo: StakingInfo?
 
   init(stakingInfo: StakingInfo?) {
     self.stakingInfo = stakingInfo
   }
 }
 
-pub struct LockedAccountInfo {
-  pub let lockedAddress: Address   
-  pub let lockedBalance: UFix64
-  pub let unlockLimit: UFix64 
+access(all) struct LockedAccountInfo {
+  access(all) let lockedAddress: Address   
+  access(all) let lockedBalance: UFix64
+  access(all) let unlockLimit: UFix64 
 
   init(
     lockedAddress: Address,
@@ -40,12 +40,12 @@ pub struct LockedAccountInfo {
   }
 }
 
-pub struct StakingInfo {
-  pub let epochInfo: EpochInfo
-  pub let lockedAccountInfo: LockedAccountInfo?
-  pub let nodeInfos: [NodeInfo]
-  pub let delegatorInfos: [DelegatorInfo]
-  pub let machineAccounts: {String: FlowStakingCollection.MachineAccountInfo}
+access(all) struct StakingInfo {
+  access(all) let epochInfo: EpochInfo
+  access(all) let lockedAccountInfo: LockedAccountInfo?
+  access(all) let nodeInfos: [NodeInfo]
+  access(all) let delegatorInfos: [DelegatorInfo]
+  access(all) let machineAccounts: {String: FlowStakingCollection.MachineAccountInfo}
 
   init(
     epochInfo: EpochInfo,
@@ -62,19 +62,19 @@ pub struct StakingInfo {
   }
 }
 
-pub struct NodeInfo {
-  pub let id: String
-  pub let networkingAddress: String
-  pub let role: UInt8
-  pub let tokensStaked: UFix64
-  pub let tokensCommitted: UFix64
-  pub let tokensUnstaking: UFix64
-  pub let tokensUnstaked: UFix64
-  pub let tokensRewarded: UFix64
+access(all) struct NodeInfo {
+  access(all) let id: String
+  access(all) let networkingAddress: String
+  access(all) let role: UInt8
+  access(all) let tokensStaked: UFix64
+  access(all) let tokensCommitted: UFix64
+  access(all) let tokensUnstaking: UFix64
+  access(all) let tokensUnstaked: UFix64
+  access(all) let tokensRewarded: UFix64
   
-  pub let delegatorIDCounter: UInt32
-  pub let tokensRequestedToUnstake: UFix64
-  pub let initialWeight: UInt64
+  access(all) let delegatorIDCounter: UInt32
+  access(all) let tokensRequestedToUnstake: UFix64
+  access(all) let initialWeight: UInt64
 
   init(nodeID: String) {
     let nodeInfo = FlowIDTableStaking.NodeInfo(nodeID: nodeID) 
@@ -93,16 +93,16 @@ pub struct NodeInfo {
   }
 }
 
-pub struct DelegatorInfo {
-  pub let id: UInt32
-  pub let nodeID: String
-  pub let nodeInfo: NodeInfo
-  pub let tokensCommitted: UFix64
-  pub let tokensStaked: UFix64
-  pub let tokensUnstaking: UFix64
-  pub let tokensRewarded: UFix64
-  pub let tokensUnstaked: UFix64
-  pub let tokensRequestedToUnstake: UFix64
+access(all) struct DelegatorInfo {
+  access(all) let id: UInt32
+  access(all) let nodeID: String
+  access(all) let nodeInfo: NodeInfo
+  access(all) let tokensCommitted: UFix64
+  access(all) let tokensStaked: UFix64
+  access(all) let tokensUnstaking: UFix64
+  access(all) let tokensRewarded: UFix64
+  access(all) let tokensUnstaked: UFix64
+  access(all) let tokensRequestedToUnstake: UFix64
 
   init(nodeID: String, delegatorID: UInt32) {
     let delegatorInfo = FlowIDTableStaking.DelegatorInfo(nodeID: nodeID, delegatorID: delegatorID)
@@ -120,14 +120,14 @@ pub struct DelegatorInfo {
   }
 }
 
-pub fun main(address: Address): Result {
+access(all) fun main(address: Address): Result {
   let epochInfo = EpochInfo(
     currentEpochCounter: FlowEpoch.currentEpochCounter,
     currentEpochPhase: FlowEpoch.currentEpochPhase.rawValue
   )
 
   let tokenHolderRef = 
-      getAuthAccount(address)
+      getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
           .borrow<&LockedTokens.TokenHolder>(from: LockedTokens.TokenHolderStoragePath)
 
   var stakingInfo: StakingInfo? = nil
@@ -171,7 +171,7 @@ pub fun main(address: Address): Result {
     )
   } else {
     let stakingCollectionRef =
-      getAuthAccount(address)
+      getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
         .borrow<&FlowStakingCollection.StakingCollection>(from: FlowStakingCollection.StakingCollectionStoragePath)
 
     if let stakingCollection = stakingCollectionRef {
