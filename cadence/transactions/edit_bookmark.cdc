@@ -4,20 +4,19 @@ transaction(
   address: Address,
   note: String
 ) {
-  let bookmarkCollection: &FlowviewAccountBookmark.AccountBookmarkCollection
+  let bookmarkCollection: auth(FlowviewAccountBookmark.Manage) &FlowviewAccountBookmark.AccountBookmarkCollection
 
-  prepare(signer: AuthAccount) {
-    if signer.borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath) == nil {
+  prepare(signer: auth(Storage, Capabilities) &Account) {
+    if signer.storage.borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath) == nil {
       let collection <- FlowviewAccountBookmark.createEmptyCollection()
-      signer.save(<-collection, to: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
+      signer.storage.save(<-collection, to: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
       
-      let cap = signer.link<&FlowviewAccountBookmark.AccountBookmarkCollection{FlowviewAccountBookmark.CollectionPublic}>(
-        FlowviewAccountBookmark.AccountBookmarkCollectionPublicPath, 
-        target: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath
-      ) ?? panic("Could not create public capability")
+      let cap = signer.capabilities.storage.issue<&FlowviewAccountBookmark.AccountBookmarkCollection>(FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
+      signer.capabilities.publish(cap, at: FlowviewAccountBookmark.AccountBookmarkCollectionPublicPath)
     }
 
-    self.bookmarkCollection = signer.borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
+    self.bookmarkCollection = signer.storage
+      .borrow<auth(FlowviewAccountBookmark.Manage) &FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
       ?? panic("Could not borrow collection")
   }
 

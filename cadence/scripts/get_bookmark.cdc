@@ -1,8 +1,9 @@
 import FlowviewAccountBookmark from "../contracts/FlowviewAccountBookmark.cdc"
 
-pub fun main(owner: Address, address: Address): &FlowviewAccountBookmark.AccountBookmark{FlowviewAccountBookmark.AccountBookmarkPublic}? {
-  let acct = getAuthAccount(owner)
-  let collection = acct.borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
+access(all) fun main(owner: Address, address: Address): &FlowviewAccountBookmark.AccountBookmark? {
+  let acct = getAuthAccount<auth(Storage) &Account>(owner)
+  let collection = acct.storage
+    .borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath)
     ?? panic("Could not borrow AccountBookmarkCollection")
 
   return collection.borrowPublicAccountBookmark(address: address)

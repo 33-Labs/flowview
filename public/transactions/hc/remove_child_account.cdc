@@ -1,9 +1,9 @@
-import HybridCustody from 0xHybridCustody
+import "HybridCustody"
 
 transaction(child: Address) {
-    prepare (acct: AuthAccount) {
-        let manager = acct.borrow<&HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
-            ?? panic("manager not found")
+    prepare (acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
+        let manager = acct.storage.borrow<auth(HybridCustody.Manage) &HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
+            ?? panic("manager no found")
         manager.removeChild(addr: child)
     }
 }

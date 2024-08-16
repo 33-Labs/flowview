@@ -1,9 +1,9 @@
-pub struct Result {
-  pub let address: Address
-  pub let balance: UFix64
-  pub let availableBalance: UFix64
-  pub let storageUsed: UInt64
-  pub let storageCapacity: UInt64
+access(all) struct Result {
+  access(all) let address: Address
+  access(all) let balance: UFix64
+  access(all) let availableBalance: UFix64
+  access(all) let storageUsed: UInt64
+  access(all) let storageCapacity: UInt64
 
   init(
     address: Address,
@@ -20,13 +20,13 @@ pub struct Result {
   }
 }
 
-pub fun main(address: Address): Result {
-  let account = getAuthAccount(address)
+access(all) fun main(address: Address): Result {
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
   return Result(
     address: account.address,
     balance: account.balance,
     availableBalance: account.availableBalance,
-    storageUsed: account.storageUsed,
-    storageCapacity: account.storageCapacity
+    storageUsed: account.storage.used,
+    storageCapacity: account.storage.capacity
   )
 }

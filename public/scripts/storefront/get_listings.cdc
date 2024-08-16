@@ -3,9 +3,9 @@ import NonFungibleToken from 0x1d7e57aa55817448
 import MetadataViews from 0x1d7e57aa55817448
 import FTRegistry from 0x097bafa4e0b48eef
 
-pub struct FTInfo {
-    pub let symbol: String
-    pub let icon: String?
+access(all) struct FTInfo {
+    access(all) let symbol: String
+    access(all) let icon: String?
 
     init(symbol: String, icon: String?) {
         self.symbol = symbol
@@ -13,10 +13,10 @@ pub struct FTInfo {
     }
 }
 
-pub struct CollectionData {
-  pub let storagePath: StoragePath
-  pub let publicPath: PublicPath
-  pub let providerPath: PrivatePath
+access(all) struct CollectionData {
+  access(all) let storagePath: StoragePath
+  access(all) let publicPath: PublicPath
+  access(all) let providerPath: PrivatePath
 
   init(
     storagePath: StoragePath,
@@ -29,9 +29,9 @@ pub struct CollectionData {
   }
 }
 
-pub struct Listings {
-    pub let validItems: [Item]
-    pub let invalidItems: [Item]
+access(all) struct Listings {
+    access(all) let validItems: [Item]
+    access(all) let invalidItems: [Item]
 
     init(validItems: [Item], invalidItems: [Item]) {
         self.validItems = validItems
@@ -39,18 +39,18 @@ pub struct Listings {
     }
 }
 
-pub struct Item {
-    pub let listingResourceId: UInt64
-    pub let details: NFTStorefrontV2.ListingDetails
-    pub let isGhosted: Bool
-    pub let isPurchased: Bool
-    pub let isExpired: Bool
-    pub let nft: &NonFungibleToken.NFT?
-    pub let paymentTokenInfo: FTInfo?
-    pub let conformMetadataViews: Bool
-    pub let collectionData: AnyStruct?
-    pub let display: AnyStruct?
-    pub let rarity: AnyStruct?
+access(all) struct Item {
+    access(all) let listingResourceId: UInt64
+    access(all) let details: NFTStorefrontV2.ListingDetails
+    access(all) let isGhosted: Bool
+    access(all) let isPurchased: Bool
+    access(all) let isExpired: Bool
+    access(all) let nft: &NonFungibleToken.NFT?
+    access(all) let paymentTokenInfo: FTInfo?
+    access(all) let conformMetadataViews: Bool
+    access(all) let collectionData: AnyStruct?
+    access(all) let display: AnyStruct?
+    access(all) let rarity: AnyStruct?
 
     init(
         listingResourceId: UInt64,
@@ -79,7 +79,7 @@ pub struct Item {
     }
 }
 
-pub fun main(account: Address): Listings {
+access(all) fun main(account: Address): Listings {
     let storefrontRef = getAccount(account)
         .getCapability<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(
             NFTStorefrontV2.StorefrontPublicPath

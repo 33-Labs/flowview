@@ -1,8 +1,8 @@
-import FlowviewAccountBookmark from 0xFlowviewAccountBookmark
+import "FlowviewAccountBookmark"
 
-pub fun main(owner: Address, target: Address): &FlowviewAccountBookmark.AccountBookmark{FlowviewAccountBookmark.AccountBookmarkPublic}? {
-  let acct = getAuthAccount(owner)
-  if let collection = acct.borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath) {
+access(all) fun main(owner: Address, target: Address): &FlowviewAccountBookmark.AccountBookmark? {
+  let acct = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(owner)
+  if let collection = acct.storage.borrow<&FlowviewAccountBookmark.AccountBookmarkCollection>(from: FlowviewAccountBookmark.AccountBookmarkCollectionStoragePath) {
     return collection.borrowPublicAccountBookmark(address: target)
   } 
 

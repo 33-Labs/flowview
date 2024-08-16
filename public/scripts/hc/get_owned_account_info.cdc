@@ -1,13 +1,13 @@
-import HybridCustody from 0xHybridCustody
-import MetadataViews from 0xMetadataViews
-import CapabilityFactory from 0xCapabilityFactory
-import CapabilityFilter from 0xCapabilityFilter
+import "HybridCustody"
+import "MetadataViews"
+import "CapabilityFactory"
+import "CapabilityFilter"
 
-pub struct OwnedAccountInfo {
-  pub let display: MetadataViews.Display?
-  pub let parents: [ParentInfo]
-  pub let owner: Address?
-  pub let isOwnedAccountExists: Bool
+access(all) struct OwnedAccountInfo {
+  access(all) let display: MetadataViews.Display?
+  access(all) let parents: [ParentInfo]
+  access(all) let owner: Address?
+  access(all) let isOwnedAccountExists: Bool
 
   init(
     display: MetadataViews.Display?, 
@@ -22,10 +22,10 @@ pub struct OwnedAccountInfo {
   }
 }
 
-pub struct ParentInfo {
-  pub let address: Address
-  pub let isClaimed: Bool
-  pub let childAccount: ChildAccountInfo?
+access(all) struct ParentInfo {
+  access(all) let address: Address
+  access(all) let isClaimed: Bool
+  access(all) let childAccount: ChildAccountInfo?
 
   init(
     address: Address,
@@ -38,12 +38,12 @@ pub struct ParentInfo {
   }
 }
 
-pub struct ChildAccountInfo {
-  pub let factory: Capability<&CapabilityFactory.Manager{CapabilityFactory.Getter}>
-  pub let filter: Capability<&{CapabilityFilter.Filter}>
+access(all) struct ChildAccountInfo {
+  access(all) let factory: Capability<&CapabilityFactory.Manager>
+  access(all) let filter: Capability<&{CapabilityFilter.Filter}>
 
   init(
-    factory: Capability<&CapabilityFactory.Manager{CapabilityFactory.Getter}>,
+    factory: Capability<&CapabilityFactory.Manager>,
     filter: Capability<&{CapabilityFilter.Filter}>
   ) {
     self.factory = factory
@@ -51,9 +51,9 @@ pub struct ChildAccountInfo {
   }
 }
 
-pub fun main(child: Address): OwnedAccountInfo {
-    let acct = getAuthAccount(child)
-    let o = acct.borrow<&HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
+access(all) fun main(child: Address): OwnedAccountInfo {
+    let acct = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(child)
+    let o = acct.storage.borrow<&HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
     if let owned = o {
       let viewType = Type<MetadataViews.Display>()
       let display = owned.resolveView(viewType) as! MetadataViews.Display?

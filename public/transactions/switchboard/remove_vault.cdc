@@ -1,14 +1,14 @@
-import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
-import FungibleToken from 0xFungibleToken
+import "FungibleTokenSwitchboard"
+import "FungibleToken"
 
 transaction {
   let capability: Capability<&{FungibleToken.Receiver}>
-  let switchboardRef: &FungibleTokenSwitchboard.Switchboard
+  let switchboardRef: auth(FungibleTokenSwitchboard.Owner) &FungibleTokenSwitchboard.Switchboard
 
-  prepare(signer: AuthAccount) {
-    self.capability = signer.getCapability<&{FungibleToken.Receiver}>(__TOKEN_RECEIVER_PATH__)
+  prepare(signer: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
+    self.capability = signer.capabilities.get<&{FungibleToken.Receiver}>(__TOKEN_RECEIVER_PATH__)
     
-    self.switchboardRef = signer.borrow<&FungibleTokenSwitchboard.Switchboard>
+    self.switchboardRef = signer.storage.borrow<auth(FungibleTokenSwitchboard.Owner) &FungibleTokenSwitchboard.Switchboard>
       (from: FungibleTokenSwitchboard.StoragePath) 
         ?? panic("Could not borrow reference to switchboard")
   }

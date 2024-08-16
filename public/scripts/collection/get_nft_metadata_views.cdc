@@ -2,13 +2,13 @@ import NonFungibleToken from 0xNonFungibleToken
 import MetadataViews from 0xMetadataViews
 import FindViews from 0xFindViews
 
-pub struct CollectionData {
-  pub let storagePath: StoragePath
-  pub let publicPath: PublicPath
-  pub let providerPath: PrivatePath
-  pub let publicCollection: Type
-  pub let publicLinkedType: Type
-  pub let providerLinkedType: Type
+access(all) struct CollectionData {
+  access(all) let storagePath: StoragePath
+  access(all) let publicPath: PublicPath
+  access(all) let providerPath: PrivatePath
+  access(all) let publicCollection: Type
+  access(all) let publicLinkedType: Type
+  access(all) let providerLinkedType: Type
 
   init(
     storagePath: StoragePath,
@@ -27,8 +27,8 @@ pub struct CollectionData {
   }
 }
 
-pub fun main(address: Address, storagePathID: String, tokenID: UInt64): {String: AnyStruct} {
-  let account = getAuthAccount(address)
+access(all) fun main(address: Address, storagePathID: String, tokenID: UInt64): {String: AnyStruct} {
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
   let res: {String: AnyStruct} = {}
 
   let path = StoragePath(identifier: storagePathID)!
