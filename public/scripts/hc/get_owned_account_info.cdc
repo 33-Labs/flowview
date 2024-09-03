@@ -53,7 +53,7 @@ access(all) struct ChildAccountInfo {
 
 access(all) fun main(child: Address): OwnedAccountInfo {
     let acct = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(child)
-    let o = acct.storage.borrow<&HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
+    let o = acct.storage.borrow<auth(HybridCustody.Owner) &HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
     if let owned = o {
       let viewType = Type<MetadataViews.Display>()
       let display = owned.resolveView(viewType) as! MetadataViews.Display?

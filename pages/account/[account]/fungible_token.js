@@ -103,17 +103,19 @@ export default function FungibleToken(props) {
       return
     }
 
-    let env = ENV.Mainnet
+    let url = 'https://token-list.fixes.world/api/token-list'
     if (publicConfig.chainEnv === 'testnet') {
-      env = ENV.Testnet
+      url = 'https://testnet-token-list.fixes.world/api/token-list'
     }
 
-    new TokenListProvider().resolve(Strategy.GitHub, env).then(tokens => {
-      const tokenList = tokens.getList().map((token) => {
-        token.id = `${token.address.replace("0x", "A.")}.${token.contractName}`
-        return token
+    fetch(url).then((response) => {
+      response.json().then((data) => {
+        const tokenList = data.tokens.map((token) => {
+          token.id = `${token.address.replace("0x", "A.")}.${token.contractName}`
+          return token
+        })
+        setTokenRegistry(tokenList)
       })
-      setTokenRegistry(tokenList)
     })
   }, [setTokenRegistry, tokenRegistry])
 
@@ -216,14 +218,6 @@ export default function FungibleToken(props) {
                 rel="noopener noreferrer"
               >
                 Bulk transfer
-              </a>
-            </label>
-            <label className={`cursor-pointer text-black bg-drizzle hover:bg-drizzle-dark px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>
-              <a href={`${publicConfig.drizzleURL}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Create airdrop
               </a>
             </label>
             <label className={`cursor-pointer text-white bg-increment hover:bg-blue-800 px-3 py-2 text-sm rounded-2xl font-semibold shrink-0`}>

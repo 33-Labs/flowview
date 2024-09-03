@@ -28,7 +28,7 @@ import Image from "next/image"
 import { useHotkeys } from "react-hotkeys-hook";
 
 const accountBookmarkFetcher = async (funcName, owner, target) => {
-  if (publicConfig.chainEnv == "emulator") {
+  if (publicConfig.chainEnv == "emulator" || publicConfig.chainEnv == "testnet") {
     return null
   }
 
@@ -143,7 +143,7 @@ export default function Layout({ children }) {
   }
 
   const showStarIcon = (bookmark) => {
-    if (publicConfig.chainEnv == "emulator") {
+    if (publicConfig.chainEnv == "emulator" || publicConfig.chainEnv == "testnet") {
       return null
     }
     if (!bookmark) {

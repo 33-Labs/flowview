@@ -4,7 +4,6 @@ access(all) contract FlowviewAccountBookmark {
 
   access(all) let AccountBookmarkCollectionStoragePath: StoragePath
   access(all) let AccountBookmarkCollectionPublicPath: PublicPath
-  access(all) let AccountBookmarkCollectionPrivatePath: PrivatePath
 
   access(all) event AccountBookmarkAdded(owner: Address, address: Address, note: String)
   access(all) event AccountBookmarkRemoved(owner: Address, address: Address)
@@ -75,7 +74,6 @@ access(all) contract FlowviewAccountBookmark {
   init() {
     self.AccountBookmarkCollectionStoragePath = /storage/flowviewAccountBookmarkCollection
     self.AccountBookmarkCollectionPublicPath = /public/flowviewAccountBookmarkCollection
-    self.AccountBookmarkCollectionPrivatePath = /private/flowviewAccountBookmarkCollection
 
     emit ContractInitialized()
   }

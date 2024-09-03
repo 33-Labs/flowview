@@ -181,16 +181,18 @@ export const bulkGetNftCatalog = async () => {
 }
 
 export const getNftCatalogByCollectionIDs = async (collectionIDs) => {
-  const code = await (await fetch("/scripts/collection/get_nft_catalog_by_collection_ids.cdc")).text()
+  // workaround:
+  return []
+  // const code = await (await fetch("/scripts/collection/get_nft_catalog_by_collection_ids.cdc")).text()
 
-  const catalogs = await fcl.query({
-    cadence: code,
-    args: (arg, t) => [
-      arg(collectionIDs, t.Array(t.String))
-    ]
-  })
+  // const catalogs = await fcl.query({
+  //   cadence: code,
+  //   args: (arg, t) => [
+  //     arg(collectionIDs, t.Array(t.String))
+  //   ]
+  // })
 
-  return catalogs
+  // return catalogs
 }
 
 const getCollectionIdentifiers = async () => {
@@ -236,24 +238,21 @@ export const bulkGetStoredItems = async (address) => {
 
 export const getStoredItems = async (address, paths) => {
   const code = await (await fetch("/scripts/storage/get_stored_items.cdc")).text()
-  const filteredPaths = paths.filter((item) =>
-    item !== "BnGNFTCollection" && item !== "RacingTimeCollection" && item !== "FuseCollectiveCollection" && item !== "ARTIFACTV2Collection"
-  )
 
   const items = await fcl.query({
     cadence: code,
     args: (arg, t) => [
       arg(address, t.Address),
-      arg(filteredPaths, t.Array(t.String))
+      arg(paths, t.Array(t.String))
     ]
   })
 
+  console.log("storaged items", items)
   return items
 }
 
 const getStoragePaths = async (address) => {
   let code = await (await fetch("/scripts/storage/get_storage_paths.cdc")).text()
-  code = code.replace("__OUTDATED_PATHS__", outdatedPaths(publicConfig.chainEnv).storage)
 
   const paths = await fcl.query({
     cadence: code,
@@ -285,7 +284,6 @@ export const getStoredStruct = async (address, path) => {
     return {}
   }
 }
-
 
 export const getStoredResource = async (address, path) => {
   const pathIdentifier = path.replace("/storage/", "")
