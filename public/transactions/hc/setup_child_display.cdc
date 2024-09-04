@@ -1,9 +1,9 @@
-import HybridCustody from 0xHybridCustody
-import MetadataViews from 0xMetadataViews
+import "HybridCustody"
+import "MetadataViews"
 
 transaction(childAddress: Address, name: String?, desc: String?, thumbnailURL: String?) {
-    prepare(acct: AuthAccount) {
-        let m = acct.borrow<&HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
+    prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
+        let m = acct.storage.borrow<auth(HybridCustody.Manage) &HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
             ?? panic("manager not found")
 
         if name != nil && desc != nil && thumbnailURL != nil {

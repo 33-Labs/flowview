@@ -3,14 +3,14 @@ import MetadataViews from 0xMetadataViews
 import FindViews from 0xFindViews
 import Flowmap from 0xFlowmap
 
-pub struct ViewInfo {
-  pub let name: String
-  pub let description: String
-  pub let thumbnail: AnyStruct{MetadataViews.File}
-  pub let rarity: String?
-  pub let transferrable: Bool
-  pub let collectionDisplay: MetadataViews.NFTCollectionDisplay?
-  pub let inscription: String
+access(all) struct ViewInfo {
+  access(all) let name: String
+  access(all) let description: String
+  access(all) let thumbnail: AnyStruct{MetadataViews.File}
+  access(all) let rarity: String?
+  access(all) let transferrable: Bool
+  access(all) let collectionDisplay: MetadataViews.NFTCollectionDisplay?
+  access(all) let inscription: String
 
   init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, transferrable: Bool, collectionDisplay: MetadataViews.NFTCollectionDisplay?, inscription: String) {
     self.name = name
@@ -23,8 +23,8 @@ pub struct ViewInfo {
   }
 }
 
-pub fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: ViewInfo} {
-  let account = getAuthAccount(address)
+access(all) fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]): {UInt64: ViewInfo} {
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
   let res: {UInt64: ViewInfo} = {}
   var collectionDisplayFetched = false
 

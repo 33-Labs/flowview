@@ -1,19 +1,19 @@
-import NonFungibleToken from 0xNonFungibleToken
+import "NonFungibleToken"
 
 transaction(recipients: [Address], tokenIds: [UInt64]) {
 
-    let senderCollection: &NonFungibleToken.Collection
+    let senderCollection: auth(NonFungibleToken.Withdraw) &{NonFungibleToken.Collection}
 
-    prepare(account: AuthAccount) {
+    prepare(account: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
         assert(recipients.length == tokenIds.length, message: "invalid input")
-        self.senderCollection = account.borrow<&NonFungibleToken.Collection>(from: __NFT_STORAGE_PATH__)!
+        self.senderCollection = account.storage.borrow<auth(NonFungibleToken.Withdraw) &{NonFungibleToken.Collection}>(from: __NFT_STORAGE_PATH__)!
     }
 
     execute {
         for index, tokenId in tokenIds {
-            let recipient = recipients[index]!
+            let recipient = recipients[index]
             let recipientAccount = getAccount(recipient)
-            let recipientCollection = recipientAccount.getCapability<&{NonFungibleToken.CollectionPublic}>(__NFT_PUBLIC_PATH__).borrow()
+            let recipientCollection = recipientAccount.capabilities.get<&{NonFungibleToken.CollectionPublic}>(__NFT_PUBLIC_PATH__).borrow()
                 ?? panic("Could not borrow capability from recipient")
 
             let nft <- self.senderCollection.withdraw(withdrawID: tokenId)

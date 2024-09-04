@@ -62,7 +62,7 @@ export default function NavigationBar() {
         </button>
 
         {
-          publicConfig.chainEnv == "emulator" ? null :
+          (publicConfig.chainEnv == "emulator" || publicConfig.chainEnv == "testnet") ? null :
             <button
               type="button"
               className="shrink-0 bg-drizzle rounded-full p-2"

@@ -1,24 +1,30 @@
-import HybridCustody from 0xHybridCustody
-import CapabilityFilter from 0xCapabilityFilter
+import "HybridCustody"
+import "CapabilityFilter"
 
-transaction(filterAddress: Address?, filterPath: String?) {
-    prepare(acct: AuthAccount) {
+transaction(filterAddress: Address?, filterPath: PublicPath?) {
+    prepare(acct: auth(Storage, Capabilities) &Account) {
         var filter: Capability<&{CapabilityFilter.Filter}>? = nil
         if filterAddress != nil && filterPath != nil {
-            let path = PublicPath(identifier: filterPath!)
-            filter = getAccount(filterAddress!).getCapability<&{CapabilityFilter.Filter}>(path!)
+            filter = getAccount(filterAddress!).capabilities.get<&{CapabilityFilter.Filter}>(filterPath!)
         }
 
-        if acct.borrow<&HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath) == nil {
+        if acct.storage.borrow<&HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath) == nil {
             let m <- HybridCustody.createManager(filter: filter)
-            acct.save(<- m, to: HybridCustody.ManagerStoragePath)
+            acct.storage.save(<- m, to: HybridCustody.ManagerStoragePath)
+        }
+        
+        for c in acct.capabilities.storage.getControllers(forPath: HybridCustody.ManagerStoragePath) {
+            c.delete()
         }
 
-        acct.unlink(HybridCustody.ManagerPublicPath)
-        acct.unlink(HybridCustody.ManagerPrivatePath)
+        acct.capabilities.unpublish(HybridCustody.ManagerPublicPath)
 
-        acct.link<&HybridCustody.Manager{HybridCustody.ManagerPrivate, HybridCustody.ManagerPublic}>(HybridCustody.ManagerPrivatePath, target: HybridCustody.ManagerStoragePath)
-        acct.link<&HybridCustody.Manager{HybridCustody.ManagerPublic}>(HybridCustody.ManagerPublicPath, target: HybridCustody.ManagerStoragePath)
+        acct.capabilities.publish(
+            acct.capabilities.storage.issue<&{HybridCustody.ManagerPublic}>(HybridCustody.ManagerStoragePath),
+            at: HybridCustody.ManagerPublicPath
+        )
+
+        acct.capabilities.storage.issue<auth(HybridCustody.Manage) &{HybridCustody.ManagerPrivate, HybridCustody.ManagerPublic}>(HybridCustody.ManagerStoragePath)
     }
 }
  

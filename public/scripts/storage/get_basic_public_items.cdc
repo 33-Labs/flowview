@@ -1,7 +1,7 @@
-pub struct Item {
-  pub let address: Address
-  pub let path: String
-  pub let targetPath: String?
+access(all) struct Item {
+  access(all) let address: Address
+  access(all) let path: String
+  access(all) let targetPath: String?
 
   init(address: Address, path: String, targetPath: String?) {
     self.address = address
@@ -10,19 +10,21 @@ pub struct Item {
   }
 }
 
-pub fun main(address: Address): [Item] {
-  let account = getAuthAccount(address)
+access(all) fun main(address: Address): [Item] {
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
   let items: [Item] = []
 
   __OUTDATED_PATHS__
-  for path in account.publicPaths {
+  for path in account.storage.publicPaths {
     if (outdatedPaths.containsKey(path)) {
       continue
     }
 
     var targetPath: String? = nil
-    if let target = account.getLinkTarget(path) {
-      targetPath = target.toString()
+    // FIXME: This is a workaround to check if the path is a capability
+    // There is no getLinkTarget method anymore
+    if account.capabilities.exists(path) {
+      targetPath = path.toString()
     }
 
     let item = Item(address: address, path: path.toString(), targetPath: targetPath)

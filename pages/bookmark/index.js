@@ -17,7 +17,7 @@ import Spinner from "../../components/common/Spinner";
 import NoteEditorModal from "../../components/bookmark/NoteEditorModal";
 
 const accountBookmarksFetcher = async (funcName, address) => {
-  if (publicConfig.chainEnv == "emulator") {
+  if (publicConfig.chainEnv === "emulator" || publicConfig.chainEnv === "testnet") {
     return null
   }
   const bookmarks = await getBookmarks(address)

@@ -11,8 +11,8 @@
   "dependencies": {
     "@headlessui/react": "^1.7.4",
     "@heroicons/react": "v1",
-    "@onflow/fcl": "^1.9.0",
-    "@onflow/types": "^1.2.1",
+    "@onflow/fcl": "^1.11.0",
+    "@onflow/types": "^1.4.0",
     "@vercel/analytics": "^1.1.1",
     "autoprefixer": "^10.4.13",
     "decimal.js": "^10.4.2",

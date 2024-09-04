@@ -1,22 +1,21 @@
-import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
-import FungibleToken from 0xFungibleToken
+import "FungibleTokenSwitchboard"
+import "FungibleToken"
 
 transaction {
-  prepare(acct: AuthAccount) {
-    if acct.borrow<&FungibleTokenSwitchboard.Switchboard>
+  prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
+    if acct.storage.borrow<&FungibleTokenSwitchboard.Switchboard>
       (from: FungibleTokenSwitchboard.StoragePath) == nil {
-        acct.save(
+        acct.storage.save(
           <- FungibleTokenSwitchboard.createSwitchboard(), 
           to: FungibleTokenSwitchboard.StoragePath)
 
-        acct.link<&FungibleTokenSwitchboard.Switchboard{FungibleToken.Receiver}>(
-          FungibleTokenSwitchboard.ReceiverPublicPath,
-          target: FungibleTokenSwitchboard.StoragePath
+        acct.capabilities.publish(
+          acct.capabilities.storage.issue<&{FungibleToken.Receiver}>(FungibleTokenSwitchboard.StoragePath),
+          at: FungibleTokenSwitchboard.ReceiverPublicPath
         )
-        
-        acct.link<&FungibleTokenSwitchboard.Switchboard{FungibleTokenSwitchboard.SwitchboardPublic, FungibleToken.Receiver}>(
-          FungibleTokenSwitchboard.PublicPath,
-          target: FungibleTokenSwitchboard.StoragePath
+        acct.capabilities.publish(
+          acct.capabilities.storage.issue<&FungibleTokenSwitchboard.Switchboard>(FungibleTokenSwitchboard.StoragePath),
+          at: FungibleTokenSwitchboard.PublicPath
         )
     }
   }

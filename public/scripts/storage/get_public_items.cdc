@@ -1,18 +1,18 @@
-import FungibleToken from 0xFungibleToken
-import NonFungibleToken from 0xNonFungibleToken
+import "FungibleToken"
+import "NonFungibleToken"
   
-pub struct Item {
-  pub let address: Address
-  pub let path: String
-  pub let type: Type
+access(all) struct Item {
+  access(all) let address: Address
+  access(all) let path: String
+  access(all) let type: Type
 
-  pub let targetPath: String?
+  access(all) let targetPath: String?
 
-  pub let isCollectionCap: Bool
-  pub let tokenIDs: [UInt64]
+  access(all) let isCollectionCap: Bool
+  access(all) let tokenIDs: [UInt64]
 
-  pub let isBalanceCap: Bool
-  pub let balance: UFix64?
+  access(all) let isBalanceCap: Bool
+  access(all) let balance: UFix64?
 
   init(
     address: Address, 
@@ -35,14 +35,14 @@ pub struct Item {
   }
 }
 
-pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
-  let account = getAuthAccount(address)
+access(all) fun main(address: Address, pathMap: {String: Bool}): [Item] {
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
 
   let items: [Item] = []
-  let balanceCapType = Type<Capability<&AnyResource{FungibleToken.Balance}>>()
-  let collectionType = Type<Capability<&AnyResource{NonFungibleToken.CollectionPublic}>>()
+  let balanceCapType = Type<Capability<&{FungibleToken.Balance}>>()
+  let collectionType = Type<Capability<&{NonFungibleToken.Collection}>>()
 
-  account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+  account.storage.forEachPublic(fun (path: PublicPath, type: Type): Bool {
     if !pathMap.containsKey(path.toString()) {
       return true
     }
@@ -53,15 +53,17 @@ pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
     var tokenIDs: [UInt64] = []
     var balance: UFix64? = nil
 
-    if let target = account.getLinkTarget(path) {
-      targetPath = target.toString()
+    // FIXME: This is a workaround to check if the path is a capability
+    // There is no getLinkTarget method anymore
+    if account.capabilities.exists(path) {
+      targetPath = path.toString()
     }
 
     if (type.isSubtype(of: balanceCapType)) {
       isBalanceCap = true
       let vaultRef = account
-          .getCapability(path)
-          .borrow<&{FungibleToken.Balance}>()
+          .capabilities.get<&{FungibleToken.Balance}>(path)
+          .borrow()
 
       if let vault = vaultRef {
           balance = vault.balance
@@ -69,8 +71,8 @@ pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
     } else if (type.isSubtype(of: collectionType)) {
       isCollectionCap = true
       let collectionRef = account
-        .getCapability(path)
-        .borrow<&{NonFungibleToken.CollectionPublic}>()
+        .capabilities.get<&{NonFungibleToken.CollectionPublic}>(path)
+        .borrow()
 
       if let collection = collectionRef {
         tokenIDs = collection.getIDs()

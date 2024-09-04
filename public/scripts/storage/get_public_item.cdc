@@ -1,13 +1,13 @@
 // A workaround method
-import FungibleToken from 0xFungibleToken
-import NonFungibleToken from 0xNonFungibleToken
+import "FungibleToken"
+import "NonFungibleToken"
   
-pub struct Item {
-  pub let address: Address
-  pub let path: String
-  pub let type: Type
+access(all) struct Item {
+  access(all) let address: Address
+  access(all) let path: String
+  access(all) let type: Type
 
-  pub let targetPath: String?
+  access(all) let targetPath: String?
 
   init(
     address: Address, 
@@ -22,19 +22,21 @@ pub struct Item {
   }
 }
 
-pub fun main(address: Address, pathMap: {String: Bool}): [Item] {
-  let account = getAuthAccount(address)
+access(all) fun main(address: Address, pathMap: {String: Bool}): [Item] {
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
 
   let items: [Item] = []
-  account.forEachPublic(fun (path: PublicPath, type: Type): Bool {
+  account.storage.forEachPublic(fun (path: PublicPath, type: Type): Bool {
     if !pathMap.containsKey(path.toString()) {
       return true
     }
 
     var targetPath: String? = nil
 
-    if let target = account.getLinkTarget(path) {
-      targetPath = target.toString()
+    // FIXME: This is a workaround to check if the path is a capability
+    // There is no getLinkTarget method anymore
+    if account.capabilities.exists(path) {
+      targetPath = path.toString()
     }
 
     let item = Item(

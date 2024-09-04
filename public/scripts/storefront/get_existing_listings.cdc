@@ -4,12 +4,12 @@ import __NFT_CONTRACT_NAME__ from __NFT_CONTRACT_ADDRESS__
 import FTRegistry from 0x097bafa4e0b48eef
 import FlowToken from 0x1654653399040a61
 
-pub struct Item {
-    pub let listingResourceId: UInt64
-    pub let details: NFTStorefrontV2.ListingDetails
-    pub let isGhosted: Bool
-    pub let isPurchased: Bool
-    pub let isExpired: Bool
+access(all) struct Item {
+    access(all) let listingResourceId: UInt64
+    access(all) let details: NFTStorefrontV2.ListingDetails
+    access(all) let isGhosted: Bool
+    access(all) let isPurchased: Bool
+    access(all) let isExpired: Bool
 
     init(
         listingResourceId: UInt64,
@@ -27,7 +27,7 @@ pub struct Item {
 }
 
 // FlowToken only
-pub fun main(account: Address, nftID: UInt64): [Item] {
+access(all) fun main(account: Address, nftID: UInt64): [Item] {
     let storefrontRef = getAccount(account)
         .getCapability<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(
             NFTStorefrontV2.StorefrontPublicPath
