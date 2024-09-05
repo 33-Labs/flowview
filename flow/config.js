@@ -52,10 +52,10 @@ async function main() {
       "0xFlowmap": "0x72ed11a540a52efc",
     });
   } else {
+    // "https://floral-special-valley.flow-mainnet.quiknode.pro",
     cfg = config({
       "flow.network": "mainnet",
-      "accessNode.api":
-        "https://floral-special-valley.flow-mainnet.quiknode.pro",
+      "accessNode.api": "https://rest-mainnet.onflow.org",
       "discovery.wallet": "https://fcl-discovery.onflow.org/authn",
       "sdk.transport": httpSend,
       "app.detail.title": "flowview",
