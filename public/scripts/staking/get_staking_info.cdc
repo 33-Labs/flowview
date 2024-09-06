@@ -126,9 +126,8 @@ access(all) fun main(address: Address): Result {
     currentEpochPhase: FlowEpoch.currentEpochPhase.rawValue
   )
 
-  let tokenHolderRef = 
-      getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
-          .borrow<&LockedTokens.TokenHolder>(from: LockedTokens.TokenHolderStoragePath)
+  let account = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
+  let tokenHolderRef = account.storage.borrow<auth(LockedTokens.TokenOperations) &LockedTokens.TokenHolder>(from: LockedTokens.TokenHolderStoragePath)
 
   var stakingInfo: StakingInfo? = nil
   if let tokenHolder = tokenHolderRef {
@@ -170,9 +169,7 @@ access(all) fun main(address: Address): Result {
       machineAccounts: {}
     )
   } else {
-    let stakingCollectionRef =
-      getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(address)
-        .borrow<&FlowStakingCollection.StakingCollection>(from: FlowStakingCollection.StakingCollectionStoragePath)
+    let stakingCollectionRef = account.storage.borrow<&FlowStakingCollection.StakingCollection>(from: FlowStakingCollection.StakingCollectionStoragePath)
 
     if let stakingCollection = stakingCollectionRef {
       let rawNodeInfos = stakingCollection.getAllNodeInfo()

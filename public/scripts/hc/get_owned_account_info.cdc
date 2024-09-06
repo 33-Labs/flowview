@@ -1,7 +1,7 @@
-import "HybridCustody"
-import "MetadataViews"
-import "CapabilityFactory"
-import "CapabilityFilter"
+import HybridCustody from 0xHybridCustody
+import MetadataViews from 0xMetadataViews
+import CapabilityFactory from 0xCapabilityFactory
+import CapabilityFilter from 0xCapabilityFilter
 
 access(all) struct OwnedAccountInfo {
   access(all) let display: MetadataViews.Display?
@@ -39,12 +39,12 @@ access(all) struct ParentInfo {
 }
 
 access(all) struct ChildAccountInfo {
-  access(all) let factory: Capability<&CapabilityFactory.Manager>
-  access(all) let filter: Capability<&{CapabilityFilter.Filter}>
+  access(all) let factory: &{CapabilityFactory.Getter}
+  access(all) let filter: &{CapabilityFilter.Filter}
 
   init(
-    factory: Capability<&CapabilityFactory.Manager>,
-    filter: Capability<&{CapabilityFilter.Filter}>
+    factory: &{CapabilityFactory.Getter},
+    filter: &{CapabilityFilter.Filter}
   ) {
     self.factory = factory
     self.filter = filter
@@ -52,7 +52,7 @@ access(all) struct ChildAccountInfo {
 }
 
 access(all) fun main(child: Address): OwnedAccountInfo {
-    let acct = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(child)
+    let acct = getAuthAccount<auth(Storage, Inbox, Capabilities) &Account>(child)
     let o = acct.storage.borrow<auth(HybridCustody.Owner) &HybridCustody.OwnedAccount>(from: HybridCustody.OwnedAccountStoragePath)
     if let owned = o {
       let viewType = Type<MetadataViews.Display>()
@@ -62,7 +62,11 @@ access(all) fun main(child: Address): OwnedAccountInfo {
       for parent in parentAddresses {
         var childInfo: ChildAccountInfo? = nil
         if let child = owned.borrowChildAccount(parent: parent) {
-          childInfo = ChildAccountInfo(factory: child.factory, filter: child.filter)
+            if let factory = child.getCapabilityFactoryManager() {
+                if let filter = child.getCapabilityFilter() {
+                    childInfo = ChildAccountInfo(factory: factory, filter: filter)
+                }
+            }
         }
 
         let isClaimed = owned.getRedeemedStatus(addr: parent) ?? false

@@ -28,8 +28,8 @@ access(all) struct Item {
 
 // FlowToken only
 access(all) fun main(account: Address, nftID: UInt64): [Item] {
-    let storefrontRef = getAccount(account)
-        .getCapability<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(
+    let account = getAccount(account)
+    let storefrontRef = account.capabilities.get<&{NFTStorefrontV2.StorefrontPublic}>(
             NFTStorefrontV2.StorefrontPublicPath
         )
         .borrow()

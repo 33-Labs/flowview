@@ -10,10 +10,12 @@ async function main() {
     cfg = config({
       "flow.network": "local",
       "accessNode.api": "http://localhost:8888",
-      "discovery.wallet": "http://localhost:8701/fcl/authn",
       "sdk.transport": httpSend,
       "app.detail.title": "flowview",
       "app.detail.icon": "https://i.imgur.com/YL8MLEd.png",
+      "walletconnect.projectId": "3148daad1116829ab01e9a271fe97179",
+      "discovery.wallet": "http://localhost:8701/fcl/authn",
+      "discovery.authn.endpoint": "http://localhost:8701/fcl/authn",
 
       "0xFlowToken": "0xf8d6e0586b0a20c7",
       "0xNFTCatalog": "0xf8d6e0586b0a20c7",
@@ -28,10 +30,12 @@ async function main() {
       "flow.network": "testnet",
       "accessNode.api":
         "https://side-still-sanctuary.flow-testnet.quiknode.pro",
-      "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
       "sdk.transport": httpSend,
       "app.detail.title": "flowview",
       "app.detail.icon": "https://i.imgur.com/YL8MLEd.png",
+      "walletconnect.projectId": "3148daad1116829ab01e9a271fe97179",
+      "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
+      "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/testnet/authn",
 
       "0xFlowToken": "0x7e60df042a9c0868",
       "0xNFTCatalog": "0x324c34e1c517e4db",
@@ -56,10 +60,12 @@ async function main() {
     cfg = config({
       "flow.network": "mainnet",
       "accessNode.api": "https://rest-mainnet.onflow.org",
-      "discovery.wallet": "https://fcl-discovery.onflow.org/authn",
       "sdk.transport": httpSend,
       "app.detail.title": "flowview",
       "app.detail.icon": "https://i.imgur.com/YL8MLEd.png",
+      "walletconnect.projectId": "3148daad1116829ab01e9a271fe97179",
+      "discovery.wallet": "https://fcl-discovery.onflow.org/authn",
+      "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/authn",
 
       "0xFlowToken": "0x1654653399040a61",
       "0xNFTCatalog": "0x49a7cda3a1eecc29",
@@ -81,7 +87,6 @@ async function main() {
     });
   }
 
-  console.log("fetching flow json")
   const resp = await fetch(process.env.NEXT_PUBLIC_APP_URL + "/flow.json");
   const flowJson = await resp.json()
   await cfg.load({ flowJSON: flowJson ?? {} });

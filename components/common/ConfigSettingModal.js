@@ -159,8 +159,6 @@ export default function ConfigSettingModal(props) {
                     disabled={transactionInProgress}
                     className="w-full inline-flex justify-center rounded-md border border-transhybridCustody shadow-sm px-4 py-2 bg-drizzle text-base font-medium text-black hover:bg-drizzle-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-drizzle sm:col-start-2 sm:text-sm disabled:bg-drizzle-light disabled:text-gray-500"
                     onClick={async () => {
-                      console.log(hybridCustody)
-                      console.log(nftStorefrontV2)
                       if (hybridCustody && hybridCustody != "") {
                         localStorage.setItem("0xHybridCustody", hybridCustody)
                       }

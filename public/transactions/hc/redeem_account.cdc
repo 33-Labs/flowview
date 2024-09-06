@@ -30,7 +30,7 @@ transaction(childAddress: Address, filterAddress: Address?, filterPath: PublicPa
         }
 
         let inboxName = HybridCustody.getChildAccountIdentifier(acct.address)
-        let cap = acct.inbox.claim<auth(HybridCustody.Child) &{HybridCustody.AccountPrivate, HybridCustody.AccountPublic, ViewResolver.Resolver}>(inboxName, provider: childAddress)
+        let cap = acct.inbox.claim<auth(HybridCustody.Child) &{HybridCustody.AccountPrivate, HybridCustody.AccountPublic, ViewResolver.ResolverCollection}>(inboxName, provider: childAddress)
             ?? panic("child account cap not found")
 
         let manager = acct.storage.borrow<auth(HybridCustody.Manage) &HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)

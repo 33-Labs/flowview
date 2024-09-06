@@ -10,7 +10,7 @@ access(all) struct ViewInfo {
   access(all) let transferrable: Bool
   access(all) let collectionDisplay: MetadataViews.NFTCollectionDisplay?
 
-  init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, transferrable: Bool, collectionDisplay: MetadataViews.NFTCollectionDisplay?) {
+  init(name: String, description: String, thumbnail: {MetadataViews.File}, rarity: String?, transferrable: Bool, collectionDisplay: MetadataViews.NFTCollectionDisplay?) {
     self.name = name
     self.description = description
     self.thumbnail = thumbnail
@@ -30,12 +30,12 @@ access(all) fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]
   }
 
   let path = StoragePath(identifier: storagePathID)!
-  let type = account.type(at: path)
+  let type = account.storage.type(at: path)
   if type == nil {
     return res
   }
 
-  let metadataViewType = Type<@{MetadataViews.ResolverCollection}>()
+  let metadataViewType = Type<@{ViewResolver.ResolverCollection}>()
 
   let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
   if !conformedMetadataViews {
@@ -52,7 +52,7 @@ access(all) fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]
     return res
   }
 
-  let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path)
+  let collectionRef = account.storage.borrow<&{ViewResolver.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path)
   for tokenID in tokenIDs {
     let resolver = collectionRef!.borrowViewResolver(id: tokenID)
     if let display = MetadataViews.getDisplay(resolver) {

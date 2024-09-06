@@ -32,9 +32,9 @@ transaction(name: String?, desc: String?, thumbnailURL: String?) {
             c.delete()
         }
 
-        acct.capabilities.storage.issue<&{HybridCustody.BorrowableAccount, HybridCustody.OwnedAccountPublic, ViewResolver.Resolver}>(HybridCustody.OwnedAccountStoragePath)
+        acct.capabilities.storage.issue<&{HybridCustody.BorrowableAccount, HybridCustody.OwnedAccountPublic, ViewResolver.ResolverCollection}>(HybridCustody.OwnedAccountStoragePath)
         acct.capabilities.publish(
-            acct.capabilities.storage.issue<&{HybridCustody.OwnedAccountPublic, ViewResolver.Resolver}>(HybridCustody.OwnedAccountStoragePath),
+            acct.capabilities.storage.issue<&{HybridCustody.OwnedAccountPublic, ViewResolver.ResolverCollection}>(HybridCustody.OwnedAccountStoragePath),
             at: HybridCustody.OwnedAccountPublicPath
         )
     }

@@ -47,7 +47,7 @@ export default function ParentView(props) {
             </button>
           </div>
         </div>
-        <div className="flex gap-x-2 px-2 text-base text-black">
+        {/* <div className="flex gap-x-2 px-2 text-base text-black">
           <div className="text-sm font-semibold text-black">Factory&nbsp;
             <a
               href={`${publicConfig.appURL}/account/${parent.childAccount.factory.address}`}
@@ -68,7 +68,7 @@ export default function ParentView(props) {
               {`${parent.childAccount.filter.address}`}
             </a>
           </div>
-        </div>
+        </div> */}
       </div>
 
 

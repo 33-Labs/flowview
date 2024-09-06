@@ -2,6 +2,7 @@ import NFTStorefrontV2 from 0x4eb8a10cb9f87357
 import NonFungibleToken from 0x1d7e57aa55817448
 import MetadataViews from 0x1d7e57aa55817448
 import FTRegistry from 0x097bafa4e0b48eef
+import ViewResolver from 0x1d7e57aa55817448
 
 access(all) struct FTInfo {
     access(all) let symbol: String
@@ -16,16 +17,13 @@ access(all) struct FTInfo {
 access(all) struct CollectionData {
   access(all) let storagePath: StoragePath
   access(all) let publicPath: PublicPath
-  access(all) let providerPath: PrivatePath
 
   init(
     storagePath: StoragePath,
     publicPath: PublicPath,
-    providerPath: PrivatePath
   ) {
     self.storagePath = storagePath
     self.publicPath = publicPath
-    self.providerPath = providerPath
   }
 }
 
@@ -45,7 +43,7 @@ access(all) struct Item {
     access(all) let isGhosted: Bool
     access(all) let isPurchased: Bool
     access(all) let isExpired: Bool
-    access(all) let nft: &NonFungibleToken.NFT?
+    access(all) let nft: &{NonFungibleToken.NFT}?
     access(all) let paymentTokenInfo: FTInfo?
     access(all) let conformMetadataViews: Bool
     access(all) let collectionData: AnyStruct?
@@ -58,7 +56,7 @@ access(all) struct Item {
         isGhosted: Bool, 
         isPurchased: Bool,
         isExpired: Bool,
-        nft: &NonFungibleToken.NFT?, 
+        nft: &{NonFungibleToken.NFT}?,
         paymentTokenInfo: FTInfo?,
         conformMetadataViews: Bool,
         collectionData: AnyStruct?,
@@ -80,8 +78,7 @@ access(all) struct Item {
 }
 
 access(all) fun main(account: Address): Listings {
-    let storefrontRef = getAccount(account)
-        .getCapability<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(
+    let storefrontRef = getAccount(account).capabilities.get<&{NFTStorefrontV2.StorefrontPublic}>(
             NFTStorefrontV2.StorefrontPublicPath
         )
         .borrow()
@@ -122,7 +119,7 @@ access(all) fun main(account: Address): Listings {
             continue
         }
 
-        let conformMetadataViews = nft!.getType().isSubtype(of: Type<@AnyResource{MetadataViews.Resolver}>())
+        let conformMetadataViews = nft!.getType().isSubtype(of: Type<@{ViewResolver.Resolver}>())
         if !conformMetadataViews {
             continue
         }
@@ -134,8 +131,7 @@ access(all) fun main(account: Address): Listings {
         if let data = nftCollectionData {
             collectionData = CollectionData(
                 storagePath: data.storagePath,
-                publicPath: data.publicPath,
-                providerPath: data.providerPath
+                publicPath: data.publicPath
             )
         }
 

@@ -43,9 +43,6 @@ export default function Staking(props) {
     account && isValidFlowAddress(account) ? ["stakingInfoFetcher", account] : null, stakingInfoFetcher
   )
 
-  console.log(infoData)
-  console.log(infoError)
-
   useEffect(() => {
     if (infoError) {
       setStakingInfo(null)
@@ -87,7 +84,8 @@ export default function Staking(props) {
   }
 
   const showInfo = () => {
-    if (publicConfig.chainEnv != "mainnet" || (infoData && !infoData.stakingInfo)) {
+    if (publicConfig.chainEnv != "mainnet" || (infoData && !infoData.stakingInfo) 
+      || (stakingInfo && stakingInfo.lockedAccountInfo == null && stakingInfo.nodeInfos.length == 0 && stakingInfo.delegatorInfos.length == 0)) {
       return (
         <div className="flex flex-col">
           <div className="flex flex-row justify-between gap-x-3 min-w-[1076px]">
