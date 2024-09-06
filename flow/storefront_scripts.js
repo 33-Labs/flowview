@@ -10,6 +10,8 @@ export const getListings = async (address) => {
     ]
   })
 
+  console.log("getListings result", result)
+
   return result
 }
 
