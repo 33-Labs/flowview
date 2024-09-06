@@ -29,12 +29,12 @@ export default function Sidebar(props) {
     { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
     { id: "6", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
     { id: "5", label: `Storefront`, link: { pathname: "/account/[account]/storefront", query: { account: account } } },
-    // {
-      // id: "7", label: `Acct Linking`, subItems: [
-        // { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
-        // { id: "7-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
-      // ]
-    // },
+    {
+      id: "7", label: `Acct Linking`, subItems: [
+        { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
+        { id: "7-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
+      ]
+    },
     {
       id: "8", label: "Storage", subItems: [
         { id: "8-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public", query: { account: account } } },
@@ -52,12 +52,12 @@ export default function Sidebar(props) {
       { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
       { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
       { id: "5", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
-      // {
-      //   id: "7", label: `Acct Linking`, subItems: [
-      //     { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
-      //     { id: "7-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
-      //   ]
-      // },
+      {
+        id: "7", label: `Acct Linking`, subItems: [
+          { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
+          { id: "7-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
+        ]
+      },
       {
         id: "8", label: "Storage", subItems: [
           { id: "8-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public", query: { account: account } } },
@@ -75,12 +75,12 @@ export default function Sidebar(props) {
       { id: "2", label: `Token`, link: { pathname: "/account/[account]/fungible_token", query: { account: account } } },
       { id: "4", label: `Collection`, link: { pathname: "/account/[account]/collection", query: { account: account } } },
       { id: "5", label: `Contract`, link: { pathname: "/account/[account]/contract", query: { account: account } } },
-      // {
-      //   id: "7", label: `Acct Linking`, subItems: [
-      //     { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
-      //     { id: "7-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
-      //   ]
-      // },
+      {
+        id: "7", label: `Acct Linking`, subItems: [
+          { id: "7-0", isSubItem: true, label: "Owned Acct", smLabel: "Owned Acct", link: { pathname: "/account/[account]/hc/owned_account", query: { account: account } } },
+          { id: "7-1", isSubItem: true, label: "Accts Manager", smLabel: "Accts Mgr", link: { pathname: "/account/[account]/hc/manager", query: { account: account } } },
+        ]
+      },
       {
         id: "8", label: "Storage", subItems: [
           { id: "8-0", isSubItem: true, label: "Public Items", smLabel: "Public", link: { pathname: "/account/[account]/public", query: { account: account } } },

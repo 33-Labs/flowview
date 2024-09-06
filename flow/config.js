@@ -87,7 +87,6 @@ async function main() {
     });
   }
 
-  console.log("fetching flow json")
   const resp = await fetch(process.env.NEXT_PUBLIC_APP_URL + "/flow.json");
   const flowJson = await resp.json()
   await cfg.load({ flowJSON: flowJson ?? {} });

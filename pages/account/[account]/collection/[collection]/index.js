@@ -260,8 +260,6 @@ export default function CollectionDetail(props) {
       return Object.values(selectedTokens).filter((t) => t.isSelected && !t.recipient).length > 0
     }
 
-    console.log("collection", collection)
-
     return (
       <div className="p-2 w-[calc(min(100vw,80rem)-160px)] sm:w-[calc(min(100vw,80rem)-192px)] overflow-auto">
         <div className="w-[1070px] flex gap-x-10 justify-between items-center">

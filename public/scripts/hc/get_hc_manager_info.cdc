@@ -1,7 +1,7 @@
-import "HybridCustody"
-import "MetadataViews"
-import "CapabilityFactory"
-import "CapabilityFilter"
+import HybridCustody from 0xHybridCustody
+import MetadataViews from 0xMetadataViews
+import CapabilityFactory from 0xCapabilityFactory
+import CapabilityFilter from 0xCapabilityFilter
 
 access(all) struct ChildAccountInfo {
   access(all) let address: Address
@@ -42,8 +42,8 @@ access(all) struct ManagerInfo {
 }
 
 access(all) fun main(child: Address): ManagerInfo {
-    let acct = getAuthAccount<auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account>(child)
-    let m = acct.storage.borrow<&HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
+    let acct = getAuthAccount<auth(Storage) &Account>(child)
+    let m = acct.storage.borrow<auth(HybridCustody.Manage) &HybridCustody.Manager>(from: HybridCustody.ManagerStoragePath)
     
     if let manager = m {
       return ManagerInfo(
@@ -60,7 +60,7 @@ access(all) fun main(child: Address): ManagerInfo {
     )
 }
 
-access(all) fun getChildAccounts(manager: &HybridCustody.Manager): [ChildAccountInfo] {
+access(all) fun getChildAccounts(manager: auth(HybridCustody.Manage) &HybridCustody.Manager): [ChildAccountInfo] {
   let childAddresses = manager.getChildAddresses()
   let children: [ChildAccountInfo] = []
   for childAddress in childAddresses {
@@ -86,7 +86,7 @@ access(all) fun getChildAccounts(manager: &HybridCustody.Manager): [ChildAccount
   return children
 }
 
-access(all) fun getOwnedAccounts(manager: &HybridCustody.Manager): [ChildAccountInfo] {
+access(all) fun getOwnedAccounts(manager: auth(HybridCustody.Manage) &HybridCustody.Manager): [ChildAccountInfo] {
   let ownedAddresses = manager.getOwnedAddresses()
   let children: [ChildAccountInfo] = []
   for ownedAddress in ownedAddresses {
