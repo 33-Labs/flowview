@@ -47,8 +47,6 @@ export default function HybridCustodyManager(props) {
     account && hybridCustody && isValidFlowAddress(account) ? ["hcManagerInfoFetcher", account] : null, hcManagerInfoFetcher
   )
 
-  console.log(itemsError)
-
   useEffect(() => {
     if (publicConfig.chainEnv == "emulator") {
       const hc = localStorage.getItem("0xHybridCustody")

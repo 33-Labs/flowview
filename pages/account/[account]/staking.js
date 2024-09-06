@@ -43,9 +43,6 @@ export default function Staking(props) {
     account && isValidFlowAddress(account) ? ["stakingInfoFetcher", account] : null, stakingInfoFetcher
   )
 
-  console.log(infoData)
-  console.log(infoError)
-
   useEffect(() => {
     if (infoError) {
       setStakingInfo(null)

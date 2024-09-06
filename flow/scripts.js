@@ -166,58 +166,9 @@ export const bulkGetNftViews = async (address, collection, limit, offset) => {
 
 // --- NFT Catalog ---
 
+// Deprecated
 export const bulkGetNftCatalog = async () => {
-  const collectionIdentifiers = await getCollectionIdentifiers()
-  const groups = splitList(collectionIdentifiers, 50)
-  const promises = groups.map((group) => {
-    return getNftCatalogByCollectionIDs(group)
-  })
-
-  const itemGroups = await Promise.all(promises)
-  const items = itemGroups.reduce((acc, current) => {
-    return Object.assign(acc, current)
-  }, {})
-  return items
-}
-
-export const getNftCatalogByCollectionIDs = async (collectionIDs) => {
-  // workaround:
   return []
-  // const code = await (await fetch("/scripts/collection/get_nft_catalog_by_collection_ids.cdc")).text()
-
-  // const catalogs = await fcl.query({
-  //   cadence: code,
-  //   args: (arg, t) => [
-  //     arg(collectionIDs, t.Array(t.String))
-  //   ]
-  // })
-
-  // return catalogs
-}
-
-const getCollectionIdentifiers = async () => {
-  const typeData = await getCatalogTypeData()
-
-  const collectionData = Object.values(typeData)
-  const collectionIdentifiers = []
-  for (let i = 0; i < collectionData.length; i++) {
-    const data = collectionData[i]
-    let collectionIDs = Object.keys(Object.assign({}, data))
-    if (collectionIDs.length > 0) {
-      collectionIdentifiers.push(collectionIDs[0])
-    }
-  }
-  return collectionIdentifiers
-}
-
-const getCatalogTypeData = async () => {
-  const code = await (await fetch("/scripts/collection/get_catalog_type_data.cdc")).text()
-
-  const typeData = await fcl.query({
-    cadence: code
-  })
-
-  return typeData
 }
 
 // --- Storage Items ---
@@ -247,7 +198,6 @@ export const getStoredItems = async (address, paths) => {
     ]
   })
 
-  console.log("storaged items", items)
   return items
 }
 
