@@ -20,7 +20,7 @@ transaction(saleItemID: UInt64, saleItemPrice: UFix64, days: UInt64) {
         if acct.borrow<&NFTStorefrontV2.Storefront>(from: NFTStorefrontV2.StorefrontStoragePath) == nil {
             let storefront <- NFTStorefrontV2.createStorefront() as! @NFTStorefrontV2.Storefront
             acct.save(<-storefront, to: NFTStorefrontV2.StorefrontStoragePath)
-            acct.link<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(NFTStorefrontV2.StorefrontPublicPath, target: NFTStorefrontV2.StorefrontStoragePath)
+            acct.link<&{NFTStorefrontV2.StorefrontPublic}>(NFTStorefrontV2.StorefrontPublicPath, target: NFTStorefrontV2.StorefrontStoragePath)
         }
 
         self.customID = "Flowview"

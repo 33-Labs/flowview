@@ -15,7 +15,7 @@ transaction {
             acct.save(<-storefront, to: NFTStorefrontV2.StorefrontStoragePath)
 
             // create a public capability for the Storefront
-            acct.link<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(NFTStorefrontV2.StorefrontPublicPath, target: NFTStorefrontV2.StorefrontStoragePath)
+            acct.link<&{NFTStorefrontV2.StorefrontPublic}>(NFTStorefrontV2.StorefrontPublicPath, target: NFTStorefrontV2.StorefrontStoragePath)
         }
     }
 }

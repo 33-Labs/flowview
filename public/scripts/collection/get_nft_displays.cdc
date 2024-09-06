@@ -2,17 +2,18 @@ import NonFungibleToken from 0xNonFungibleToken
 import MetadataViews from 0xMetadataViews
 import FindViews from 0xFindViews
 import Flowmap from 0xFlowmap
+import ViewResolver from 0xViewResolver
 
 access(all) struct ViewInfo {
   access(all) let name: String
   access(all) let description: String
-  access(all) let thumbnail: AnyStruct{MetadataViews.File}
+  access(all) let thumbnail: {MetadataViews.File}
   access(all) let rarity: String?
   access(all) let transferrable: Bool
   access(all) let collectionDisplay: MetadataViews.NFTCollectionDisplay?
   access(all) let inscription: String
 
-  init(name: String, description: String, thumbnail: AnyStruct{MetadataViews.File}, rarity: String?, transferrable: Bool, collectionDisplay: MetadataViews.NFTCollectionDisplay?, inscription: String) {
+  init(name: String, description: String, thumbnail: {MetadataViews.File}, rarity: String?, transferrable: Bool, collectionDisplay: MetadataViews.NFTCollectionDisplay?, inscription: String) {
     self.name = name
     self.description = description
     self.thumbnail = thumbnail
@@ -33,19 +34,19 @@ access(all) fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]
   }
 
   let path = StoragePath(identifier: storagePathID)!
-  let type = account.type(at: path)
+  let type = account.storage.type(at: path)
   if type == nil {
     return res
   }
 
-  let metadataViewType = Type<@AnyResource{MetadataViews.ResolverCollection}>()
+  let metadataViewType = Type<@{ViewResolver.ResolverCollection}>()
 
   let conformedMetadataViews = type!.isSubtype(of: metadataViewType)
   if !conformedMetadataViews {
     for tokenID in tokenIDs {
       var inscription = ""
       if storagePathID == "flowmapCollection" {
-        let collectionRef = account.borrow<&{Flowmap.CollectionPublic}>(from: path)
+        let collectionRef = account.storage.borrow<&{Flowmap.CollectionPublic}>(from: path)
         if let c = collectionRef {
           if let nft = c.borrowFlowmap(id: tokenID) {
             inscription = nft.inscription
@@ -65,35 +66,9 @@ access(all) fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]
     return res
   }
 
-  let collectionRef = account.borrow<&{MetadataViews.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path)
+  let collectionRef = account.storage.borrow<&{ViewResolver.ResolverCollection, NonFungibleToken.CollectionPublic}>(from: path)
   for tokenID in tokenIDs {
-    let resolver = collectionRef!.borrowViewResolver(id: tokenID)
-    if let display = MetadataViews.getDisplay(resolver) {
-      var rarityDesc: String? = nil
-      if let rarityView = MetadataViews.getRarity(resolver) {
-        rarityDesc = rarityView.description
-      }
-      let transferrable = !FindViews.checkSoulBound(resolver)
-
-      var collectionDisplay: MetadataViews.NFTCollectionDisplay? = nil
-      if (!collectionDisplayFetched) {
-        if let cDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
-          collectionDisplay = cDisplay
-          collectionDisplayFetched = true
-        }
-      }
-
-      res[tokenID] = ViewInfo(
-        name: display.name,
-        description: display.description,
-        thumbnail: display.thumbnail,
-        rarity: rarityDesc,
-        transferrable: transferrable,
-        collectionDisplay: collectionDisplay,
-        inscription: ""
-      )
-    } else {
-      res[tokenID] = ViewInfo(
+    let placeholder = ViewInfo(
         name: storagePathID,
         description: "",
         thumbnail: MetadataViews.HTTPFile(url: ""),
@@ -102,6 +77,37 @@ access(all) fun main(address: Address, storagePathID: String, tokenIDs: [UInt64]
         collectionDisplay: nil,
         inscription: ""
       )
+    let viewResolver = collectionRef!.borrowViewResolver(id: tokenID)
+    if let resolver = viewResolver {
+        if let display = MetadataViews.getDisplay(resolver) {
+            var rarityDesc: String? = nil
+            if let rarityView = MetadataViews.getRarity(resolver) {
+                rarityDesc = rarityView.description
+            }
+            let transferrable = !FindViews.checkSoulBound(resolver)
+
+            var collectionDisplay: MetadataViews.NFTCollectionDisplay? = nil
+            if (!collectionDisplayFetched) {
+                if let cDisplay = MetadataViews.getNFTCollectionDisplay(resolver) {
+                collectionDisplay = cDisplay
+                collectionDisplayFetched = true
+                }
+            }
+
+            res[tokenID] = ViewInfo(
+                name: display.name,
+                description: display.description,
+                thumbnail: display.thumbnail,
+                rarity: rarityDesc,
+                transferrable: transferrable,
+                collectionDisplay: collectionDisplay,
+                inscription: ""
+            )
+        } else {
+            res[tokenID] = placeholder
+        }
+    } else {
+      res[tokenID] = placeholder
     }
   }
   return res

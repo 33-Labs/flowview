@@ -34,7 +34,9 @@ const extractContractInfo = (metadata) => {
     return { contractName: null, contractAddress: null }
   }
 
-  let collectionType = getResourceType(metadata.collectionData.providerLinkedType)
+  console.log(metadata)
+
+  let collectionType = getResourceType(metadata.collectionData.publicLinkedType)
   let contractAddress = `0x${collectionType.split(".")[1]}`
   let contractName = collectionType.split(".")[2]
   return { contractName: contractName, contractAddress: contractAddress }

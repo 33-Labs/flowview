@@ -16,16 +16,13 @@ access(all) struct FTInfo {
 access(all) struct CollectionData {
   access(all) let storagePath: StoragePath
   access(all) let publicPath: PublicPath
-  access(all) let providerPath: PrivatePath
 
   init(
     storagePath: StoragePath,
     publicPath: PublicPath,
-    providerPath: PrivatePath
   ) {
     self.storagePath = storagePath
     self.publicPath = publicPath
-    self.providerPath = providerPath
   }
 }
 
@@ -81,7 +78,7 @@ access(all) struct Item {
 
 access(all) fun main(account: Address): Listings {
     let storefrontRef = getAccount(account)
-        .getCapability<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(
+        .getCapability<&{NFTStorefrontV2.StorefrontPublic}>(
             NFTStorefrontV2.StorefrontPublicPath
         )
         .borrow()
@@ -134,8 +131,7 @@ access(all) fun main(account: Address): Listings {
         if let data = nftCollectionData {
             collectionData = CollectionData(
                 storagePath: data.storagePath,
-                publicPath: data.publicPath,
-                providerPath: data.providerPath
+                publicPath: data.publicPath
             )
         }
 

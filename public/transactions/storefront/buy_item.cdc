@@ -15,7 +15,7 @@ import NFTStorefrontV2 from 0xNFTStorefrontV2
 transaction(listingResourceID: UInt64, storefrontAddress: Address, commissionRecipient: Address?) {
     let paymentVault: @FungibleToken.Vault
     let nftCollection: &__NFT_CONTRACT_NAME__.Collection{NonFungibleToken.Receiver}
-    let storefront: &NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}
+    let storefront: &{NFTStorefrontV2.StorefrontPublic}
     let listing: &NFTStorefrontV2.Listing{NFTStorefrontV2.ListingPublic}
     var commissionRecipientCap: Capability<&{FungibleToken.Receiver}>?
 
@@ -23,7 +23,7 @@ transaction(listingResourceID: UInt64, storefrontAddress: Address, commissionRec
         self.commissionRecipientCap = nil
         // Access the storefront public resource of the seller to purchase the listing.
         self.storefront = getAccount(storefrontAddress)
-            .getCapability<&NFTStorefrontV2.Storefront{NFTStorefrontV2.StorefrontPublic}>(
+            .getCapability<&{NFTStorefrontV2.StorefrontPublic}>(
                 NFTStorefrontV2.StorefrontPublicPath
             )!
             .borrow()
