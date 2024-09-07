@@ -1,6 +1,6 @@
 // A workaround method
-import "FungibleToken"
-import "NonFungibleToken"
+import FungibleToken from 0xFungibleToken
+import NonFungibleToken from 0xNonFungibleToken
   
 access(all) struct Item {
   access(all) let address: Address

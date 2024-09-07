@@ -1,8 +1,8 @@
 #allowAccountLinking
 
-import "HybridCustody"
-import "CapabilityFilter"
-import "ViewResolver"
+import HybridCustody from 0xHybridCustody
+import CapabilityFilter from 0xCapabilityFilter
+import ViewResolver from 0xViewResolver
 
 transaction(childAddress: Address, filterAddress: Address?, filterPath: PublicPath?) {
     prepare(acct: auth(Storage, Capabilities, Inbox) &Account) {

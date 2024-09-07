@@ -1,8 +1,8 @@
-import "MetadataViews"
-import "ViewResolver"
+import MetadataViews from 0xMetadataViews
+import ViewResolver from 0xViewResolver
 
-import "HybridCustody"
-import "CapabilityFilter"
+import HybridCustody from 0xHybridCustody
+import CapabilityFilter from 0xCapabilityFilter
 
 transaction(childAddress: Address, filterAddress: Address?, filterPath: PublicPath?) {
     prepare(acct: auth(Storage, Capabilities, Inbox) &Account) {

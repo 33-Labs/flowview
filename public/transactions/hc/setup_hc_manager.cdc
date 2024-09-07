@@ -1,5 +1,5 @@
-import "HybridCustody"
-import "CapabilityFilter"
+import HybridCustody from 0xHybridCustody
+import CapabilityFilter from 0xCapabilityFilter
 
 transaction(filterAddress: Address?, filterPath: PublicPath?) {
     prepare(acct: auth(Storage, Capabilities) &Account) {

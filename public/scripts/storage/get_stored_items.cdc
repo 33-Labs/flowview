@@ -1,7 +1,7 @@
-import "FungibleToken"
-import "NonFungibleToken"
-import "MetadataViews"
-import "ViewResolver"
+import FungibleToken from 0xFungibleToken
+import NonFungibleToken from 0xNonFungibleToken
+import MetadataViews from 0xMetadataViews
+import ViewResolver from 0xViewResolver
 
 access(all) struct CollectionDisplay {
   access(all) let name: String

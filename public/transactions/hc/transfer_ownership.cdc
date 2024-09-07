@@ -1,6 +1,6 @@
 #allowAccountLinking
 
-import "HybridCustody"
+import HybridCustody from 0xHybridCustody
 
 transaction(owner: Address) {
     prepare(acct: auth(Storage) &Account) {

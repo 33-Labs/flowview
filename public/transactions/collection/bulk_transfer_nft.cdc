@@ -1,4 +1,4 @@
-import "NonFungibleToken"
+import NonFungibleToken from 0xNonFungibleToken
 
 transaction(recipients: [Address], tokenIds: [UInt64]) {
 

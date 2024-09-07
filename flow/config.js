@@ -24,6 +24,8 @@ async function main() {
       "0xNonFungibleToken": "0xf8d6e0586b0a20c7",
       "0xFungibleToken": "0xee82856bf20e2aa6",
       "0xFungibleTokenSwitchboard": "0xee82856bf20e2aa6",
+      "0xBurner": "0xf8d6e0586b0a20c7",
+      "0xViewResolver": "0xf8d6e0586b0a20c7"
     });
   } else if (publicConfig.chainEnv == "testnet") {
     cfg = config({
@@ -47,6 +49,7 @@ async function main() {
       "0xFlowbox": "0xbca26f5091cd39ec",
       "0xFlowviewAccountBookmark": "0xdc34f5a7b807bcfb",
       "0xNFTStorefrontV2": "0x2d55b98eb200daef",
+      "0xBurner": "0x9a0766d93b6608b7",
 
       "0xHybridCustody": "0x294e44e1ec6993c6",
       "0xCapabilityFactory": "0x294e44e1ec6993c6",
@@ -77,6 +80,7 @@ async function main() {
       "0xFlowbox": "0x1b3930856571a52b",
       "0xFlowviewAccountBookmark": "0x39b144ab4d348e2b",
       "0xNFTStorefrontV2": "0x4eb8a10cb9f87357",
+      "0xBurner": "0xf233dcee88fe0abe",
 
       "0xHybridCustody": "0xd8a7e05a7ac670c0",
       "0xCapabilityFactory": "0xd8a7e05a7ac670c0",

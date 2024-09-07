@@ -1,8 +1,8 @@
-import "HybridCustody"
-import "CapabilityFactory"
-import "CapabilityFilter"
-import "CapabilityDelegator"
-import "ViewResolver"
+import HybridCustody from 0xHybridCustody
+import CapabilityFactory from 0xCapabilityFactory
+import CapabilityFilter from 0xCapabilityFilter
+import CapabilityDelegator from 0xCapabilityDelegator
+import ViewResolver from 0xViewResolver
 
 transaction(parent: Address, factoryAddress: Address, filterAddress: Address) {
     prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {

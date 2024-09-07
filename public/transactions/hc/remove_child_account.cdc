@@ -1,4 +1,4 @@
-import "HybridCustody"
+import HybridCustody from 0xHybridCustody
 
 transaction(child: Address) {
     prepare (acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {

@@ -1,4 +1,4 @@
-import "FlowviewAccountBookmark"
+import FlowviewAccountBookmark from 0xFlowviewAccountBookmark
 
 transaction(
   address: Address,

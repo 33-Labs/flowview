@@ -1,4 +1,4 @@
-import "Burner"
+import Burner from 0xBurner
 
 transaction() {
   prepare(signer: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {

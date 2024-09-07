@@ -1,5 +1,5 @@
-import "FungibleTokenSwitchboard"
-import "FungibleToken"
+import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
+import FungibleToken from 0xFungibleToken
 
 transaction {
   let capability: Capability<&{FungibleToken.Receiver}>

@@ -1,8 +1,8 @@
 #allowAccountLinking
 
-import "ViewResolver"
-import "MetadataViews"
-import "HybridCustody"
+import ViewResolver from 0xViewResolver
+import MetadataViews from 0xMetadataViews
+import HybridCustody from 0xHybridCustody
 
 /// This transaction configures an OwnedAccount in the signer if needed and configures its Capabilities per
 /// HybridCustody's intended design. If Display values are specified (as recommended), they will be set on the

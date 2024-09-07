@@ -1,12 +1,12 @@
 #allowAccountLinking
 
-import "MetadataViews"
-import "ViewResolver"
+import MetadataViews from 0xMetadataViews
+import ViewResolver from 0xViewResolver
 
-import "HybridCustody"
-import "CapabilityFactory"
-import "CapabilityFilter"
-import "CapabilityDelegator"
+import HybridCustody from 0xHybridCustody
+import CapabilityFactory from 0xCapabilityFactory
+import CapabilityFilter from 0xCapabilityFilter
+import CapabilityDelegator from 0xCapabilityDelegator
 
 /// This transaction configures an OwnedAccount in the signer if needed, and proceeds to create a ChildAccount 
 /// using CapabilityFactory.Manager and CapabilityFilter.Filter Capabilities from the given addresses. A

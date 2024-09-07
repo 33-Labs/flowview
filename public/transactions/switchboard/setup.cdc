@@ -1,5 +1,5 @@
-import "FungibleTokenSwitchboard"
-import "FungibleToken"
+import FungibleTokenSwitchboard from 0xFungibleTokenSwitchboard
+import FungibleToken from 0xFungibleToken
 
 transaction {
   prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {

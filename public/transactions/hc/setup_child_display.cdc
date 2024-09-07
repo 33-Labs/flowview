@@ -1,5 +1,5 @@
-import "HybridCustody"
-import "MetadataViews"
+import HybridCustody from 0xHybridCustody
+import MetadataViews from 0xMetadataViews
 
 transaction(childAddress: Address, name: String?, desc: String?, thumbnailURL: String?) {
     prepare(acct: auth(Storage, Contracts, Keys, Inbox, Capabilities) &Account) {
